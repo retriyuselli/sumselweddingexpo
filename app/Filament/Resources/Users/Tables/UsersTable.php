@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Filament\Resources\Users\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+
+class UsersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->circular()
+                    ->disk('public')
+                    ->defaultImageUrl(fn ($record) => 
+                        'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=7F9CF5&background=EBF4FF&size=200'
+                    ),
+                
+                TextColumn::make('name')
+                    ->label('Full Name')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    ->description(fn ($record) => $record->email),
+                
+                TextColumn::make('email')
+                    ->label('Email Address')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Email copied!')
+                    ->icon('heroicon-m-envelope')
+                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->colors([
+                        'danger' => 'super_admin',
+                        'warning' => 'panel_user',
+                        'success' => fn ($state): bool => !in_array($state, ['super_admin', 'panel_user']),
+                    ])
+                    ->separator(',')
+                    ->searchable(),
+                
+                IconColumn::make('email_verified_at')
+                    ->label('Verified')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->sortable()
+                    ->alignCenter()
+                    ->tooltip(fn ($record) => $record->email_verified_at 
+                        ? 'Verified on ' . $record->email_verified_at->format('d M Y')
+                        : 'Not verified'
+                    ),
+                
+                TextColumn::make('created_at')
+                    ->label('Joined')
+                    ->dateTime('d M Y')
+                    ->sortable()
+                    ->toggleable()
+                    ->description(fn ($record) => $record->created_at->diffForHumans()),
+                
+                TextColumn::make('updated_at')
+                    ->label('Last Updated')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->since(),
+            ])
+            ->filters([
+                SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->label('Filter by Role'),
+                
+                TernaryFilter::make('email_verified_at')
+                    ->label('Email Verified')
+                    ->placeholder('All users')
+                    ->trueLabel('Verified only')
+                    ->falseLabel('Unverified only')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('email_verified_at'),
+                        false: fn ($query) => $query->whereNull('email_verified_at'),
+                    ),
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped()
+            ->emptyStateHeading('No users yet')
+            ->emptyStateDescription('Start by creating a new user.')
+            ->emptyStateIcon('heroicon-o-user-group');
+    }
+}

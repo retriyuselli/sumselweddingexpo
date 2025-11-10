@@ -1,0 +1,151 @@
+@extends('layouts.app')
+
+@section('title', $category->name . ' — Blog WeddingExpo')
+@push('head')
+    <meta name="description" content="{{ $category->description }}">
+@endpush
+
+@section('content')
+    <main class="min-h-screen">
+
+        <!-- Hero Category -->
+        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <nav class="flex items-center gap-2 text-sm mb-4">
+                    <a href="{{ route('blog') }}" class="text-gray-600 hover:text-rose-600">Blog</a>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-rose-600 font-medium">{{ $category->name }}</span>
+                </nav>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">{{ $category->name }}</h1>
+                <p class="text-sm sm:text-base text-neutral-600 max-w-3xl">
+                    {{ $category->description ?? 'Artikel seputar ' . strtolower($category->name) }}
+                </p>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="py-12 bg-white">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-6 sm:mb-8">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-2">Kategori Lainnya</h2>
+                    <div class="h-1 w-20 bg-rose-600"></div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- All Button -->
+                    <a href="{{ route('blog') }}" 
+                       class="px-3 py-2 sm:px-4 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold hover:border-rose-600 hover:text-rose-600 hover:shadow-md transition text-xs sm:text-sm text-center flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        Semua
+                    </a>
+
+                    @foreach($categories as $cat)
+                    <a href="{{ route('blog.category', $cat->slug) }}" 
+                       class="border px-3 py-2 sm:px-4 {{ $cat->id === $category->id ? 'bg-rose-600 text-white border-rose-600' : 'bg-white border-gray-200 text-gray-700 hover:border-rose-600 hover:text-rose-600' }} rounded-lg font-semibold hover:shadow-md transition text-xs sm:text-sm text-center flex items-center justify-center gap-2 group">
+                        {{ $cat->name }}
+                        @if($cat->blogs_count > 0)
+                            <span class="inline-flex items-center justify-center w-5 h-5 text-xs {{ $cat->id === $category->id ? 'bg-rose-700 text-white' : 'bg-gray-100 text-gray-600 group-hover:bg-rose-100 group-hover:text-rose-600' }} rounded-full transition">
+                                {{ $cat->blogs_count }}
+                            </span>
+                        @endif
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Grid -->
+        <section class="py-12 bg-gray-50">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-6">
+                    <p class="text-sm text-gray-600">
+                        Menampilkan <span class="font-semibold">{{ $blogs->total() }}</span> artikel
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    
+                    @forelse($blogs as $blog)
+                    <!-- Article -->
+                    <article class="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                        <div class="relative overflow-hidden">
+                            <img src="{{ $blog->image ?: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop&auto=format&q=80' }}" 
+                                 alt="{{ $blog->title }}" 
+                                 class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-4 left-4 px-3 py-1 bg-rose-600 text-white text-xs font-semibold rounded-full">
+                                {{ $blog->category->name }}
+                            </span>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <h3 class="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 hover:text-rose-600 transition">
+                                <a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a>
+                            </h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-3">
+                                {{ $blog->excerpt }}
+                            </p>
+                            <div class="flex items-center justify-between text-xs sm:text-sm text-gray-500">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    {{ $blog->date->format('d M Y') }}
+                                </span>
+                                <span>{{ $blog->read_time }} min baca</span>
+                            </div>
+                        </div>
+                    </article>
+                    @empty
+                    <div class="col-span-full text-center py-12">
+                        <div class="mb-4">
+                            <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 text-lg mb-2">Belum ada artikel dalam kategori ini</p>
+                        <a href="{{ route('blog') }}" class="text-rose-600 hover:text-rose-700 font-medium">
+                            ← Kembali ke semua artikel
+                        </a>
+                    </div>
+                    @endforelse
+
+                </div>
+
+                <!-- Pagination -->
+                @if($blogs->hasPages())
+                <div class="mt-8 sm:mt-12 flex justify-center">
+                    {{ $blogs->links() }}
+                </div>
+                @endif
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="py-16 bg-linear-to-r from-rose-600 to-pink-600 text-white">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">Butuh Konsultasi Pernikahan?</h2>
+                <p class="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 opacity-90 max-w-2xl mx-auto">
+                    Tim ahli kami siap membantu mewujudkan pernikahan impian Anda!
+                </p>
+                <a href="https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20konsultasi%20pernikahan" 
+                   target="_blank"
+                   class="inline-flex items-center px-6 py-3 sm:px-8 bg-white text-rose-600 font-semibold rounded-lg hover:bg-gray-100 transition shadow-lg text-sm sm:text-base">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    Hubungi via WhatsApp
+                </a>
+            </div>
+        </section>
+
+    </main>
+@endsection
+
+@section('footer')
+    <footer class="py-8 text-center text-sm text-gray-500 bg-gray-50">
+        © {{ date('Y') }} WeddingExpo. Semua hak cipta.
+    </footer>
+@endsection
