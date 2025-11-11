@@ -27,6 +27,8 @@ class SponsorForm
                             ->label('Logo')
                             ->image()
                             ->directory('sponsors')
+                            ->disk('public')
+                            ->maxSize(5120)
                             ->columnSpan(1),
                         
                         TextInput::make('website')
