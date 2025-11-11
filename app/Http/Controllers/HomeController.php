@@ -32,8 +32,10 @@ class HomeController extends Controller
             ]);
         }
         
-        // Ambil data sponsor yang aktif, diurutkan berdasarkan order
+        // Ambil data sponsor yang aktif dan memiliki logo, diurutkan berdasarkan order
         $sponsors = Sponsor::where('is_active', true)
+            ->whereNotNull('logo')
+            ->where('logo', '!=', '')
             ->orderBy('order')
             ->get();
 

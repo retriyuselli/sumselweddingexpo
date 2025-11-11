@@ -261,21 +261,18 @@ use Illuminate\Support\Facades\Storage;
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 @forelse($sponsors as $sponsor)
-                    <div class="bg-white rounded-xl p-6 flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-105 group border border-neutral-100">
-                        <div class="text-center">
-                            <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition overflow-hidden bg-neutral-50">
-                                @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
+                    @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
+                        <div class="bg-white rounded-xl p-6 flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-105 group border border-neutral-100">
+                            <div class="text-center">
+                                <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition overflow-hidden bg-neutral-50">
                                     <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain">
-                                @else
-                                    <span class="text-lg font-bold text-rose-600">{{ strtoupper(substr($sponsor->name, 0, 1)) }}</span>
-                                @endif
+                                </div>
                             </div>
-                            <p class="mt-2 text-xs text-neutral-600">{{ $sponsor->name }}</p>
                         </div>
-                    </div>
+                    @endif
                 @empty
                     <div class="col-span-full text-center text-neutral-600">
-                        <p>Belum ada sponsor</p>
+                        <p>Belum ada sponsor dengan logo</p>
                     </div>
                 @endforelse
             </div>

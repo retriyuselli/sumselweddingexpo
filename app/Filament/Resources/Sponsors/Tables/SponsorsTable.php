@@ -20,9 +20,7 @@ class SponsorsTable
                     ->label('Logo')
                     ->disk('public')
                     ->circular()
-                    ->width(50)
-                    ->height(50)
-                    ->fallbackIcon('heroicon-o-photo'),
+                    ->width(50),
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
