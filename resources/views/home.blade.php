@@ -259,21 +259,62 @@ use Illuminate\Support\Facades\Storage;
                 <h2 class="text-2xl sm:text-4xl font-bold text-neutral-900">Sponsor & Exhibitor</h2>
                 <p class="mt-3 text-neutral-600 max-w-2xl mx-auto">Terima kasih kepada partner resmi dan exhibitor yang mendukung acara ini</p>
             </div>
-            <div class="flex overflow-x-auto snap-x snap-mandatory pb-4 gap-2">
-                @forelse($sponsors as $sponsor)
-                    @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                        <div class="group relative flex-shrink-0 w-40 snap-center">
-                            <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden bg-white rounded-lg">
-                                <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
+            
+            <!-- Sponsor Carousel with Navigation -->
+            <div class="relative flex items-center gap-4">
+                <!-- Left Arrow Button -->
+                <button id="scrollLeft" class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+
+                <!-- Scrollable Container -->
+                <div id="sponsorScroll" class="flex-1 flex overflow-x-auto snap-x snap-mandatory pb-4 gap-2 scroll-smooth">
+                    @forelse($sponsors as $sponsor)
+                        @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
+                            <div class="group relative shrink-0 w-40 snap-center">
+                                <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden bg-white rounded-lg shadow-md hover:shadow-lg">
+                                    <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
+                                </div>
                             </div>
+                        @endif
+                    @empty
+                        <div class="text-center text-neutral-600 w-full py-8">
+                            <p>Belum ada sponsor dengan logo</p>
                         </div>
-                    @endif
-                @empty
-                    <div class="text-center text-neutral-600 w-full">
-                        <p>Belum ada sponsor dengan logo</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
+
+                <!-- Right Arrow Button -->
+                <button id="scrollRight" class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5L15.75 12l-7.5 7.5" />
+                    </svg>
+                </button>
             </div>
+
+            <script>
+                const scrollContainer = document.getElementById('sponsorScroll');
+                const scrollLeftBtn = document.getElementById('scrollLeft');
+                const scrollRightBtn = document.getElementById('scrollRight');
+
+                // Scroll left
+                scrollLeftBtn.addEventListener('click', () => {
+                    scrollContainer.scrollBy({
+                        left: -200,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Scroll right
+                scrollRightBtn.addEventListener('click', () => {
+                    scrollContainer.scrollBy({
+                        left: 200,
+                        behavior: 'smooth'
+                    });
+                });
+            </script>
             <div class="mt-12 text-center">
                 <a href="/exhibitor" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all hover:scale-105 shadow-lg hover:shadow-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
