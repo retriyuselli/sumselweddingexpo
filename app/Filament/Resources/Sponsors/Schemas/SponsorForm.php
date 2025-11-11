@@ -26,7 +26,7 @@ class SponsorForm
                         FileUpload::make('logo')
                             ->label('Logo')
                             ->image()
-                            ->directory('vendors')
+                            ->directory('sponsors')
                             ->columnSpan(1),
                         
                         TextInput::make('website')

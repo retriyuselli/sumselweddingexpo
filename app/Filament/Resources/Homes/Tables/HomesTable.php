@@ -16,18 +16,29 @@ class HomesTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->weight('bold'),
                 TextColumn::make('hero_subtitle')
                     ->label('Subtitle Hero')
-                    ->limit(50),
+                    ->limit(50)
+                    ->searchable(),
+                TextColumn::make('meta_description')
+                    ->label('Meta Description')
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('highlight_videos')
+                    ->label('Video Highlights')
+                    ->formatStateUsing(fn ($state) => count($state ?? []) . ' videos')
+                    ->badge(),
                 IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->boolean()
+                    ->label('Aktif'),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Terakhir Diupdate')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

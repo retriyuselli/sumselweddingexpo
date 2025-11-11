@@ -16,21 +16,34 @@ class SponsorsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
                 ImageColumn::make('logo')
                     ->label('Logo')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->circular()
+                    ->size(50),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('website')
-                    ->searchable(),
+                    ->label('Website')
+                    ->searchable()
+                    ->url(fn ($record) => $record->website)
+                    ->openUrlInNewTab()
+                    ->limit(30),
+                TextColumn::make('description')
+                    ->label('Deskripsi')
+                    ->limit(40)
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('order')
+                    ->label('Urutan')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->boolean(),
+                    ->boolean()
+                    ->label('Aktif'),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

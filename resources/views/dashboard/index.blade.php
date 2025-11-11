@@ -6,7 +6,7 @@
     <main class="min-h-screen bg-gray-50">
         
         <!-- Header -->
-        <section class="pt-24 md:pt-28 pb-10 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
@@ -15,11 +15,11 @@
                                  alt="{{ auth()->user()->name }}"
                                  class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover shadow-lg border-2 border-white"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 items-center justify-center text-white shadow-lg font-bold text-lg sm:text-2xl hidden">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 items-center justify-center text-white shadow-lg font-bold text-lg sm:text-2xl hidden">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @else
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white shadow-lg font-bold text-lg sm:text-2xl">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white shadow-lg font-bold text-lg sm:text-2xl">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
@@ -165,8 +165,8 @@
                             
                             <div class="space-y-3">
                                 <!-- Event Item -->
-                                <div class="flex gap-4 p-4 bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg">
-                                    <div class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-lg flex flex-col items-center justify-center shadow-sm">
+                                <div class="flex gap-4 p-4 bg-linear-to-r from-rose-50 to-pink-50 rounded-lg">
+                                    <div class="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-lg flex flex-col items-center justify-center shadow-sm">
                                         <span class="text-lg sm:text-xl font-bold text-rose-600">15</span>
                                         <span class="text-xs text-neutral-600">Feb</span>
                                     </div>
@@ -194,11 +194,11 @@
                                              alt="{{ $user->name }}"
                                              class="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-white"
                                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 items-center justify-center text-white font-bold text-3xl shadow-lg hidden">
+                                        <div class="w-20 h-20 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 items-center justify-center text-white font-bold text-3xl shadow-lg hidden">
                                             {{ strtoupper(substr($user->name, 0, 1)) }}
                                         </div>
                                     @else
-                                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">
+                                        <div class="w-20 h-20 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">
                                             {{ strtoupper(substr($user->name, 0, 1)) }}
                                         </div>
                                     @endif
@@ -233,7 +233,7 @@
                         </div>
 
                         <!-- Need Help -->
-                        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-4 sm:p-6 text-white">
+                        <div class="bg-linear-to-br from-blue-600 to-indigo-700 rounded-xl p-4 sm:p-6 text-white">
                             <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

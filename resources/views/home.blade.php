@@ -264,8 +264,8 @@ use Illuminate\Support\Facades\Storage;
                     <div class="bg-white rounded-xl p-6 flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-105 group border border-neutral-100">
                         <div class="text-center">
                             <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition overflow-hidden bg-neutral-50">
-                                @if($sponsor->logo && Storage::disk('public')->exists('vendors/' . $sponsor->logo))
-                                    <img src="{{ asset('storage/vendors/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain">
+                                @if($sponsor->logo && Storage::disk('public')->exists('sponsors/' . $sponsor->logo))
+                                    <img src="{{ asset('storage/sponsors/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain">
                                 @else
                                     <span class="text-lg font-bold text-rose-600">{{ strtoupper(substr($sponsor->name, 0, 1)) }}</span>
                                 @endif
