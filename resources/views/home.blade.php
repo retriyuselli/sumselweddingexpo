@@ -261,7 +261,7 @@ use Illuminate\Support\Facades\Storage;
             </div>
             
             <!-- Sponsor Carousel with Navigation -->
-            <div class="relative flex items-center gap-4">
+            <div class="relative flex items-center justify-center gap-4">
                 <!-- Left Arrow Button -->
                 <button id="scrollLeft" class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -270,12 +270,12 @@ use Illuminate\Support\Facades\Storage;
                 </button>
 
                 <!-- Scrollable Container -->
-                <div id="sponsorScroll" class="flex-1 flex overflow-x-auto snap-x snap-mandatory pb-4 gap-2 scroll-smooth">
+                <div id="sponsorScroll" class="flex-1 flex overflow-x-auto snap-x snap-mandatory gap-2 scroll-smooth" style="scrollbar-width: none;">
                     @forelse($sponsors as $sponsor)
                         @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                            <div class="group relative shrink-0 w-40 snap-center">
-                                <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden bg-white rounded-lg shadow-md hover:shadow-lg">
-                                    <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
+                            <div class="shrink-0 w-40 snap-center">
+                                <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
+                                    <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain hover:brightness-110 transition-all">
                                 </div>
                             </div>
                         @endif
@@ -293,6 +293,12 @@ use Illuminate\Support\Facades\Storage;
                     </svg>
                 </button>
             </div>
+
+            <style>
+                #sponsorScroll::-webkit-scrollbar {
+                    display: none;
+                }
+            </style>
 
             <script>
                 const scrollContainer = document.getElementById('sponsorScroll');
