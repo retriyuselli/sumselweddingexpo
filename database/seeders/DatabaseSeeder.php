@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             CategoryTenantSeeder::class,
             PartisipasiSeeder::class,
             DataPembayaranSeeder::class,
+            SponsorSeeder::class,
+            HomeSeeder::class,
         ]);
     }
 }

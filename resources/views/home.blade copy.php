@@ -5,10 +5,6 @@
     <meta name="description" content="Informasi lokasi pameran WeddingExpo, peta, akses, dan fasilitas.">
 @endpush
 
-@php
-use Illuminate\Support\Facades\Storage;
-@endphp
-
 @section('content')
 
     <!-- Hero: full-bleed image with overlay -->
@@ -96,7 +92,22 @@ use Illuminate\Support\Facades\Storage;
                     <h2 class="text-xl sm:text-3xl font-bold text-neutral-900 mb-6">Wedding Expo Terbesar di Sumatera
                         Selatan</h2>
                     <div class="space-y-4 text-neutral-700">
-                        {!! nl2br(e($home->tentang_kami ?? '')) !!}
+                        <p class="text-base leading-relaxed font-semibold text-neutral-900">
+                            Sumsel Wedding Expo (SWE) pada tahun 2024 dan 2025 telah sukses diselenggarakan dengan mengusung tema "Recovery Together." Ajang ini berhasil menghadirkan lebih dari 80 vendor pernikahan terkemuka di Sumatera Selatan, yang terdiri dari berbagai kategori seperti venue gedung, hotel, catering, wedding organizer, make up artist, fotografer, dekorasi, hingga developer perumahan.
+                        </p>
+                        <p class="leading-relaxed">
+                            Kehadiran Sumsel Wedding Expo diharapkan dapat memberikan kemudahan bagi para calon pengantin dalam menemukan dan berinteraksi langsung dengan vendor-vendor impian mereka, sehingga segala kebutuhan dan harapan dalam mewujudkan pernikahan ideal dapat terencana dengan baik.
+                        </p>
+                        <p class="leading-relaxed mt-6">
+                            Setelah kesuksesan SWE 2024 Season I & II serta SWE 2025 Season I & II, kami kembali hadir menyelenggarakan Sumsel Wedding Expo 2026 Season I. Pada edisi kali ini, lokasi penyelenggaraan berpindah dari Palembang Indah Mall ke Palembang Icon, dengan harapan dapat menghadirkan suasana baru serta memberikan pengalaman yang lebih berkesan bagi para pengunjung.
+                        </p>
+                        <p class="leading-relaxed">
+                            Melalui acara ini, kami ingin terus menjadi wadah inspiratif bagi para calon pengantin untuk menemukan vendor terbaik, berkomunikasi langsung dengan para peserta pameran, serta mempersiapkan momen pernikahan impian mereka dengan lebih mudah dan menyenangkan.
+                        </p>
+                        <p class="leading-relaxed mt-6 text-neutral-600 italic">
+                            <span class="font-semibold text-neutral-900">Salam Hangat,</span><br>
+                            Ramadhona Utama
+                        </p>
                     </div>
                     <div class="grid grid-cols-3 gap-6 mt-8">
                         <div class="text-center">
@@ -226,22 +237,70 @@ use Illuminate\Support\Facades\Storage;
                 <p class="mt-3 text-neutral-300">Lihat kembali moment-moment terbaik dari acara sebelumnya</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 video-container">
-                @forelse($home->highlight_videos ?? [] as $video)
-                    <div class="group">
-                        <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
-                            <iframe class="w-full h-full" 
-                                src="https://www.youtube.com/embed/{{ $video['video_id'] }}?modestbranding=1"
-                                title="{{ $video['title'] }}" frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                        <h3 class="mt-4 font-semibold text-sm sm:text-base">{{ $video['title'] }}</h3>
-                        <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                <!-- Video 1 -->
+                <div class="group">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/AIjcb5vTH6M?modestbranding=1"
+                            title="Wedding Expo Highlight 1" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
                     </div>
-                @empty
-                    <p class="text-neutral-400">Belum ada video highlight</p>
-                @endforelse
+                    <h3 class="mt-4 font-semibold text-sm sm:text-base"></h3>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="group">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/ObPh6sXgEfE?modestbranding=1"
+                            title="Wedding Expo Highlight 2" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <h3 class="mt-4 font-semibold text-sm sm:text-base"></h3>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                </div>
+
+                <!-- Video 3 -->
+                <div class="group">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/SZtypoLHDu4?modestbranding=1"
+                            title="Wedding Expo Highlight 3" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <h3 class="mt-4 font-semibold text-sm sm:text-base"></h3>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                </div>
+
+                <!-- Video 4 -->
+                <div class="group">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/J4aig4NUa34?modestbranding=1"
+                            title="Wedding Expo Highlight 4" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <h3 class="mt-4 font-semibold text-sm sm:text-base"></h3>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                </div>
+
+                <!-- Video 5 -->
+                <div class="group">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-800 scale-100">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/MId8wPEI1Uk?modestbranding=1"
+                            title="Wedding Expo Highlight 5" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <h3 class="mt-4 font-semibold text-sm sm:text-base"></h3>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-1"></p>
+                </div>
             </div>
         </div>
     </section>
@@ -260,24 +319,36 @@ use Illuminate\Support\Facades\Storage;
                 <p class="mt-3 text-neutral-600 max-w-2xl mx-auto">Terima kasih kepada partner resmi dan exhibitor yang mendukung acara ini</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                @forelse($sponsors as $sponsor)
+                @for ($i = 1; $i <= 12; $i++)
+                    @php
+                        // physical storage path: storage/app/public/vendors
+                        $storagePng = storage_path('app/public/vendors/vendor-' . $i . '.png');
+                        $storageJpg = storage_path('app/public/vendors/vendor-' . $i . '.jpg');
+                        $storageSvg = storage_path('app/public/vendors/vendor-' . $i . '.svg');
+
+                        // public asset path (served via public/storage/vendors)
+                        $publicPng = 'storage/vendors/vendor-' . $i . '.png';
+                        $publicJpg = 'storage/vendors/vendor-' . $i . '.jpg';
+                        $publicSvg = 'storage/vendors/vendor-' . $i . '.svg';
+                    @endphp
+
                     <div class="bg-white rounded-xl p-6 flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-105 group border border-neutral-100">
                         <div class="text-center">
                             <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition overflow-hidden bg-neutral-50">
-                                @if($sponsor->logo && Storage::disk('public')->exists('vendors/' . $sponsor->logo))
-                                    <img src="{{ asset('storage/vendors/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain">
+                                @if (file_exists($storagePng) || file_exists(public_path($publicPng)))
+                                    <img src="{{ asset($publicPng) }}" alt="Sponsor {{ $i }}" class="w-full h-full object-contain">
+                                @elseif(file_exists($storageJpg) || file_exists(public_path($publicJpg)))
+                                    <img src="{{ asset($publicJpg) }}" alt="Sponsor {{ $i }}" class="w-full h-full object-contain">
+                                @elseif(file_exists($storageSvg) || file_exists(public_path($publicSvg)))
+                                    <img src="{{ asset($publicSvg) }}" alt="Sponsor {{ $i }}" class="w-full h-full object-contain">
                                 @else
-                                    <span class="text-lg font-bold text-rose-600">{{ strtoupper(substr($sponsor->name, 0, 1)) }}</span>
+                                    <span class="text-lg font-bold text-rose-600">{{ $i }}</span>
                                 @endif
                             </div>
-                            <p class="mt-2 text-xs text-neutral-600">{{ $sponsor->name }}</p>
+                            <p class="mt-2 text-xs text-neutral-600">Sponsor {{ $i }}</p>
                         </div>
                     </div>
-                @empty
-                    <div class="col-span-full text-center text-neutral-600">
-                        <p>Belum ada sponsor</p>
-                    </div>
-                @endforelse
+                @endfor
             </div>
             <div class="mt-12 text-center">
                 <a href="/exhibitor" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all hover:scale-105 shadow-lg hover:shadow-xl">

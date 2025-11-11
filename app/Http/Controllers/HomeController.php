@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Expo;
+use App\Models\Home;
+use App\Models\Sponsor;
 
 class HomeController extends Controller
 {
@@ -19,32 +21,22 @@ class HomeController extends Controller
         $eventLocation = $expo ? $expo->lokasi : 'Grand City Surabaya Convention Hall';
         $eventName = $expo ? $expo->nama_expo : 'Wedding Expo 2026';
         
-        // Daftar logo sponsor & exhibitor (nama dan file). 
-        // Letakkan file logo di public/images/sponsors dan public/images/exhibitors.
-        $sponsors = [
-            ['name' => 'Brand A', 'file' => 'brand-a.png'],
-            ['name' => 'Brand B', 'file' => 'brand-b.png'],
-            ['name' => 'Brand C', 'file' => 'brand-c.png'],
-            ['name' => 'Brand D', 'file' => 'brand-d.png'],
-            ['name' => 'Brand E', 'file' => 'brand-e.png'],
-            ['name' => 'Brand F', 'file' => 'brand-f.png'],
-        ];
+        // Ambil data home page dari database
+        $home = Home::active()->first();
+        if (!$home) {
+            $home = new Home([
+                'tentang_kami' => 'Selamat datang di Sumatra Wedding Expo',
+                'hero_subtitle' => 'Temukan Vendor Pernikahan Impian Anda',
+                'highlight_videos' => [],
+                'is_active' => true,
+            ]);
+        }
+        
+        // Ambil data sponsor yang aktif, diurutkan berdasarkan order
+        $sponsors = Sponsor::where('is_active', true)
+            ->orderBy('order')
+            ->get();
 
-        $exhibitors = [
-            ['name' => 'Vendor 1', 'file' => 'vendor-1.png'],
-            ['name' => 'Vendor 2', 'file' => 'vendor-2.png'],
-            ['name' => 'Vendor 3', 'file' => 'vendor-3.png'],
-            ['name' => 'Vendor 4', 'file' => 'vendor-4.png'],
-            ['name' => 'Vendor 5', 'file' => 'vendor-5.png'],
-            ['name' => 'Vendor 6', 'file' => 'vendor-6.png'],
-            ['name' => 'Vendor 7', 'file' => 'vendor-7.png'],
-            ['name' => 'Vendor 8', 'file' => 'vendor-8.png'],
-            ['name' => 'Vendor 9', 'file' => 'vendor-9.png'],
-            ['name' => 'Vendor 10', 'file' => 'vendor-10.png'],
-            ['name' => 'Vendor 11', 'file' => 'vendor-11.png'],
-            ['name' => 'Vendor 12', 'file' => 'vendor-12.png'],
-        ];
-
-        return view('home', compact('eventDate', 'eventStart', 'eventEnd', 'eventLocation', 'eventName', 'expo', 'sponsors', 'exhibitors'));
+        return view('home', compact('eventDate', 'eventStart', 'eventEnd', 'eventLocation', 'eventName', 'expo', 'home', 'sponsors'));
     }
 }
