@@ -15,17 +15,15 @@ class HomeSeeder extends Seeder
     {
         Home::create([
             'tentang_kami' => <<<'EOT'
-Sumatra Wedding Expo (SWE) 2024-2025 adalah sebuah pameran pernikahan skala regional yang diselenggarakan di Sumatera dengan tujuan mempromosikan dan menghubungkan calon pengantin dengan berbagai vendor pernikahan profesional.
-
-Pameran ini menghadirkan lebih dari 50 vendor terkemuka di industri pernikahan, mulai dari dekorasi, catering, fotografi, videografi, hingga layanan venue dan entertainment. Setiap vendor telah tersertifikasi dan memiliki pengalaman bertahun-tahun dalam memberikan layanan pernikahan berkualitas tinggi.
-
-Dengan mengikuti SWE 2024-2025, calon pengantin dapat:
-• Melihat dan berinteraksi langsung dengan berbagai pilihan vendor
-• Mendapatkan penawaran spesial dan paket hemat eksklusif
-• Mengumpulkan inspirasi dan ide-ide baru untuk pernikahan impian mereka
-• Membangun relasi bisnis dengan profesional di industri pernikahan
-
-Visi kami adalah menjadi platform terpercaya yang memudahkan calon pengantin menemukan vendor pernikahan terbaik dengan layanan yang ramah, profesional, dan transparan. Kami berkomitmen untuk memberikan pengalaman pameran yang berkesan dan bermanfaat bagi semua peserta.
+<p><strong>Sumsel Wedding Expo (SWE)</strong> pada tahun <strong>2024 dan 2025</strong> telah sukses diselenggarakan dengan mengusung tema <em>"Recovery Together."</em></p>
+<p>Ajang ini berhasil menghadirkan lebih dari <strong>80 vendor pernikahan terkemuka di Sumatera Selatan</strong>, yang terdiri dari berbagai kategori seperti <strong>venue gedung, hotel, catering, wedding organizer, make up artist, fotografer, dekorasi, hingga developer perumahan</strong>.</p>
+<p></p>
+<p>Kehadiran <strong>Sumsel Wedding Expo</strong> diharapkan dapat memberikan kemudahan bagi para calon pengantin dalam menemukan dan berinteraksi langsung dengan vendor-vendor impian mereka, sehingga segala kebutuhan dan harapan dalam mewujudkan pernikahan ideal dapat terencana dengan baik.</p>
+<p></p>
+<p>Setelah kesuksesan <strong>SWE 2024 Season I &amp; II</strong> serta <strong>SWE 2025 Season I &amp; II</strong>, kami kembali hadir menyelenggarakan <strong>Sumsel Wedding Expo 2026 Season I</strong>.</p>
+<p>Pada edisi kali ini, lokasi penyelenggaraan berpindah dari <strong>Palembang Indah Mall</strong> ke <strong>Palembang Icon</strong>, dengan harapan dapat menghadirkan suasana baru serta memberikan pengalaman yang lebih berkesan bagi para pengunjung.</p>
+<p></p>
+<p>Melalui acara ini, kami ingin terus menjadi wadah inspiratif bagi para calon pengantin untuk menemukan vendor terbaik, berkomunikasi langsung dengan para peserta pameran, serta mempersiapkan momen pernikahan impian mereka dengan lebih mudah dan menyenangkan.</p>
 EOT,
             'highlight_videos' => [
                 [

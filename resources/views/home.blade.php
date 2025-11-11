@@ -95,8 +95,8 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                     <h2 class="text-xl sm:text-3xl font-bold text-neutral-900 mb-6">Wedding Expo Terbesar di Sumatera
                         Selatan</h2>
-                    <div class="space-y-4 text-neutral-700">
-                        {!! nl2br(e($home->tentang_kami ?? '')) !!}
+                    <div class="space-y-4 text-neutral-700 prose prose-sm max-w-none">
+                        {!! $home->tentang_kami ?? '' !!}
                     </div>
                     <div class="grid grid-cols-3 gap-6 mt-8">
                         <div class="text-center">

@@ -6,6 +6,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -17,9 +18,8 @@ class HomeForm
             ->components([
                 Section::make('Tentang Kami')
                     ->schema([
-                        Textarea::make('tentang_kami')
+                        RichEditor::make('tentang_kami')
                             ->label('Konten Tentang Kami')
-                            ->rows(5)
                             ->required()
                             ->columnSpanFull(),
                     ]),
