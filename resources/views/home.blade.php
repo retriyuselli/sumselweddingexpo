@@ -248,39 +248,6 @@ use Illuminate\Support\Facades\Storage;
 
     <!-- Sponsor & Exhibitor -->
     <section id="sponsor" class="py-16 sm:py-20 bg-neutral-50">
-        <style>
-            @keyframes scroll-left {
-                0% {
-                    transform: translateX(0);
-                }
-                100% {
-                    transform: translateX(calc(-100% - 0px));
-                }
-            }
-
-            .sponsors-scroll {
-                display: flex;
-                animation: scroll-left 30s linear infinite;
-                width: fit-content;
-            }
-
-            .sponsors-scroll:hover {
-                animation-play-state: paused;
-            }
-
-            .sponsor-item {
-                flex: 0 0 calc(100% / 6);
-                min-width: 180px;
-            }
-
-            @media (max-width: 768px) {
-                .sponsor-item {
-                    flex: 0 0 calc(100% / 3);
-                    min-width: 120px;
-                }
-            }
-        </style>
-
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-700 text-sm font-medium mb-4">
@@ -292,31 +259,22 @@ use Illuminate\Support\Facades\Storage;
                 <h2 class="text-2xl sm:text-4xl font-bold text-neutral-900">Sponsor & Exhibitor</h2>
                 <p class="mt-3 text-neutral-600 max-w-2xl mx-auto">Terima kasih kepada partner resmi dan exhibitor yang mendukung acara ini</p>
             </div>
-
-            <div class="relative w-full overflow-hidden bg-white rounded-lg">
-                <div class="sponsors-scroll">
-                    @forelse($sponsors as $sponsor)
-                        @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                            <div class="sponsor-item group relative">
-                                <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden">
-                                    <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
-                                </div>
+            <div class="flex overflow-x-auto gap-0 pb-4 snap-x snap-mandatory">
+                @forelse($sponsors as $sponsor)
+                    @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
+                        <div class="group relative flex-shrink-0 w-40">
+                            <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden snap-center">
+                                <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
                             </div>
-                        @endif
-                    @endforelse
-                    <!-- Duplicate for seamless loop -->
-                    @forelse($sponsors as $sponsor)
-                        @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                            <div class="sponsor-item group relative">
-                                <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden">
-                                    <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
-                                </div>
-                            </div>
-                        @endif
-                    @endforelse
-                </div>
+                            {{-- <p class="mt-3 text-center text-sm text-neutral-700 font-medium group-hover:text-rose-600 transition">{{ $sponsor->name }}</p> --}}
+                        </div>
+                    @endif
+                @empty
+                    <div class="col-span-full text-center text-neutral-600">
+                        <p>Belum ada sponsor dengan logo</p>
+                    </div>
+                @endforelse
             </div>
-
             <div class="mt-12 text-center">
                 <a href="/exhibitor" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all hover:scale-105 shadow-lg hover:shadow-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
