@@ -259,18 +259,17 @@ use Illuminate\Support\Facades\Storage;
                 <h2 class="text-2xl sm:text-4xl font-bold text-neutral-900">Sponsor & Exhibitor</h2>
                 <p class="mt-3 text-neutral-600 max-w-2xl mx-auto">Terima kasih kepada partner resmi dan exhibitor yang mendukung acara ini</p>
             </div>
-            <div class="flex overflow-x-auto gap-0 pb-4 snap-x snap-mandatory">
+            <div class="flex overflow-x-auto snap-x snap-mandatory pb-4 gap-2">
                 @forelse($sponsors as $sponsor)
                     @if($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                        <div class="group relative flex-shrink-0 w-40">
-                            <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden snap-center">
+                        <div class="group relative flex-shrink-0 w-40 snap-center">
+                            <div class="relative w-full h-32 transition-all duration-300 hover:scale-110 p-2 flex items-center justify-center overflow-hidden bg-white rounded-lg">
                                 <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain group-hover:brightness-110 transition-all">
                             </div>
-                            {{-- <p class="mt-3 text-center text-sm text-neutral-700 font-medium group-hover:text-rose-600 transition">{{ $sponsor->name }}</p> --}}
                         </div>
                     @endif
                 @empty
-                    <div class="col-span-full text-center text-neutral-600">
+                    <div class="text-center text-neutral-600 w-full">
                         <p>Belum ada sponsor dengan logo</p>
                     </div>
                 @endforelse
