@@ -9,6 +9,7 @@ php artisan migrate:refresh
 php artisan shield:generate --all
 
 php artisan db:seed --class=UserSeeder
+php artisan migrate:refresh
 
 # Jalankan hanya BlogSeeder
 

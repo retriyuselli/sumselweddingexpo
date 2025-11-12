@@ -16,13 +16,13 @@ class PenyelenggaraSeeder extends Seeder
         // Seed satu Penyelenggara saja
         $main = [
             'name' => 'PT. Makna Kreatif Indonesia',
-            'alamat' => 'Jl. Jenderal Sudirman No. 123, Palembang',
+            'alamat' => 'Jl. Sintraman Jaya I No.2148, 20 Ilir D II, Kec. Kemuning, Kota Palembang, Sumatera Selatan 30137',
             'tentang' => 'PT. Makna Kreatif Indonesia adalah penyelenggara kegiatan Sumsel Wedding Expo yang diadakan di Palembang Icon Mall dan Palembang Indah Mall. Serta menyelenggarakan acara B2B, B2C dan B2G yang inovative dan terkemuka.',
-            'jam_operasional' => '09:00 - 17:00',
-            'email' => 'info@sumselwo.test',
-            'no_tlp' => '081234567890',
-            'instagram' => 'sumselwo',
-            'tiktok' => 'sumselwo',
+            'jam_operasional' => 'Senin - Sabtu 09:00 - 17:00',
+            'email' => 'office@sumselweddingexpo.com',
+            'no_tlp' => '+62 813-6018-513',
+            'instagram' => 'sumselweddingexpo',
+            'tiktok' => 'sumselweddingexpo',
         ];
 
         // Cari termasuk yang terhapus (soft-deleted), lalu restore/update jika ada
