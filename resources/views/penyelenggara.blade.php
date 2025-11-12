@@ -55,11 +55,16 @@
             <div class="p-6 rounded-xl border border-neutral-200 bg-white">
                 <h3 class="text-base sm:text-lg font-semibold">Kontak</h3>
                 <div class="mt-2 sm:mt-3 space-y-2 text-sm text-neutral-700">
-                    <div>Email: <a href="mailto:info@weddingexpo.id"
-                            class="text-rose-600 hover:text-rose-700">info@sumselweddingexpo.id</a></div>
+                    <div>Email: <a
+                            href="mailto:{{ optional($penyelenggaras->first())->email ?? 'info@sumselweddingexpo.id' }}"
+                            class="text-rose-600 hover:text-rose-700">{{ optional($penyelenggaras->first())->email ?? 'info@sumselweddingexpo.id' }}</a>
+                    </div>
 
-                    <div>WhatsApp: <a href="https://wa.me/6281234567890" target="_blank"
-                            class="text-rose-600 hover:text-rose-700">+62 813-7318-3794</a></div>
+                    <div>WhatsApp: <a
+                            href="https://wa.me/{{ optional($penyelenggaras->first())->no_tlp ?? '+62 813-7318-3794' }}"
+                            target="_blank"
+                            class="text-rose-600 hover:text-rose-700">{{ optional($penyelenggaras->first())->no_tlp ?? '+62 813-7318-3794' }}</a>
+                    </div>
                 </div>
                 <div class="mt-4 sm:mt-6">
                     <h4 class="text-xs sm:text-sm font-semibold text-neutral-600">Media Sosial</h4>
