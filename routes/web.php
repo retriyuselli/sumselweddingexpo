@@ -6,12 +6,13 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PenyelenggaraController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
 Route::view('/lokasi', 'lokasi')->name('lokasi');
-// Halaman Penyelenggara
-Route::view('/penyelenggara', 'penyelenggara')->name('penyelenggara');
+// Halaman Penyelenggara (via controller)
+Route::get('/penyelenggara', [PenyelenggaraController::class, 'index'])->name('penyelenggara');
 // Halaman Gallery
 Route::view('/gallery', 'gallery')->name('gallery');
 // Halaman Partners

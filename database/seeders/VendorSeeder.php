@@ -241,16 +241,18 @@ class VendorSeeder extends Seeder
             $jenisUsahaId = $jenisUsahas[$vendor['jenis_usaha']] ?? null;
             
             if ($jenisUsahaId) {
-                Vendor::create([
-                    'nama_vendor' => $vendor['nama_vendor'],
-                    'jenis_usaha_id' => $jenisUsahaId,
-                    'alamat' => $vendor['alamat'],
-                    'kota' => $vendor['kota'],
-                    'no_telepon' => $vendor['no_telepon'],
-                    'email' => $vendor['email'],
-                    'nama_pic' => $vendor['nama_pic'],
-                    'no_wa_pic' => $vendor['no_wa_pic'],
-                ]);
+                Vendor::firstOrCreate(
+                    ['email' => $vendor['email']],
+                    [
+                        'nama_vendor' => $vendor['nama_vendor'],
+                        'jenis_usaha_id' => $jenisUsahaId,
+                        'alamat' => $vendor['alamat'],
+                        'kota' => $vendor['kota'],
+                        'no_telepon' => $vendor['no_telepon'],
+                        'nama_pic' => $vendor['nama_pic'],
+                        'no_wa_pic' => $vendor['no_wa_pic'],
+                    ]
+                );
             }
         }
     }

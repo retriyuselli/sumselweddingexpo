@@ -23,67 +23,79 @@ class UserSeeder extends Seeder
         $vendorRole = Role::firstOrCreate(['name' => 'vendor']);
 
         // Super Admin
-        $superAdmin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-            'bio' => 'Super Administrator untuk sistem WeddingExpo',
-            'author_color' => '#ef4444',
-        ]);
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superadmin@weddingexpo.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'bio' => 'Super Administrator untuk sistem WeddingExpo',
+                'author_color' => '#ef4444',
+            ]
+        );
         $superAdmin->assignRole($superAdminRole);
 
         // Admin
-        $admin = User::create([
-            'name' => 'Admin WeddingExpo',
-            'email' => 'admin@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-            'bio' => 'Admin yang mengelola konten dan data WeddingExpo',
-            'author_color' => '#3b82f6',
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@weddingexpo.com'],
+            [
+                'name' => 'Admin WeddingExpo',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'bio' => 'Admin yang mengelola konten dan data WeddingExpo',
+                'author_color' => '#3b82f6',
+            ]
+        );
         $admin->assignRole($adminRole);
 
         // Author 1
-        $author1 = User::create([
-            'name' => 'Sarah Wijaya',
-            'email' => 'sarah@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-            'bio' => 'Wedding planner berpengalaman lebih dari 10 tahun di industri pernikahan. Passionate tentang membuat setiap pernikahan menjadi momen yang tak terlupakan.',
-            'author_color' => '#ec4899',
-        ]);
+        $author1 = User::firstOrCreate(
+            ['email' => 'sarah@weddingexpo.com'],
+            [
+                'name' => 'Sarah Wijaya',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'bio' => 'Wedding planner berpengalaman lebih dari 10 tahun di industri pernikahan. Passionate tentang membuat setiap pernikahan menjadi momen yang tak terlupakan.',
+                'author_color' => '#ec4899',
+            ]
+        );
         $author1->assignRole($authorRole);
 
         // Author 2
-        $author2 = User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'budi@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-            'bio' => 'Fotografer pernikahan profesional dan content creator. Senang berbagi tips tentang fotografi dan tren pernikahan terkini.',
-            'author_color' => '#8b5cf6',
-        ]);
+        $author2 = User::firstOrCreate(
+            ['email' => 'budi@weddingexpo.com'],
+            [
+                'name' => 'Budi Santoso',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'bio' => 'Fotografer pernikahan profesional dan content creator. Senang berbagi tips tentang fotografi dan tren pernikahan terkini.',
+                'author_color' => '#8b5cf6',
+            ]
+        );
         $author2->assignRole($authorRole);
 
         // Editor
-        $editor = User::create([
-            'name' => 'Linda Kusuma',
-            'email' => 'linda@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-            'bio' => 'Editor konten yang memastikan setiap artikel berkualitas tinggi dan informatif untuk para calon pengantin.',
-            'author_color' => '#10b981',
-        ]);
+        $editor = User::firstOrCreate(
+            ['email' => 'linda@weddingexpo.com'],
+            [
+                'name' => 'Linda Kusuma',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'bio' => 'Editor konten yang memastikan setiap artikel berkualitas tinggi dan informatif untuk para calon pengantin.',
+                'author_color' => '#10b981',
+            ]
+        );
         $editor->assignRole($editorRole);
 
         // User Biasa
-        $vendor = User::create([
-            'name' => 'Vendor',
-            'email' => 'vendor@weddingexpo.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        $vendor = User::firstOrCreate(
+            ['email' => 'vendor@weddingexpo.com'],
+            [
+                'name' => 'Vendor',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
         $vendor->assignRole($vendorRole);
 
         $this->command->info('Users created with Spatie roles:');

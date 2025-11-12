@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             JenisUsahaSeeder::class,
             VendorSeeder::class,
             GallerySeeder::class,
+            PenyelenggaraSeeder::class,
             RekeningTujuanSeeder::class,
             CategoryTenantSeeder::class,
             PartisipasiSeeder::class,
