@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\PengeluaranLains\Schemas;
 
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
 
 class PengeluaranLainForm
 {
@@ -37,7 +37,7 @@ class PengeluaranLainForm
                     ->searchable()
                     ->required()
                     ->label('Rekening Tujuan')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank . ' - ' . $record->nomor_rekening),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening),
 
                 FileUpload::make('bukti_transfer')
                     ->directory('bukti-transfer')

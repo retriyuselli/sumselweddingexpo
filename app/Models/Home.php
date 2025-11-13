@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
 
 class Home extends Model
 {
@@ -37,6 +36,6 @@ class Home extends Model
     // Static method untuk mendapatkan home data
     public static function getHome()
     {
-        return self::first() ?? new self();
+        return self::first() ?? new self;
     }
 }

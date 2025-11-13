@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class AvatarController extends Controller
 {
@@ -14,7 +14,7 @@ class AvatarController extends Controller
      */
     public function show(User $user)
     {
-        if (!$user->avatar_url || !Storage::exists($user->avatar_url)) {
+        if (! $user->avatar_url || ! Storage::exists($user->avatar_url)) {
             abort(404);
         }
 
@@ -33,8 +33,8 @@ class AvatarController extends Controller
     public function showOwn(Request $request)
     {
         $user = $request->user();
-        
-        if (!$user || !$user->avatar_url || !Storage::exists($user->avatar_url)) {
+
+        if (! $user || ! $user->avatar_url || ! Storage::exists($user->avatar_url)) {
             abort(404);
         }
 

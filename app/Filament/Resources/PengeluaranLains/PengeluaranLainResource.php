@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PengeluaranLains;
 
+use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\PengeluaranLains\Pages\CreatePengeluaranLain;
 use App\Filament\Resources\PengeluaranLains\Pages\EditPengeluaranLain;
 use App\Filament\Resources\PengeluaranLains\Pages\ListPengeluaranLains;
@@ -21,6 +22,8 @@ class PengeluaranLainResource extends Resource
     protected static ?string $model = PengeluaranLain::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
+
+    protected static ?string $cluster = KeuanganCluster::class;
 
     public static function form(Schema $schema): Schema
     {

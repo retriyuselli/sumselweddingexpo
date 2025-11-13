@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,12 +11,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
-use Filament\Models\Contracts\HasAvatar;
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +28,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         'password',
         'avatar_url',
         'bio',
+        'tentang',
+        'media_sosial',
+        'jabatan',
         'author_color',
     ];
 
@@ -51,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'media_sosial' => 'array',
         ];
     }
 
@@ -67,12 +71,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        if (!$this->avatar_url || !Storage::disk('public')->exists($this->avatar_url)) {
+        if (! $this->avatar_url || ! Storage::disk('public')->exists($this->avatar_url)) {
             return null;
         }
 
         // Return public URL with cache busting
-        return Storage::url($this->avatar_url) . '?v=' . Storage::disk('public')->lastModified($this->avatar_url);
+        return Storage::url($this->avatar_url).'?v='.Storage::disk('public')->lastModified($this->avatar_url);
     }
 
     /**
@@ -80,12 +84,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
      */
     public function getAvatarAttribute(): ?string
     {
-        if (!$this->avatar_url || !Storage::disk('public')->exists($this->avatar_url)) {
+        if (! $this->avatar_url || ! Storage::disk('public')->exists($this->avatar_url)) {
             return null;
         }
 
         // Return public URL with cache busting
-        return Storage::url($this->avatar_url) . '?v=' . Storage::disk('public')->lastModified($this->avatar_url);
+        return Storage::url($this->avatar_url).'?v='.Storage::disk('public')->lastModified($this->avatar_url);
     }
 
     /**
@@ -102,11 +106,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function getInitialsAttribute(): string
     {
         $words = explode(' ', $this->name);
-        
+
         if (count($words) >= 2) {
-            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            return strtoupper(substr($words[0], 0, 1).substr($words[1], 0, 1));
         }
-        
+
         return strtoupper(substr($this->name, 0, 2));
     }
 
@@ -126,7 +130,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         if ($this->roles->isNotEmpty()) {
             return $this->roles->pluck('name')->join(', ');
         }
-        
+
         return 'User';
     }
 

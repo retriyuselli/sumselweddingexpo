@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DataPembayarans;
 
+use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\DataPembayarans\Pages\CreateDataPembayaran;
 use App\Filament\Resources\DataPembayarans\Pages\EditDataPembayaran;
 use App\Filament\Resources\DataPembayarans\Pages\ListDataPembayarans;
@@ -21,6 +22,8 @@ class DataPembayaranResource extends Resource
     protected static ?string $model = DataPembayaran::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
+
+    protected static ?string $cluster = KeuanganCluster::class;
 
     public static function form(Schema $schema): Schema
     {

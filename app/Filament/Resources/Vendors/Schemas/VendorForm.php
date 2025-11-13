@@ -2,14 +2,13 @@
 
 namespace App\Filament\Resources\Vendors\Schemas;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use App\Models\Expo;
-use App\Models\CategoryTenant;
 use App\Enums\CategoryTier;
+use App\Models\Expo;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
 
 class VendorForm
@@ -112,13 +111,13 @@ class VendorForm
                                     ->orderBy('tanggal_mulai')
                                     ->first();
 
-                                if (!$nearestExpo) {
+                                if (! $nearestExpo) {
                                     $nearestExpo = Expo::where('status', true)
                                         ->orderBy('tanggal_mulai', 'desc')
                                         ->first();
                                 }
 
-                                if (!$nearestExpo) {
+                                if (! $nearestExpo) {
                                     return [];
                                 }
 
@@ -133,6 +132,7 @@ class VendorForm
                                 return collect($categories)
                                     ->mapWithKeys(function ($value) {
                                         $tier = CategoryTier::tryFrom($value);
+
                                         return [$value => $tier ? $tier->label() : $value];
                                     })
                                     ->toArray();
@@ -145,8 +145,9 @@ class VendorForm
                                     ->first()
                                     ?? Expo::where('status', true)->orderBy('tanggal_mulai', 'desc')->first();
 
-                                if (!$nearestExpo || !$state) {
+                                if (! $nearestExpo || ! $state) {
                                     $set('harga_jual', null);
+
                                     return;
                                 }
 
@@ -171,7 +172,7 @@ class VendorForm
                                     ?? Expo::where('status', true)->orderBy('tanggal_mulai', 'desc')->first();
 
                                 return $expo
-                                    ? ('Opsi diambil dari: ' . $expo->nama_expo . ' (' . ($expo->periode ?? '-') . ')')
+                                    ? ('Opsi diambil dari: '.$expo->nama_expo.' ('.($expo->periode ?? '-').')')
                                     : 'Belum ada expo aktif';
                             })
                             ->columnSpan(1),
@@ -180,7 +181,7 @@ class VendorForm
                             ->label('Harga Paket')
                             ->disabled()
                             ->dehydrated(true)
-                            ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp ' . number_format((int) $state, 0, ',', '.'))
+                            ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp '.number_format((int) $state, 0, ',', '.'))
                             ->helperText('Otomatis mengikuti kategori pada expo terdekat.')
                             ->columnSpan(1),
 

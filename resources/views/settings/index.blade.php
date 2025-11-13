@@ -213,7 +213,7 @@
                                     <label class="block text-xs sm:text-sm font-medium text-neutral-700 mb-3">Theme</label>
                                     <div class="grid grid-cols-3 gap-3">
                                         <div class="relative">
-                                            <input type="radio" name="theme" id="light" class="sr-only peer" checked>
+                                            <input type="radio" name="theme" id="light" class="sr-only peer">
                                             <label for="light" class="flex flex-col items-center justify-center p-4 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:bg-neutral-50">
                                                 <svg class="w-6 h-6 mb-2 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -240,6 +240,30 @@
                                             </label>
                                         </div>
                                     </div>
+                                    @push('scripts')
+                                        <script>
+                                            (function() {
+                                                var light = document.getElementById('light');
+                                                var dark = document.getElementById('dark');
+                                                var auto = document.getElementById('auto');
+
+                                                function syncRadios(value) {
+                                                    if (value === 'dark') dark.checked = true;
+                                                    else if (value === 'auto') auto.checked = true;
+                                                    else light.checked = true;
+                                                }
+
+                                                // Initialize selection from stored value
+                                                var current = (window.__getTheme && window.__getTheme()) || 'light';
+                                                syncRadios(current);
+
+                                                // Handlers (no Save button wiring)
+                                                light.addEventListener('change', function() { window.__setTheme && window.__setTheme('light'); });
+                                                dark.addEventListener('change', function() { window.__setTheme && window.__setTheme('dark'); });
+                                                auto.addEventListener('change', function() { window.__setTheme && window.__setTheme('auto'); });
+                                            })();
+                                        </script>
+                                    @endpush
                                 </div>
 
                                 <!-- Language Selection -->

@@ -6,8 +6,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -23,17 +23,16 @@ class UsersTable
                     ->label('Avatar')
                     ->circular()
                     ->disk('public')
-                    ->defaultImageUrl(fn ($record) => 
-                        'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=7F9CF5&background=EBF4FF&size=200'
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name).'&color=7F9CF5&background=EBF4FF&size=200'
                     ),
-                
+
                 TextColumn::make('name')
                     ->label('Full Name')
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
                     ->description(fn ($record) => $record->email),
-                
+
                 TextColumn::make('email')
                     ->label('Email Address')
                     ->searchable()
@@ -43,18 +42,18 @@ class UsersTable
                     ->icon('heroicon-m-envelope')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge()
                     ->colors([
                         'danger' => 'super_admin',
                         'warning' => 'panel_user',
-                        'success' => fn ($state): bool => !in_array($state, ['super_admin', 'panel_user']),
+                        'success' => fn ($state): bool => ! in_array($state, ['super_admin', 'panel_user']),
                     ])
                     ->separator(',')
                     ->searchable(),
-                
+
                 IconColumn::make('email_verified_at')
                     ->label('Verified')
                     ->boolean()
@@ -64,18 +63,18 @@ class UsersTable
                     ->falseColor('danger')
                     ->sortable()
                     ->alignCenter()
-                    ->tooltip(fn ($record) => $record->email_verified_at 
-                        ? 'Verified on ' . $record->email_verified_at->format('d M Y')
+                    ->tooltip(fn ($record) => $record->email_verified_at
+                        ? 'Verified on '.$record->email_verified_at->format('d M Y')
                         : 'Not verified'
                     ),
-                
+
                 TextColumn::make('created_at')
                     ->label('Joined')
                     ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable()
                     ->description(fn ($record) => $record->created_at->diffForHumans()),
-                
+
                 TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->dateTime('d M Y H:i')
@@ -89,7 +88,7 @@ class UsersTable
                     ->multiple()
                     ->preload()
                     ->label('Filter by Role'),
-                
+
                 TernaryFilter::make('email_verified_at')
                     ->label('Email Verified')
                     ->placeholder('All users')

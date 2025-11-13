@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Blog;
 use App\Models\BlogCategory;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
@@ -88,10 +88,10 @@ class BlogController extends Controller
 
         $blogs = Blog::with(['category', 'user'])
             ->where('is_published', true)
-            ->where(function($q) use ($query) {
+            ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('excerpt', 'like', "%{$query}%")
-                  ->orWhere('content', 'like', "%{$query}%");
+                    ->orWhere('excerpt', 'like', "%{$query}%")
+                    ->orWhere('content', 'like', "%{$query}%");
             })
             ->orderBy('date', 'desc')
             ->paginate(9);

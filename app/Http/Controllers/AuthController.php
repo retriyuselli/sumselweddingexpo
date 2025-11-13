@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use App\Models\User;
-use App\Models\Vendor;
 
 class AuthController extends Controller
 {
@@ -49,7 +49,7 @@ class AuthController extends Controller
     public function profile()
     {
         return view('profile.index', [
-            'user' => Auth::user()
+            'user' => Auth::user(),
         ]);
     }
 
@@ -71,9 +71,9 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'old_avatar' => $user->avatar_url,
                 'file_size' => $request->file('avatar_url')->getSize(),
-                'mime_type' => $request->file('avatar_url')->getMimeType()
+                'mime_type' => $request->file('avatar_url')->getMimeType(),
             ]);
-            
+
             // Delete old avatar if exists
             if ($user->avatar_url) {
                 Storage::disk('public')->delete($user->avatar_url);
@@ -83,15 +83,15 @@ class AuthController extends Controller
             // Store new avatar in public storage
             $avatarPath = $request->file('avatar_url')->store('avatars', 'public');
             $user->avatar_url = $avatarPath;
-            
+
             Log::info('New avatar saved', [
                 'path' => $avatarPath,
-                'exists' => Storage::disk('public')->exists($avatarPath)
+                'exists' => Storage::disk('public')->exists($avatarPath),
             ]);
         } else {
             Log::info('No avatar file in request', [
                 'has_avatar_input' => $request->has('avatar_url'),
-                'all_files' => array_keys($request->allFiles())
+                'all_files' => array_keys($request->allFiles()),
             ]);
         }
 
@@ -101,7 +101,7 @@ class AuthController extends Controller
 
         // Update password if provided
         if ($request->filled('current_password')) {
-            if (!Hash::check($request->current_password, $user->password)) {
+            if (! Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
             }
 
@@ -119,7 +119,7 @@ class AuthController extends Controller
     public function settings()
     {
         return view('settings.index', [
-            'user' => Auth::user()
+            'user' => Auth::user(),
         ]);
     }
 
@@ -136,7 +136,7 @@ class AuthController extends Controller
 
         // Here you would typically save these settings to a settings table
         // For now, we'll just return success
-        
+
         return back()->with('success', 'Settings berhasil diperbarui!');
     }
 

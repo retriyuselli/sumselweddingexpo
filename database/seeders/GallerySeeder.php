@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Gallery;
 use App\Models\Expo;
-use Carbon\Carbon;
+use App\Models\Gallery;
+use Illuminate\Database\Seeder;
 
 class GallerySeeder extends Seeder
 {
@@ -17,9 +15,10 @@ class GallerySeeder extends Seeder
     {
         // Get active expo
         $expo = Expo::where('status', 1)->first();
-        
-        if (!$expo) {
+
+        if (! $expo) {
             $this->command->warn('No active expo found. Please run ExpoSeeder first.');
+
             return;
         }
 
@@ -161,6 +160,6 @@ class GallerySeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Gallery seeder completed: 12 photos created for ' . $expo->nama_expo);
+        $this->command->info('Gallery seeder completed: 12 photos created for '.$expo->nama_expo);
     }
 }

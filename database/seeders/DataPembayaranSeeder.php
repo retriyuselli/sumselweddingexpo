@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\DataPembayaran;
 use App\Models\Partisipasi;
 use App\Models\RekeningTujuan;
-use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class DataPembayaranSeeder extends Seeder
 {
@@ -18,17 +16,19 @@ class DataPembayaranSeeder extends Seeder
     {
         // Get all participations
         $partisipasis = Partisipasi::with('vendor')->get();
-        
+
         if ($partisipasis->isEmpty()) {
             $this->command->warn('No participations found. Please run PartisipasiSeeder first.');
+
             return;
         }
 
         // Get rekening tujuan
         $rekenings = RekeningTujuan::all();
-        
+
         if ($rekenings->isEmpty()) {
             $this->command->warn('No rekening tujuan found. Please run RekeningTujuanSeeder first.');
+
             return;
         }
 
@@ -38,7 +38,7 @@ class DataPembayaranSeeder extends Seeder
         foreach ($partisipasis as $partisipasi) {
             $hargaJual = (int) $partisipasi->harga_jual;
             $namaPembayar = $partisipasi->vendor->nama_vendor ?? 'Unknown';
-            
+
             // Generate payment based on status_pembayaran
             switch ($partisipasi->status_pembayaran) {
                 case 'Lunas':
@@ -79,7 +79,7 @@ class DataPembayaranSeeder extends Seeder
                         $rekenings->random()->id,
                         'Pembayaran Cicilan 1 - 50%'
                     );
-                    
+
                     $pembayaranData[] = $this->createPembayaran(
                         $partisipasi->id,
                         $namaPembayar,
@@ -102,18 +102,18 @@ class DataPembayaranSeeder extends Seeder
             DataPembayaran::create($data);
         }
 
-        $this->command->info('DataPembayaran seeder completed: ' . count($pembayaranData) . ' payments created');
-        
+        $this->command->info('DataPembayaran seeder completed: '.count($pembayaranData).' payments created');
+
         // Statistics
         $lunas = $partisipasis->where('status_pembayaran', 'Lunas')->count();
         $dp = $partisipasis->where('status_pembayaran', 'DP')->count();
         $cicilan = $partisipasis->where('status_pembayaran', 'Cicilan')->count();
         $belumLunas = $partisipasis->where('status_pembayaran', 'Belum Lunas')->count();
-        
-        $this->command->info("Payment breakdown:");
+
+        $this->command->info('Payment breakdown:');
         $this->command->info("- Lunas: {$lunas} participations = {$lunas} payments");
         $this->command->info("- DP: {$dp} participations = {$dp} payments");
-        $this->command->info("- Cicilan: {$cicilan} participations = " . ($cicilan * 2) . " payments");
+        $this->command->info("- Cicilan: {$cicilan} participations = ".($cicilan * 2).' payments');
         $this->command->info("- Belum Lunas: {$belumLunas} participations = 0 payments");
     }
 

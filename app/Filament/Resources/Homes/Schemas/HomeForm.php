@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\Homes\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -33,7 +32,7 @@ class HomeForm
                                     ->label('Judul Video')
                                     ->required()
                                     ->columnSpan(1),
-                                
+
                                 TextInput::make('video_id')
                                     ->label('YouTube Video ID')
                                     ->required()
@@ -51,7 +50,7 @@ class HomeForm
                         TextInput::make('hero_subtitle')
                             ->label('Subtitle Hero')
                             ->columnSpan(1),
-                        
+
                         TextInput::make('meta_description')
                             ->label('Meta Description')
                             ->maxLength(160)

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
 class Gallery extends Model
@@ -46,7 +46,7 @@ class Gallery extends Model
     // Accessors
     public function getImageUrlsAttribute(): array
     {
-        if (empty($this->image_path) || !is_array($this->image_path)) {
+        if (empty($this->image_path) || ! is_array($this->image_path)) {
             return [asset('images/placeholder-gallery.jpg')];
         }
 
@@ -58,7 +58,7 @@ class Gallery extends Model
 
             // Cek apakah file ada
             if (Storage::disk('public')->exists($path)) {
-                return asset('storage/' . $path);
+                return asset('storage/'.$path);
             }
 
             return asset('images/placeholder-gallery.jpg');
@@ -68,6 +68,7 @@ class Gallery extends Model
     public function getPrimaryImageUrlAttribute(): string
     {
         $urls = $this->image_urls;
+
         return $urls[0] ?? asset('images/placeholder-gallery.jpg');
     }
 

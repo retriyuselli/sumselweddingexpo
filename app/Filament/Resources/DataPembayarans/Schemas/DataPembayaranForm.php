@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\DataPembayarans\Schemas;
 
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
 
 class DataPembayaranForm
 {
@@ -20,7 +20,7 @@ class DataPembayaranForm
                     ->searchable()
                     ->required()
                     ->label('Partisipasi')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => 'Partisipasi #' . $record->id . ' - ' . optional($record->vendor)->nama_vendor),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => 'Partisipasi #'.$record->id.' - '.optional($record->vendor)->nama_vendor),
 
                 TextInput::make('nama_pembayar')
                     ->required()
@@ -57,7 +57,7 @@ class DataPembayaranForm
                     ->searchable()
                     ->required()
                     ->label('Rekening Tujuan')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank . ' - ' . $record->nomor_rekening),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening),
 
                 Textarea::make('keterangan')
                     ->rows(3)

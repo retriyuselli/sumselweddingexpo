@@ -14,7 +14,7 @@ return new class extends Migration
     {
         // First, convert existing data to JSON array format
         DB::table('galleries')->get()->each(function ($gallery) {
-            if (!empty($gallery->image_path) && !str_starts_with($gallery->image_path, '[')) {
+            if (! empty($gallery->image_path) && ! str_starts_with($gallery->image_path, '[')) {
                 DB::table('galleries')
                     ->where('id', $gallery->id)
                     ->update(['image_path' => json_encode([$gallery->image_path])]);
@@ -35,7 +35,7 @@ return new class extends Migration
         // Convert JSON back to string (take first element)
         DB::table('galleries')->get()->each(function ($gallery) {
             $images = json_decode($gallery->image_path, true);
-            if (is_array($images) && !empty($images)) {
+            if (is_array($images) && ! empty($images)) {
                 DB::table('galleries')
                     ->where('id', $gallery->id)
                     ->update(['image_path' => $images[0]]);

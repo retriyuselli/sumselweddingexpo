@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Penyelenggara;
 use App\Models\PenyelenggaraGallery;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class PenyelenggaraController extends Controller
 {
@@ -33,6 +33,8 @@ class PenyelenggaraController extends Controller
                 ->get()
             : collect();
 
-        return view('penyelenggara', compact('penyelenggaras', 'featuredGalleries'));
+        $teamMembers = User::withRole('swe')->orderBy('name')->get();
+
+        return view('penyelenggara', compact('penyelenggaras', 'featuredGalleries', 'teamMembers'));
     }
 }

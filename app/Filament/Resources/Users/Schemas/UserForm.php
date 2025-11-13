@@ -30,10 +30,9 @@ class UserForm
                             ->placeholder('Enter full name')
                             ->autocomplete('name')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($state, callable $set) => 
-                                $set('name', ucwords(strtolower($state)))
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('name', ucwords(strtolower($state)))
                             ),
-                        
+
                         TextInput::make('email')
                             ->label('Email Address')
                             ->email()
@@ -44,7 +43,7 @@ class UserForm
                             ->autocomplete('email')
                             ->suffixIcon('heroicon-m-envelope')
                             ->live(onBlur: true),
-                        
+
                         FileUpload::make('avatar_url')
                             ->label('Profile Photo')
                             ->avatar()
@@ -54,8 +53,13 @@ class UserForm
                             ->maxSize(2048)
                             ->helperText('Upload a profile photo (max 2MB, stored securely)')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+
+                        TextInput::make('jabatan')
+                            ->label('Jabatan')
+                            ->placeholder('Contoh: Project Manager')
+                            ->maxLength(255),
                     ]),
-                
+
                 Section::make('Security & Access')
                     ->description('Password and role management')
                     ->icon('heroicon-o-shield-check')
@@ -65,13 +69,12 @@ class UserForm
                             ->label('Password')
                             ->password()
                             ->revealable()
-                            ->dehydrateStateUsing(fn ($state) => !empty($state) ? Hash::make($state) : null)
+                            ->dehydrateStateUsing(fn ($state) => ! empty($state) ? Hash::make($state) : null)
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
                             ->rule(Password::default())
                             ->placeholder('Enter password')
-                            ->helperText(fn (string $context) => 
-                                $context === 'create' 
+                            ->helperText(fn (string $context) => $context === 'create'
                                     ? 'Minimum 8 characters (required)'
                                     : 'Leave empty to keep current password'
                             )
@@ -80,7 +83,7 @@ class UserForm
                             ->validationMessages([
                                 'required' => 'Password is required for new users.',
                             ]),
-                        
+
                         TextInput::make('password_confirmation')
                             ->label('Confirm Password')
                             ->password()
@@ -94,7 +97,7 @@ class UserForm
                             ->validationMessages([
                                 'same' => 'Passwords must match.',
                             ]),
-                        
+
                         Select::make('roles')
                             ->relationship('roles', 'name')
                             ->multiple()
@@ -106,7 +109,7 @@ class UserForm
                             ->native(false)
                             ->suffixIcon('heroicon-m-shield-check'),
                     ]),
-                
+
                 Section::make('Account Status')
                     ->description('Email verification and account status')
                     ->icon('heroicon-o-envelope-open')
@@ -119,7 +122,7 @@ class UserForm
                             ->seconds(false)
                             ->helperText('Leave empty if email is not verified')
                             ->suffixIcon('heroicon-m-calendar-days'),
-                        
+
                         Toggle::make('is_verified')
                             ->label('Mark as Verified')
                             ->inline(false)
@@ -133,6 +136,26 @@ class UserForm
                             })
                             ->reactive()
                             ->helperText('Enable to automatically verify email on creation'),
+                    ]),
+
+                Section::make('Social Media')
+                    ->description('Set Instagram and TikTok links')
+                    ->icon('heroicon-o-share')
+                    ->columns(2)
+                    ->statePath('media_sosial')
+                    ->schema([
+                        TextInput::make('instagram')
+                            ->label('Instagram URL')
+                            ->placeholder('https://www.instagram.com/username')
+                            ->url()
+                            ->maxLength(255)
+                            ->suffixIcon('heroicon-m-link'),
+                        TextInput::make('tiktok')
+                            ->label('TikTok URL')
+                            ->placeholder('https://www.tiktok.com/@username')
+                            ->url()
+                            ->maxLength(255)
+                            ->suffixIcon('heroicon-m-link'),
                     ]),
             ]);
     }

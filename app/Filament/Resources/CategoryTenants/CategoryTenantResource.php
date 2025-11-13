@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CategoryTenants;
 
+use App\Filament\Clusters\Vendor as VendorCluster;
 use App\Filament\Resources\CategoryTenants\Pages\CreateCategoryTenant;
 use App\Filament\Resources\CategoryTenants\Pages\EditCategoryTenant;
 use App\Filament\Resources\CategoryTenants\Pages\ListCategoryTenants;
@@ -21,6 +22,8 @@ class CategoryTenantResource extends Resource
     protected static ?string $model = CategoryTenant::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
+
+    protected static ?string $cluster = VendorCluster::class;
 
     public static function form(Schema $schema): Schema
     {

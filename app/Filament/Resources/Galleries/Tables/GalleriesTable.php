@@ -37,7 +37,7 @@ class GalleriesTable
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
-                    ->description(fn ($record) => $record->description ? substr($record->description, 0, 50) . '...' : null),
+                    ->description(fn ($record) => $record->description ? substr($record->description, 0, 50).'...' : null),
 
                 TextColumn::make('expo.nama_expo')
                     ->label('Event')

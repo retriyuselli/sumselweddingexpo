@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (! Schema::hasColumn('users', 'role')) {
-                $table->string('role')->default('user')->index();
+            if (! Schema::hasColumn('users', 'media_sosial')) {
+                $table->json('media_sosial')->nullable()->after('tentang');
             }
         });
     }
@@ -18,8 +18,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'role')) {
-                $table->dropColumn('role');
+            if (Schema::hasColumn('users', 'media_sosial')) {
+                $table->dropColumn('media_sosial');
             }
         });
     }

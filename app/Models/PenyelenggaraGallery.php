@@ -45,7 +45,7 @@ class PenyelenggaraGallery extends Model
     // Accessors
     public function getImageUrlsAttribute(): array
     {
-        if (empty($this->image_path) || !is_array($this->image_path)) {
+        if (empty($this->image_path) || ! is_array($this->image_path)) {
             return [asset('images/placeholder-gallery.jpg')];
         }
 
@@ -55,7 +55,7 @@ class PenyelenggaraGallery extends Model
             }
 
             if (Storage::disk('public')->exists($path)) {
-                return asset('storage/' . $path);
+                return asset('storage/'.$path);
             }
 
             return asset('images/placeholder-gallery.jpg');
@@ -65,6 +65,7 @@ class PenyelenggaraGallery extends Model
     public function getPrimaryImageUrlAttribute(): string
     {
         $urls = $this->image_urls;
+
         return $urls[0] ?? asset('images/placeholder-gallery.jpg');
     }
 

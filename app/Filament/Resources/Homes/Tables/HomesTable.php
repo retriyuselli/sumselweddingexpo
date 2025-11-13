@@ -28,7 +28,7 @@ class HomesTable
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('highlight_videos')
                     ->label('Video Highlights')
-                    ->formatStateUsing(fn ($state) => count($state ?? []) . ' videos')
+                    ->formatStateUsing(fn ($state) => count($state ?? []).' videos')
                     ->badge(),
                 IconColumn::make('is_active')
                     ->boolean()

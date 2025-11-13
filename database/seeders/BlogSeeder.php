@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class BlogSeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class BlogSeeder extends Seeder
             ['slug' => 'budget-planning'],
             [
                 'name' => 'Budget & Planning',
-                'description' => 'Tips mengatur budget dan merencanakan pernikahan'
+                'description' => 'Tips mengatur budget dan merencanakan pernikahan',
             ]
         );
 
@@ -28,7 +27,7 @@ class BlogSeeder extends Seeder
             ['slug' => 'tips-tricks'],
             [
                 'name' => 'Tips & Tricks',
-                'description' => 'Tips dan trik seputar persiapan pernikahan'
+                'description' => 'Tips dan trik seputar persiapan pernikahan',
             ]
         );
 
@@ -36,7 +35,7 @@ class BlogSeeder extends Seeder
             ['slug' => 'vendor-guide'],
             [
                 'name' => 'Vendor Guide',
-                'description' => 'Panduan memilih vendor pernikahan terbaik'
+                'description' => 'Panduan memilih vendor pernikahan terbaik',
             ]
         );
 
@@ -44,7 +43,7 @@ class BlogSeeder extends Seeder
             ['slug' => 'venue-decoration'],
             [
                 'name' => 'Venue & Decoration',
-                'description' => 'Inspirasi venue dan dekorasi pernikahan'
+                'description' => 'Inspirasi venue dan dekorasi pernikahan',
             ]
         );
 
@@ -52,7 +51,7 @@ class BlogSeeder extends Seeder
             ['slug' => 'wedding-trends'],
             [
                 'name' => 'Wedding Trends',
-                'description' => 'Tren pernikahan terkini dan ide kreatif'
+                'description' => 'Tren pernikahan terkini dan ide kreatif',
             ]
         );
 
@@ -79,7 +78,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 7,
                 'image' => 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Pernikahan impian tidak selalu harus menguras kantong. Dengan planning yang smart dan prioritas yang jelas, Anda bisa mengadakan pernikahan memorable tanpa harus berutang.</p><h2>Tips Mengatur Budget</h2><ul><li>Tentukan total budget yang realistis</li><li>Buat breakdown per kategori</li><li>Sisihkan dana cadangan 10%</li><li>Prioritaskan hal yang penting</li></ul>'
+                'content' => '<p>Pernikahan impian tidak selalu harus menguras kantong. Dengan planning yang smart dan prioritas yang jelas, Anda bisa mengadakan pernikahan memorable tanpa harus berutang.</p><h2>Tips Mengatur Budget</h2><ul><li>Tentukan total budget yang realistis</li><li>Buat breakdown per kategori</li><li>Sisihkan dana cadangan 10%</li><li>Prioritaskan hal yang penting</li></ul>',
             ]
         );
 
@@ -96,7 +95,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 6,
                 'image' => 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Fotografer adalah salah satu vendor paling penting dalam pernikahan Anda. Mereka akan mengabadikan momen-momen berharga yang tidak bisa diulang.</p><h2>Yang Perlu Diperhatikan</h2><ul><li>Review portfolio dan style fotografi</li><li>Tanya paket dan harga detail</li><li>Cek testimoni klien sebelumnya</li><li>Meeting langsung untuk chemistry</li></ul>'
+                'content' => '<p>Fotografer adalah salah satu vendor paling penting dalam pernikahan Anda. Mereka akan mengabadikan momen-momen berharga yang tidak bisa diulang.</p><h2>Yang Perlu Diperhatikan</h2><ul><li>Review portfolio dan style fotografi</li><li>Tanya paket dan harga detail</li><li>Cek testimoni klien sebelumnya</li><li>Meeting langsung untuk chemistry</li></ul>',
             ]
         );
 
@@ -113,7 +112,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 5,
                 'image' => 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Tahun 2026 membawa tren dekorasi pernikahan yang memadukan elegansi klasik dengan sentuhan modern dan sustainable.</p><h2>Tren Populer 2026</h2><ul><li>Dried flowers dan pampas grass</li><li>Warna earth tone dan sage green</li><li>Minimalist dengan greenery</li><li>Sustainable decoration</li></ul>'
+                'content' => '<p>Tahun 2026 membawa tren dekorasi pernikahan yang memadukan elegansi klasik dengan sentuhan modern dan sustainable.</p><h2>Tren Populer 2026</h2><ul><li>Dried flowers dan pampas grass</li><li>Warna earth tone dan sage green</li><li>Minimalist dengan greenery</li><li>Sustainable decoration</li></ul>',
             ]
         );
 
@@ -130,7 +129,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 8,
                 'image' => 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Persiapan pernikahan membutuhkan planning yang matang. Dengan checklist ini, Anda bisa mengatur timeline dengan lebih terstruktur.</p><h2>Timeline 6 Bulan</h2><ul><li>Bulan 1-2: Booking venue dan vendor utama</li><li>Bulan 3-4: Fitting gaun dan setelan</li><li>Bulan 5: Finalisasi detail acara</li><li>Bulan 6: Rehearsal dan last minute check</li></ul>'
+                'content' => '<p>Persiapan pernikahan membutuhkan planning yang matang. Dengan checklist ini, Anda bisa mengatur timeline dengan lebih terstruktur.</p><h2>Timeline 6 Bulan</h2><ul><li>Bulan 1-2: Booking venue dan vendor utama</li><li>Bulan 3-4: Fitting gaun dan setelan</li><li>Bulan 5: Finalisasi detail acara</li><li>Bulan 6: Rehearsal dan last minute check</li></ul>',
             ]
         );
 
@@ -147,7 +146,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 6,
                 'image' => 'https://images.unsplash.com/photo-1510076857177-7470076d4098?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Pemilihan venue adalah keputusan penting yang akan mempengaruhi keseluruhan konsep dan budget pernikahan Anda.</p><h2>Indoor vs Outdoor</h2><h3>Kelebihan Indoor</h3><ul><li>Tidak tergantung cuaca</li><li>AC dan fasilitas lengkap</li><li>Lebih predictable</li></ul><h3>Kelebihan Outdoor</h3><ul><li>Natural lighting bagus untuk foto</li><li>Suasana lebih romantis</li><li>Lebih unik dan memorable</li></ul>'
+                'content' => '<p>Pemilihan venue adalah keputusan penting yang akan mempengaruhi keseluruhan konsep dan budget pernikahan Anda.</p><h2>Indoor vs Outdoor</h2><h3>Kelebihan Indoor</h3><ul><li>Tidak tergantung cuaca</li><li>AC dan fasilitas lengkap</li><li>Lebih predictable</li></ul><h3>Kelebihan Outdoor</h3><ul><li>Natural lighting bagus untuk foto</li><li>Suasana lebih romantis</li><li>Lebih unik dan memorable</li></ul>',
             ]
         );
 
@@ -164,7 +163,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 7,
                 'image' => 'https://images.unsplash.com/photo-1594552072238-52759f1f9c71?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Gaun pengantin yang tepat akan membuat Anda tampil percaya diri dan cantik maksimal di hari pernikahan.</p><h2>Panduan Bentuk Tubuh</h2><ul><li>Pear Shape: A-line atau ball gown</li><li>Apple Shape: Empire waist</li><li>Hourglass: Mermaid atau fit-and-flare</li><li>Rectangle: Ball gown dengan detail pinggang</li></ul>'
+                'content' => '<p>Gaun pengantin yang tepat akan membuat Anda tampil percaya diri dan cantik maksimal di hari pernikahan.</p><h2>Panduan Bentuk Tubuh</h2><ul><li>Pear Shape: A-line atau ball gown</li><li>Apple Shape: Empire waist</li><li>Hourglass: Mermaid atau fit-and-flare</li><li>Rectangle: Ball gown dengan detail pinggang</li></ul>',
             ]
         );
 
@@ -181,7 +180,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 5,
                 'image' => 'https://images.unsplash.com/photo-1555244162-803834f70033?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Menu catering yang lezat dan variatif akan membuat tamu Anda puas dan mengingat pernikahan Anda dengan baik.</p><h2>Menu Favorit</h2><ul><li>Main Course: Nasi Briyani, Beef Wellington</li><li>Appetizer: Spring rolls, Bruschetta</li><li>Dessert: Mini cakes, Gelato station</li><li>Beverage: Signature mocktail, Coffee bar</li></ul>'
+                'content' => '<p>Menu catering yang lezat dan variatif akan membuat tamu Anda puas dan mengingat pernikahan Anda dengan baik.</p><h2>Menu Favorit</h2><ul><li>Main Course: Nasi Briyani, Beef Wellington</li><li>Appetizer: Spring rolls, Bruschetta</li><li>Dessert: Mini cakes, Gelato station</li><li>Beverage: Signature mocktail, Coffee bar</li></ul>',
             ]
         );
 
@@ -198,7 +197,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 6,
                 'image' => 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Makeup pengantin harus tahan lama, photogenic, dan tentunya membuat Anda merasa cantik dan percaya diri.</p><h2>Natural vs Glam</h2><h3>Natural Makeup</h3><ul><li>Cocok untuk outdoor/garden wedding</li><li>Terlihat fresh dan youthful</li><li>Flawless skin dengan soft colors</li></ul><h3>Glam Makeup</h3><ul><li>Cocok untuk ballroom/evening wedding</li><li>Bold dan dramatic</li><li>Strong eyes dan defined features</li></ul>'
+                'content' => '<p>Makeup pengantin harus tahan lama, photogenic, dan tentunya membuat Anda merasa cantik dan percaya diri.</p><h2>Natural vs Glam</h2><h3>Natural Makeup</h3><ul><li>Cocok untuk outdoor/garden wedding</li><li>Terlihat fresh dan youthful</li><li>Flawless skin dengan soft colors</li></ul><h3>Glam Makeup</h3><ul><li>Cocok untuk ballroom/evening wedding</li><li>Bold dan dramatic</li><li>Strong eyes dan defined features</li></ul>',
             ]
         );
 
@@ -215,7 +214,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 5,
                 'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Entertainment yang tepat akan membuat suasana pernikahan lebih hidup dan tamu Anda terhibur sepanjang acara.</p><h2>Ide Entertainment</h2><ul><li>Live band atau akustik</li><li>Photo booth dengan props lucu</li><li>Magic show atau live painting</li><li>Traditional dance performance</li><li>Interactive games untuk tamu</li></ul>'
+                'content' => '<p>Entertainment yang tepat akan membuat suasana pernikahan lebih hidup dan tamu Anda terhibur sepanjang acara.</p><h2>Ide Entertainment</h2><ul><li>Live band atau akustik</li><li>Photo booth dengan props lucu</li><li>Magic show atau live painting</li><li>Traditional dance performance</li><li>Interactive games untuk tamu</li></ul>',
             ]
         );
 
@@ -232,7 +231,7 @@ class BlogSeeder extends Seeder
                 'read_time' => 8,
                 'image' => 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=600&fit=crop&auto=format&q=80',
                 'is_published' => true,
-                'content' => '<p>Indonesia memiliki surga-surga tersembunyi yang sempurna untuk bulan madu romantis bersama pasangan.</p><h2>Top Destinasi</h2><ul><li>Bali - Ubud dan Nusa Penida</li><li>Labuan Bajo - Komodo Island</li><li>Raja Ampat - Paradise underwater</li><li>Yogyakarta - Culture dan nature</li><li>Lombok - Pantai dan Gili Islands</li></ul><p>Setiap destinasi menawarkan pengalaman unik yang akan membuat honeymoon Anda tak terlupakan.</p>'
+                'content' => '<p>Indonesia memiliki surga-surga tersembunyi yang sempurna untuk bulan madu romantis bersama pasangan.</p><h2>Top Destinasi</h2><ul><li>Bali - Ubud dan Nusa Penida</li><li>Labuan Bajo - Komodo Island</li><li>Raja Ampat - Paradise underwater</li><li>Yogyakarta - Culture dan nature</li><li>Lombok - Pantai dan Gili Islands</li></ul><p>Setiap destinasi menawarkan pengalaman unik yang akan membuat honeymoon Anda tak terlupakan.</p>',
             ]
         );
 

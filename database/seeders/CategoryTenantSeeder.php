@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Enums\CategoryTier;
 use App\Models\CategoryTenant;
 use App\Models\Expo;
-use App\Enums\CategoryTier;
+use Illuminate\Database\Seeder;
 
 class CategoryTenantSeeder extends Seeder
 {
@@ -17,9 +16,10 @@ class CategoryTenantSeeder extends Seeder
     {
         // Get active expo
         $expo = Expo::where('status', 1)->first();
-        
-        if (!$expo) {
+
+        if (! $expo) {
             $this->command->warn('No active expo found. Please run ExpoSeeder first.');
+
             return;
         }
 
@@ -50,7 +50,7 @@ class CategoryTenantSeeder extends Seeder
             CategoryTenant::create($category);
         }
 
-        $this->command->info('CategoryTenant seeder completed for ' . $expo->nama_expo);
+        $this->command->info('CategoryTenant seeder completed for '.$expo->nama_expo);
         $this->command->info('- Platinum: 10 units @ Rp 15.000.000');
         $this->command->info('- Gold: 20 units @ Rp 11.000.000');
         $this->command->info('Total available booths: 30 units');

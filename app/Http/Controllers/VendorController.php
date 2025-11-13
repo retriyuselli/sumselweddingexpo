@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vendor;
-use App\Models\JenisUsaha;
+use App\Enums\CategoryTier;
 use App\Models\CategoryTenant;
 use App\Models\Expo;
+use App\Models\JenisUsaha;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Enums\CategoryTier;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class VendorController extends Controller
 {
@@ -21,6 +21,7 @@ class VendorController extends Controller
     public function index()
     {
         $vendors = Vendor::with('jenisUsaha')->latest()->paginate(10);
+
         return view('vendors.index', compact('vendors'));
     }
 
@@ -30,6 +31,7 @@ class VendorController extends Controller
     public function create()
     {
         $jenisUsahas = JenisUsaha::all();
+
         return view('vendors.create', compact('jenisUsahas'));
     }
 
@@ -108,6 +110,7 @@ class VendorController extends Controller
     public function show(Vendor $vendor)
     {
         $vendor->load('jenisUsaha', 'partisipasis');
+
         return view('vendors.show', compact('vendor'));
     }
 
@@ -117,6 +120,7 @@ class VendorController extends Controller
     public function edit(Vendor $vendor)
     {
         $jenisUsahas = JenisUsaha::all();
+
         return view('vendors.edit', compact('vendor', 'jenisUsahas'));
     }
 
@@ -167,6 +171,7 @@ class VendorController extends Controller
     public function getAllVendors()
     {
         $vendors = Vendor::with('jenisUsaha')->get();
+
         return response()->json($vendors);
     }
 
@@ -180,7 +185,7 @@ class VendorController extends Controller
         $vendors = Vendor::with('jenisUsaha')
             ->where('nama_vendor', 'like', "%{$query}%")
             ->orWhere('nama_pendaftar', 'like', "%{$query}%")
-            ->orWhereHas('jenisUsaha', function($q) use ($query) {
+            ->orWhereHas('jenisUsaha', function ($q) use ($query) {
                 $q->where('nama_jenis_usaha', 'like', "%{$query}%");
             })
             ->paginate(10);
@@ -221,7 +226,7 @@ class VendorController extends Controller
             ->whereDate('tanggal_mulai', '>=', now()->toDateString())
             ->orderBy('tanggal_mulai', 'asc')
             ->first();
-        if (!$nearestExpo) {
+        if (! $nearestExpo) {
             $nearestExpo = Expo::where('status', true)
                 ->orderBy('tanggal_mulai', 'desc')
                 ->first();
@@ -239,11 +244,11 @@ class VendorController extends Controller
             foreach ($rows as $row) {
                 $value = (string) $row->category; // nilai mentah string
                 $label = CategoryTier::tryFrom($value)?->label() ?? $value;
-                if (!array_key_exists($value, $paketOptions)) {
+                if (! array_key_exists($value, $paketOptions)) {
                     $paketOptions[$value] = $label;
                 }
                 // Gunakan harga pertama yang ditemukan untuk kategori tsb
-                if (!array_key_exists($value, $paketPrices)) {
+                if (! array_key_exists($value, $paketPrices)) {
                     $paketPrices[$value] = (int) ($row->harga_jual ?? 0);
                 }
             }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pengeluarans;
 
+use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\Pengeluarans\Pages\CreatePengeluaran;
 use App\Filament\Resources\Pengeluarans\Pages\EditPengeluaran;
 use App\Filament\Resources\Pengeluarans\Pages\ListPengeluarans;
@@ -21,6 +22,8 @@ class PengeluaranResource extends Resource
     protected static ?string $model = Pengeluaran::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
+
+    protected static ?string $cluster = KeuanganCluster::class;
 
     public static function form(Schema $schema): Schema
     {

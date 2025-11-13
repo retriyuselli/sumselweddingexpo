@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\Partisipasis\Schemas;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
+use App\Models\CategoryTenant;
+use App\Models\Expo;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
-use App\Models\Expo;
-use App\Models\CategoryTenant;
 
 class PartisipasiForm
 {
@@ -64,9 +64,10 @@ class PartisipasiForm
                             ->label('Kategori Tenant')
                             ->options(function (callable $get) {
                                 $expoId = $get('expo_id');
-                                if (!$expoId) {
+                                if (! $expoId) {
                                     return [];
                                 }
+
                                 return CategoryTenant::where('expo_id', $expoId)
                                     ->where('status', true)
                                     ->pluck('category', 'id');

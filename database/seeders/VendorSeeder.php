@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Vendor;
 use App\Models\JenisUsaha;
+use App\Models\Vendor;
+use Illuminate\Database\Seeder;
 
 class VendorSeeder extends Seeder
 {
@@ -239,7 +238,7 @@ class VendorSeeder extends Seeder
 
         foreach ($vendors as $vendor) {
             $jenisUsahaId = $jenisUsahas[$vendor['jenis_usaha']] ?? null;
-            
+
             if ($jenisUsahaId) {
                 Vendor::firstOrCreate(
                     ['email' => $vendor['email']],

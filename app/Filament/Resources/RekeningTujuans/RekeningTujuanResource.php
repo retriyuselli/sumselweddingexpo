@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\RekeningTujuans;
 
+use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\RekeningTujuans\Pages\CreateRekeningTujuan;
 use App\Filament\Resources\RekeningTujuans\Pages\EditRekeningTujuan;
 use App\Filament\Resources\RekeningTujuans\Pages\ListRekeningTujuans;
@@ -21,6 +22,8 @@ class RekeningTujuanResource extends Resource
     protected static ?string $model = RekeningTujuan::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
+
+    protected static ?string $cluster = KeuanganCluster::class;
 
     public static function form(Schema $schema): Schema
     {

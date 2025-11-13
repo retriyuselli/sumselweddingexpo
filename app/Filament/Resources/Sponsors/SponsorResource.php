@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Sponsors;
 
+use App\Filament\Clusters\Sponsors as SponsorsCluster;
 use App\Filament\Resources\Sponsors\Pages\CreateSponsor;
 use App\Filament\Resources\Sponsors\Pages\EditSponsor;
 use App\Filament\Resources\Sponsors\Pages\ListSponsors;
@@ -11,14 +12,15 @@ use App\Models\Sponsor;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class SponsorResource extends Resource
 {
     protected static ?string $model = Sponsor::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-star';
+
+    protected static ?string $cluster = SponsorsCluster::class;
 
     public static function form(Schema $schema): Schema
     {

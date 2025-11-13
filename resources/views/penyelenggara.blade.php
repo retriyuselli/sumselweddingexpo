@@ -159,60 +159,49 @@
                 acara Anda.</p>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Team Member 1 - Rama -->
-                <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition">
-                    <div
-                        class="aspect-square bg-linear-to-br from-rose-100 to-rose-200 flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('storage/teams/Rama.jpg') }}" alt="Rama" class="w-full h-full object-cover">
+                @forelse ($teamMembers as $member)
+                    <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition">
+                        <div
+                            class="aspect-square bg-linear-to-br from-rose-100 to-rose-200 flex items-center justify-center overflow-hidden">
+                            @php($avatarUrl = $member->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($member->name) . '&color=7F9CF5&background=EBF4FF&size=600')
+                            <img src="{{ $avatarUrl }}" alt="{{ $member->name }}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-sm sm:text-base font-semibold text-neutral-800">{{ $member->name }}</h3>
+                            <p class="text-xs text-rose-600 mt-1">{{ $member->jabatan }}</p>
+                            @php($ig = data_get($member->media_sosial, 'instagram'))
+                            @php($tt = data_get($member->media_sosial, 'tiktok'))
+                            <div class="mt-2 flex items-center gap-3">
+                                @if ($ig)
+                                    <a href="{{ $ig }}" target="_blank" rel="noopener noreferrer"
+                                        class="group inline-flex items-center justify-center w-8 h-8 rounded-full border border-neutral-200 hover:bg-rose-50 hover:border-rose-300 transition"
+                                        aria-label="Instagram">
+                                        <svg class="w-5 h-5 text-[#E4405F] group-hover:text-[#C13584]" fill="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162z" />
+                                        </svg>
+                                    </a>
+                                @endif
+                                @if ($tt)
+                                    <a href="{{ $tt }}" target="_blank" rel="noopener noreferrer"
+                                        class="group inline-flex items-center justify-center w-8 h-8 rounded-full border border-neutral-200 hover:bg-rose-50 hover:border-rose-300 transition"
+                                        aria-label="TikTok">
+                                        <svg class="w-5 h-5 text-black group-hover:text-[#EE1D52]" fill="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                                        </svg>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                    <div class="p-4">
-                        <h3 class="text-sm sm:text-base font-semibold text-neutral-800">Rama</h3>
-                        <p class="text-xs text-rose-600 mt-1">Position / Role</p>
-                        <p class="text-xs text-neutral-600 mt-2">Deskripsi singkat tentang team member.</p>
+                @empty
+                    <div class="bg-white rounded-xl border border-neutral-200 p-6 sm:col-span-2 lg:col-span-4">
+                        <p class="text-sm text-neutral-600">Belum ada anggota tim dengan role swe.</p>
                     </div>
-                </div>
-
-                <!-- Team Member 2 - Retri -->
-                <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition">
-                    <div
-                        class="aspect-square bg-linear-to-br from-rose-100 to-rose-200 flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('storage/teams/Retri.jpg') }}" alt="Retri"
-                            class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-sm sm:text-base font-semibold text-neutral-800">Retri</h3>
-                        <p class="text-xs text-rose-600 mt-1">Position / Role</p>
-                        <p class="text-xs text-neutral-600 mt-2">Deskripsi singkat tentang team member.</p>
-                    </div>
-                </div>
-
-                <!-- Team Member 3 - Ritchi -->
-                <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition">
-                    <div
-                        class="aspect-square bg-linear-to-br from-rose-100 to-rose-200 flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('storage/teams/Ritchi.jpg') }}" alt="Ritchi"
-                            class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-sm sm:text-base font-semibold text-neutral-800">Ritchi</h3>
-                        <p class="text-xs text-rose-600 mt-1">Position / Role</p>
-                        <p class="text-xs text-neutral-600 mt-2">Deskripsi singkat tentang team member.</p>
-                    </div>
-                </div>
-
-                <!-- Team Member 4 - Satra -->
-                <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition">
-                    <div
-                        class="aspect-square bg-linear-to-br from-rose-100 to-rose-200 flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('storage/teams/Satra.jpg') }}" alt="Satra"
-                            class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-sm sm:text-base font-semibold text-neutral-800">Satra</h3>
-                        <p class="text-xs text-rose-600 mt-1">Position / Role</p>
-                        <p class="text-xs text-neutral-600 mt-2">Deskripsi singkat tentang team member.</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 

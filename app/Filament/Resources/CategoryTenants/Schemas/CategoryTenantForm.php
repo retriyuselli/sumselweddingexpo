@@ -2,16 +2,15 @@
 
 namespace App\Filament\Resources\CategoryTenants\Schemas;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use App\Enums\CategoryTier;
 use App\Models\Expo;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
-use Illuminate\Validation\Rule;
 
 class CategoryTenantForm
 {
@@ -91,18 +90,19 @@ class CategoryTenantForm
                             ->helperText(function (callable $get) {
                                 $jual = $get('harga_jual');
                                 $modal = $get('harga_modal');
-                                
-                                if (!is_numeric($jual) || !is_numeric($modal)) {
+
+                                if (! is_numeric($jual) || ! is_numeric($modal)) {
                                     return 'Biaya modal/pokok per unit.';
                                 }
-                                
+
                                 $valid = (int) $jual > (int) $modal;
-                                
-                                if (!$valid) {
+
+                                if (! $valid) {
                                     return '⚠️ Peringatan: Harga modal harus lebih kecil dari harga jual!';
                                 }
-                                
+
                                 $persentaseMargin = (((int) $jual - (int) $modal) / (int) $modal) * 100;
+
                                 return '✓ Valid - Margin: '.number_format($persentaseMargin, 1).'%';
                             })
                             ->columnSpan(1),
@@ -118,16 +118,16 @@ class CategoryTenantForm
                                 $jual = $get('harga_jual');
                                 $modal = $get('harga_modal');
                                 $unit = $get('jumlah_unit');
-                                
-                                if (!is_numeric($jual) || !is_numeric($modal) || !is_numeric($unit) || (int) $unit < 1) {
+
+                                if (! is_numeric($jual) || ! is_numeric($modal) || ! is_numeric($unit) || (int) $unit < 1) {
                                     return 'Jumlah unit/booth yang tersedia.';
                                 }
-                                
+
                                 $totalJual = (int) $jual * (int) $unit;
                                 $totalModal = (int) $modal * (int) $unit;
                                 $laba = $totalJual - $totalModal;
                                 $fmt = fn ($v) => 'Rp '.number_format((int) $v, 0, ',', '.');
-                                
+
                                 return 'Total Pendapatan: '.$fmt($totalJual).' • Modal: '.$fmt($totalModal).' • Est. Laba: '.$fmt($laba);
                             })
                             ->columnSpan(1),

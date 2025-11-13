@@ -6,6 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'WeddingExpo')</title>
 
+    <script>
+        (function() {
+            try {
+                var STORAGE_KEY = 'theme';
+                var stored = localStorage.getItem(STORAGE_KEY);
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+
+                function apply(theme) {
+                    var html = document.documentElement;
+                    if (theme === 'dark' || (theme === 'auto' && prefersDark.matches)) {
+                        html.classList.add('dark');
+                    } else {
+                        html.classList.remove('dark');
+                    }
+                }
+
+                // Initial apply
+                var theme = stored || 'light';
+                apply(theme);
+
+                // Listen to system changes when auto
+                if (prefersDark && theme === 'auto') {
+                    prefersDark.addEventListener('change', function() {
+                        apply('auto');
+                    });
+                }
+
+                // Expose a small API for pages to update theme
+                window.__setTheme = function(next) {
+                    localStorage.setItem(STORAGE_KEY, next);
+                    apply(next);
+                };
+
+                window.__getTheme = function() {
+                    return localStorage.getItem(STORAGE_KEY) || 'light';
+                };
+            } catch (e) {
+                // Fail silently to avoid blocking page render
+            }
+        })();
+    </script>
+
     <!-- Font: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Filament\Clusters\Pengguna as PenggunaCluster;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
@@ -21,24 +22,24 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
-    
-    protected static string|\UnitEnum|null $navigationGroup = 'User Management';
-    
+
+    protected static ?string $cluster = PenggunaCluster::class;
+
     protected static ?int $navigationSort = 1;
-    
+
     protected static ?string $recordTitleAttribute = 'name';
-    
+
     protected static ?string $navigationLabel = 'Users';
-    
+
     protected static ?string $modelLabel = 'User';
-    
+
     protected static ?string $pluralModelLabel = 'Users';
 
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);
     }
-    
+
     public static function infolist(Schema $schema): Schema
     {
         return UserInfolist::configure($schema);
@@ -48,15 +49,16 @@ class UserResource extends Resource
     {
         return UsersTable::configure($table);
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
     }
-    
+
     public static function getNavigationBadgeColor(): ?string
     {
         $count = static::getModel()::count();
+
         return match (true) {
             $count > 50 => 'danger',
             $count > 20 => 'warning',
@@ -80,17 +82,17 @@ class UserResource extends Resource
             'edit' => EditUser::route('/{record}/edit'),
         ];
     }
-    
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'email'];
     }
-    
+
     public static function getGlobalSearchResultTitle($record): string
     {
         return $record->name;
     }
-    
+
     public static function getGlobalSearchResultDetails($record): array
     {
         return [

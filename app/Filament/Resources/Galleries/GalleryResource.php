@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Galleries;
 
+use App\Filament\Clusters\Content;
 use App\Filament\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Resources\Galleries\Pages\ListGalleries;
@@ -21,6 +22,8 @@ class GalleryResource extends Resource
     protected static ?string $model = Gallery::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
+
+    protected static ?string $cluster = Content::class;
 
     protected static ?string $navigationLabel = 'Gallery';
 

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\JenisUsaha;
+use Illuminate\Database\Seeder;
 
 class JenisUsahaSeeder extends Seeder
 {
@@ -21,7 +20,7 @@ class JenisUsahaSeeder extends Seeder
             'Dekorasi Pernikahan',
             'Wedding Organizer',
             'Event Planner',
-            
+
             // Fashion & Beauty
             'Gaun Pengantin',
             'Kebaya Pengantin',
@@ -29,7 +28,7 @@ class JenisUsahaSeeder extends Seeder
             'Make Up Artist (MUA)',
             'Hair Stylist',
             'Salon Kecantikan',
-            
+
             // Photography & Videography
             'Fotografer',
             'Videografer',
@@ -37,14 +36,14 @@ class JenisUsahaSeeder extends Seeder
             'Wedding Cinematic',
             'Photo Booth',
             'Drone Photography',
-            
+
             // Catering & Cake
             'Catering Pernikahan',
             'Wedding Cake',
             'Dessert Table',
             'Traditional Cake',
             'Cupcake & Cookies',
-            
+
             // Entertainment
             'Wedding Band',
             'DJ',
@@ -52,30 +51,30 @@ class JenisUsahaSeeder extends Seeder
             'Musik Tradisional',
             'Penari',
             'Singer/Penyanyi',
-            
+
             // Invitation & Souvenir
             'Undangan Pernikahan',
             'Undangan Digital',
             'Souvenir Pernikahan',
             'Hampers',
             'Gift Registry',
-            
+
             // Jewelry & Accessories
             'Perhiasan Emas',
             'Cincin Kawin',
             'Aksesoris Pengantin',
             'Sepatu Pengantin',
-            
+
             // Transportation
             'Rental Mobil Pengantin',
             'Sewa Bus Tamu',
             'Wedding Car Decoration',
-            
+
             // Honeymoon & Travel
             'Paket Honeymoon',
             'Travel Agent',
             'Hotel Honeymoon',
-            
+
             // Miscellaneous
             'Wedding Favors',
             'Lighting & Sound System',

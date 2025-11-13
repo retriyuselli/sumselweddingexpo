@@ -32,8 +32,9 @@ class GalleryForm
                                     ->mapWithKeys(function ($expo) {
                                         $label = $expo->nama_expo;
                                         if ($expo->periode) {
-                                            $label .= ' (' . $expo->periode . ')';
+                                            $label .= ' ('.$expo->periode.')';
                                         }
+
                                         return [$expo->id => $label];
                                     });
                             })

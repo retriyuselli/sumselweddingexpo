@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Homes;
 
+use App\Filament\Clusters\Content;
 use App\Filament\Resources\Homes\Pages\CreateHome;
 use App\Filament\Resources\Homes\Pages\EditHome;
 use App\Filament\Resources\Homes\Pages\ListHomes;
@@ -11,14 +12,15 @@ use App\Models\Home;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class HomeResource extends Resource
 {
     protected static ?string $model = Home::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
+
+    protected static ?string $cluster = Content::class;
 
     public static function form(Schema $schema): Schema
     {

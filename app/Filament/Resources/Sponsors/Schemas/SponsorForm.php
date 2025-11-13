@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Sponsors\Schemas;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -22,7 +22,7 @@ class SponsorForm
                             ->label('Nama Sponsor')
                             ->required()
                             ->columnSpan(1),
-                        
+
                         FileUpload::make('logo')
                             ->label('Logo')
                             ->image()
@@ -30,18 +30,18 @@ class SponsorForm
                             ->disk('public')
                             ->maxSize(5120)
                             ->columnSpan(1),
-                        
+
                         TextInput::make('website')
                             ->label('Website')
                             ->url()
                             ->columnSpan(1),
-                        
+
                         TextInput::make('order')
                             ->label('Urutan')
                             ->numeric()
                             ->default(0)
                             ->columnSpan(1),
-                        
+
                         Textarea::make('description')
                             ->label('Deskripsi')
                             ->rows(3)

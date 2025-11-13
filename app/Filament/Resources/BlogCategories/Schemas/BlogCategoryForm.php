@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\BlogCategories\Schemas;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class BlogCategoryForm

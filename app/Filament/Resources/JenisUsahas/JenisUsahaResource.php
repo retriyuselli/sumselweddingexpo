@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JenisUsahas;
 
+use App\Filament\Clusters\Vendor as VendorCluster;
 use App\Filament\Resources\JenisUsahas\Pages\CreateJenisUsaha;
 use App\Filament\Resources\JenisUsahas\Pages\EditJenisUsaha;
 use App\Filament\Resources\JenisUsahas\Pages\ListJenisUsahas;
@@ -21,6 +22,8 @@ class JenisUsahaResource extends Resource
     protected static ?string $model = JenisUsaha::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
+
+    protected static ?string $cluster = VendorCluster::class;
 
     public static function form(Schema $schema): Schema
     {
