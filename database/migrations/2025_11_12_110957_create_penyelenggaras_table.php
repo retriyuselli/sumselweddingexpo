@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penyelenggaras', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('logo')->nullable();
             $table->text('alamat');
             $table->string('jam_operasional');
             $table->string('email')->unique()->nullable();

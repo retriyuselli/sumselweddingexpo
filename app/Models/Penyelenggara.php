@@ -12,6 +12,7 @@ class Penyelenggara extends Model
 
     protected $fillable = [
         'name',
+        'logo',
         'alamat',
         'tentang',
         'jam_operasional',

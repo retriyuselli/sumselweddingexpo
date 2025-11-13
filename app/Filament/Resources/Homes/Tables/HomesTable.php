@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Homes\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -15,6 +16,15 @@ class HomesTable
     {
         return $table
             ->columns([
+                ImageColumn::make('penyelenggara.logo')
+                    ->label('Logo Penyelenggara')
+                    ->disk('public')
+                    ->circular()
+                    ->width(40),
+                TextColumn::make('penyelenggara.name')
+                    ->label('Penyelenggara')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('id')
                     ->label('ID')
                     ->weight('bold'),

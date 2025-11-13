@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SponsorType;
 use Illuminate\Database\Eloquent\Model;
 
 class Sponsor extends Model
@@ -11,11 +12,13 @@ class Sponsor extends Model
         'logo',
         'website',
         'description',
+        'jenis_sponsor',
         'is_active',
         'order',
     ];
 
     protected $casts = [
+        'jenis_sponsor' => SponsorType::class,
         'is_active' => 'boolean',
     ];
 

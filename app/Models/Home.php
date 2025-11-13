@@ -11,6 +11,7 @@ class Home extends Model
         'highlight_videos',
         'hero_subtitle',
         'meta_description',
+        'penyelenggara_id',
         'is_active',
     ];
 
@@ -25,6 +26,11 @@ class Home extends Model
         return $this->belongsToMany(Sponsor::class, 'home_sponsor')
             ->orderBy('order')
             ->where('is_active', true);
+    }
+
+    public function penyelenggara()
+    {
+        return $this->belongsTo(Penyelenggara::class);
     }
 
     // Scope untuk mendapatkan data home yang aktif

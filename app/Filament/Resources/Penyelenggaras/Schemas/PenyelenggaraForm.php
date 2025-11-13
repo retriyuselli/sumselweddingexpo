@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Penyelenggaras\Schemas;
 
 use App\Models\Penyelenggara;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -19,6 +20,13 @@ class PenyelenggaraForm
                     ->placeholder('Nama penyelenggara')
                     ->required()
                     ->maxLength(255),
+
+                FileUpload::make('logo')
+                    ->label('Logo')
+                    ->image()
+                    ->directory('penyelenggaras')
+                    ->disk('public')
+                    ->maxSize(5120),
 
                 TextInput::make('jam_operasional')
                     ->label('Jam Operasional')

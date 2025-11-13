@@ -21,7 +21,7 @@ class HomeController extends Controller
         $eventName = $expo ? $expo->nama_expo : 'Wedding Expo 2026';
 
         // Ambil data home page dari database
-        $home = Home::active()->first();
+        $home = Home::active()->with('penyelenggara')->first();
         if (! $home) {
             $home = new Home([
                 'tentang_kami' => 'Selamat datang di Sumatra Wedding Expo',
@@ -38,6 +38,7 @@ class HomeController extends Controller
             ->orderBy('order')
             ->get();
 
-        return view('home', compact('eventDate', 'eventStart', 'eventEnd', 'eventLocation', 'eventName', 'expo', 'home', 'sponsors'));
+        $penyelenggara = $home->penyelenggara;
+        return view('home', compact('eventDate', 'eventStart', 'eventEnd', 'eventLocation', 'eventName', 'expo', 'home', 'sponsors', 'penyelenggara'));
     }
 }

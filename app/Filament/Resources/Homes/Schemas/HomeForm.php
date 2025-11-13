@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Homes\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +16,16 @@ class HomeForm
     {
         return $schema
             ->components([
+                Section::make('Penyelenggara')
+                    ->schema([
+                        Select::make('penyelenggara_id')
+                            ->relationship('penyelenggara', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->label('Penyelenggara')
+                            ->native(false)
+                            ->nullable(),
+                    ]),
                 Section::make('Tentang Kami')
                     ->schema([
                         RichEditor::make('tentang_kami')

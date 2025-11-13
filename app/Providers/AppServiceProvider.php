@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Penyelenggara;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('layouts.navbar', function ($view) {
+            $penyelenggara = Penyelenggara::query()
+                ->select('name', 'logo')
+                ->first();
+
+            $view->with('penyelenggara', $penyelenggara);
+        });
     }
 }

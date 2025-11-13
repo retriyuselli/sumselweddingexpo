@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Penyelenggaras\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
@@ -17,6 +18,11 @@ class PenyelenggarasTable
     {
         return $table
             ->columns([
+                ImageColumn::make('logo')
+                    ->label('Logo')
+                    ->disk('public')
+                    ->circular()
+                    ->width(50),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

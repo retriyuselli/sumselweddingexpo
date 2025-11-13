@@ -3,11 +3,13 @@
 namespace App\Filament\Resources\Sponsors\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use App\Enums\SponsorType;
 
 class SponsorForm
 {
@@ -34,6 +36,13 @@ class SponsorForm
                         TextInput::make('website')
                             ->label('Website')
                             ->url()
+                            ->columnSpan(1),
+
+                        Select::make('jenis_sponsor')
+                            ->label('Jenis Sponsor')
+                            ->options(SponsorType::options())
+                            ->native(false)
+                            ->required()
                             ->columnSpan(1),
 
                         TextInput::make('order')

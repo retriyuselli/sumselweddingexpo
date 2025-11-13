@@ -2,7 +2,11 @@
 <header class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur border-b border-neutral-200">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <a href="/" class="flex items-center gap-2">
-            <img src="/storage/logo/logoswe.png" alt="WeddingExpo Logo" class="h-10 w-auto">
+            @if(isset($penyelenggara) && $penyelenggara?->logo)
+                <img src="{{ asset('storage/'.$penyelenggara->logo) }}" alt="{{ $penyelenggara->name }}" class="h-10 w-auto">
+            @else
+                <img src="/storage/logo/logoswe.png" alt="WeddingExpo Logo" class="h-10 w-auto">
+            @endif
         </a>
         <nav class="hidden md:flex items-center gap-8 text-sm">
             <a href="/" class="hover:text-rose-600">Home</a>
