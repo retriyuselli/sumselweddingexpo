@@ -27,6 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->default()
+            ->favicon('/storage/logo/logoswe.png')
+            ->brandName('Filament Demo')
+            ->brandLogo('/storage/logo/logoswe.png')
+            ->brandLogoHeight('3rem')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

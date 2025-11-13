@@ -63,7 +63,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return true; // Modify this logic based on your requirements
+        return $this->hasAnyRole(['super_admin', 'admin']);
     }
 
     /**

@@ -18,6 +18,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -34,6 +39,31 @@ class AuthController extends Controller
         return back()->withErrors([
             'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        $user->assignRole('customer');
+
+        $user->sendEmailVerificationNotification();
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/')->with('success', 'Akun berhasil dibuat. Silakan cek email untuk verifikasi.');
     }
 
     public function logout(Request $request)

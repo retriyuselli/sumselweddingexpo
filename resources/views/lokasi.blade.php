@@ -11,7 +11,8 @@
     <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Lokasi Pameran</h1>
-            <p class="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-neutral-600">Temukan venue pameran dan cara terbaik untuk menuju ke sana.</p>
+            <p class="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-neutral-600">Temukan venue pameran dan cara terbaik
+                untuk menuju ke sana.</p>
         </div>
     </section>
 
@@ -20,12 +21,15 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-8 items-start">
             <div class="p-4 sm:p-6 rounded-xl border border-neutral-200 bg-white">
                 <h2 class="text-base sm:text-lg md:text-xl font-bold">Venue</h2>
-                <p class="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-neutral-700">Palembang Icon Mall, Palembang - Sumatera Selatan </p>
-                <p class="mt-1 text-neutral-500 text-xs sm:text-sm">Jalan POM IX, Lorok Pakjo, Kecamatan Ilir Barat I, Kota Palembang, Sumatera Selatan 30137, Indonesia</p>
+                <p class="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-neutral-700">Palembang Icon Mall, Palembang -
+                    Sumatera Selatan </p>
+                <p class="mt-1 text-neutral-500 text-xs sm:text-sm">Jalan POM IX, Lorok Pakjo, Kecamatan Ilir Barat I, Kota
+                    Palembang, Sumatera Selatan 30137, Indonesia</p>
                 <div class="mt-4 sm:mt-6 grid sm:grid-cols-2 gap-4">
                     <div>
                         <div class="text-xs sm:text-sm text-neutral-500">Jam Operasional</div>
-                        <div class="mt-1 text-xs sm:text-sm text-neutral-800">10.00–21.00 (Jumat–Sabtu) <br>10.00–22.00 (Minggu)</div>
+                        <div class="mt-1 text-xs sm:text-sm text-neutral-800">10.00–21.00 (Jumat–Sabtu) <br>10.00–22.00
+                            (Minggu)</div>
                     </div>
                     <div>
                         <div class="text-xs sm:text-sm text-neutral-500">Parkir</div>
@@ -58,7 +62,8 @@
                     <span class="text-lg">🚌</span> Akses dengan Angkutan Umum
                 </h3>
                 <div class="text-xs sm:text-sm text-neutral-700 space-y-3">
-                    <p>Terdapat halte bus terdekat seperti <strong>Halte PIM</strong> yang hanya sekitar 4-5 menit jalan kaki dari mall.</p>
+                    <p>Terdapat halte bus terdekat seperti <strong>Halte PIM</strong> yang hanya sekitar 4-5 menit jalan
+                        kaki dari mall.</p>
 
                     <p class="font-medium">Beberapa rute bus yang melewati dekat mall:</p>
                     <ul class="list-disc ml-6 space-y-1">
@@ -79,9 +84,11 @@
                 <div class="text-xs sm:text-sm text-neutral-700 space-y-3">
                     <p>Sistem LRT Palembang beroperasi di Palembang.</p>
 
-                    <p>Stasiun LRT yang relatif dekat: <strong>Stasiun Terpadu Jembatan Ampera</strong> — sekitar 25 menit jalan kaki dari mall.</p>
+                    <p>Stasiun LRT yang relatif dekat: <strong>Stasiun Terpadu Jembatan Ampera</strong> — sekitar 25 menit
+                        jalan kaki dari mall.</p>
 
-                    <p>Setelah turun LRT, mungkin perlu lanjut dengan ojol/taksi atau jalan kaki tergantung jarak/stasiun Anda.</p>
+                    <p>Setelah turun LRT, mungkin perlu lanjut dengan ojol/taksi atau jalan kaki tergantung jarak/stasiun
+                        Anda.</p>
                 </div>
             </div>
 
@@ -93,9 +100,11 @@
                 <div class="text-xs sm:text-sm text-neutral-700 space-y-3">
                     <p>Mall mudah diakses dengan kendaraan karena berada di pusat kota Palembang.</p>
 
-                    <p>Jika pakai aplikasi peta atau Waze, cari rute ke <strong>"Palembang Icon Mall, Jalan POM IX, Palembang"</strong>.</p>
+                    <p>Jika pakai aplikasi peta atau Waze, cari rute ke <strong>"Palembang Icon Mall, Jalan POM IX,
+                            Palembang"</strong>.</p>
 
-                    <p>Perhatikan jam sibuk: di kota besar biasanya pagi dan sore banyak lalu-lintas. Sebaiknya berangkat lebih awal jika waktu penting.</p>
+                    <p>Perhatikan jam sibuk: di kota besar biasanya pagi dan sore banyak lalu-lintas. Sebaiknya berangkat
+                        lebih awal jika waktu penting.</p>
                 </div>
             </div>
 
@@ -105,26 +114,15 @@
                     <span class="text-lg">✅</span> Tips Tambahan
                 </h3>
                 <ul class="text-xs sm:text-sm text-neutral-700 space-y-2 list-disc ml-6">
-                    <li>Jika Anda datang dari luar kota atau dari bandara, pertama menggunakan LRT atau bus ke pusat kota, lalu lanjut ke mall.</li>
+                    <li>Jika Anda datang dari luar kota atau dari bandara, pertama menggunakan LRT atau bus ke pusat kota,
+                        lalu lanjut ke mall.</li>
                     <li>Pastikan naik bus dengan rute yang melewati "Jalan POM IX" atau pusat kota Palembang.</li>
                     <li>Periksa jadwal dan ketersediaan transportasi umum di hari Anda datang karena bisa berubah.</li>
-                    <li>Jika membawa banyak barang belanjaan atau bersama keluarga, kendaraan pribadi atau taksi/ojol bisa lebih nyaman.</li>
+                    <li>Jika membawa banyak barang belanjaan atau bersama keluarga, kendaraan pribadi atau taksi/ojol bisa
+                        lebih nyaman.</li>
                 </ul>
             </div>
         </div>
     </section>
 
-@endsection
-
-@section('footer')
-    <footer class="py-8 border-t border-neutral-200">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
-            <div class="text-sm text-neutral-600">&copy; {{ date('Y') }} WeddingExpo. Semua hak cipta.</div>
-            <div class="flex items-center gap-4 text-sm text-neutral-600">
-                <a href="#" class="hover:text-neutral-900">Kebijakan Privasi</a>
-                <a href="#" class="hover:text-neutral-900">Syarat & Ketentuan</a>
-                <a href="/admin" class="hover:text-neutral-900">Admin</a>
-            </div>
-        </div>
-    </footer>
 @endsection

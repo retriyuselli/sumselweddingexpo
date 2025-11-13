@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             DataPembayaranSeeder::class,
             SponsorSeeder::class,
             HomeSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

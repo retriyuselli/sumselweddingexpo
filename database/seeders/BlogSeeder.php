@@ -55,15 +55,15 @@ class BlogSeeder extends Seeder
             ]
         );
 
-        // Get authors (users with author or editor role)
-        $sarah = User::where('email', 'sarah@weddingexpo.com')->first();
-        $budi = User::where('email', 'budi@weddingexpo.com')->first();
-        $linda = User::where('email', 'linda@weddingexpo.com')->first();
+        $sweAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'swe'))->first();
+        $adminAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'admin'))->first();
+        $superAdminAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'super_admin'))->first();
 
-        // Get authors (users with author or editor role)
-        $sarah = User::where('email', 'sarah@weddingexpo.com')->first();
-        $budi = User::where('email', 'budi@weddingexpo.com')->first();
-        $linda = User::where('email', 'linda@weddingexpo.com')->first();
+        $defaultAuthor = $sweAuthor ?? $adminAuthor ?? $superAdminAuthor ?? User::first();
+
+        $sarah = $sweAuthor ?? $defaultAuthor;
+        $budi = $adminAuthor ?? $defaultAuthor;
+        $linda = $superAdminAuthor ?? $defaultAuthor;
 
         // Blog 1
         Blog::firstOrCreate(

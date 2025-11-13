@@ -4,12 +4,11 @@ cd /home/u380354370/domains/sumselweddingexpo.com/public_html
 
 # Jalankan hanya UserSeeder
 
-php artisan db:seed --class=DatabaseSeeder
-php artisan migrate:refresh
-php artisan shield:generate --all
+php artisan migrate:fresh --seed
 
-php artisan db:seed --class=UserSeeder
-php artisan migrate:refresh
+php artisan migrate:fresh
+php artisan db:seed --class=DatabaseSeeder
+php artisan shield:generate --all
 
 # Jalankan hanya BlogSeeder
 
