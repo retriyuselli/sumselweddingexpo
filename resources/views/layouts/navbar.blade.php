@@ -28,7 +28,7 @@
                     <a href="/gallery" class="block px-3 py-2 hover:bg-neutral-50">Gallery</a>
                 </div>
             </div>
-            <a href="/partners" class="hover:text-rose-600">Partners</a>
+            <a href="/partners" class="hover:text-rose-600">Vendor</a>
             <a href="/jadwal" class="hover:text-rose-600">Jadwal</a>
             <a href="/blog" class="hover:text-rose-600">Blog</a>
             @auth
@@ -192,7 +192,7 @@
                 </div>
             </details>
 
-            <a href="/partners" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Partners</a>
+            <a href="/partners" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Vendor</a>
             <a href="/jadwal" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Jadwal</a>
             <a href="/blog" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Blog</a>
             @auth

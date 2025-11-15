@@ -38,6 +38,55 @@
                             <p id="time-text" class="text-base">{{ optional($payment?->paid_at)->format('d M Y H:i') ?? '—' }}</p>
                         </div>
                     </div>
+                    @php
+                        $order = $payment?->order;
+                        $items = $order?->items ?? collect();
+                    @endphp
+                    @if ($order && $items->count())
+                        <div class="mt-6">
+                            <h2 class="text-base font-semibold">Detail Pesanan</h2>
+                            <table class="mt-3 w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-neutral-200">
+                                        <th class="py-2 text-left">Produk</th>
+                                        <th class="py-2 text-center">Qty</th>
+                                        <th class="py-2 text-right">Harga</th>
+                                        <th class="py-2 text-right">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($items as $it)
+                                        <tr class="border-b border-neutral-100">
+                                            <td class="py-2">{{ $it->name_snapshot }}</td>
+                                            <td class="py-2 text-center">{{ (int) ($it->qty ?? 0) }}</td>
+                                            <td class="py-2 text-right">Rp {{ number_format((float) ($it->price_snapshot ?? 0), 0, ',', '.') }}</td>
+                                            <td class="py-2 text-right">Rp {{ number_format((float) ($it->subtotal ?? 0), 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t border-neutral-200">
+                                        <td class="py-2 font-semibold" colspan="3">Total</td>
+                                        <td class="py-2 text-right font-semibold">Rp {{ number_format((float) ($order->amount_total ?? 0), 0, ',', '.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-neutral-600">Nama</p>
+                                    <p class="text-sm">{{ trim(($order->billing_first_name ?? '').' '.($order->billing_last_name ?? '')) ?: '—' }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-neutral-600">Kontak</p>
+                                    <p class="text-sm">{{ $order->billing_phone ?? '—' }} • {{ $order->billing_email ?? '—' }}</p>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <p class="text-sm text-neutral-600">Alamat</p>
+                                    <p class="text-sm">{{ trim(($order->billing_street ?? '').' '.($order->billing_apt ?? '')) ?: '—' }}, {{ $order->billing_city ?? '' }}{{ $order->billing_city ? ',' : '' }} {{ $order->billing_province ?? '' }} {{ $order->billing_postcode ?? '' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div class="mt-6 flex items-center gap-3">
                         <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm hover:bg-neutral-800">Kembali ke Dashboard</a>
                         <a href="{{ route('cart') }}" class="px-4 py-2 rounded-lg border border-neutral-300 text-neutral-700 text-sm hover:bg-neutral-50">Lihat Keranjang</a>

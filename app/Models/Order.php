@@ -16,6 +16,18 @@ class Order extends Model
         'amount_subtotal',
         'amount_total',
         'status',
+        'billing_first_name',
+        'billing_last_name',
+        'billing_company',
+        'billing_country',
+        'billing_street',
+        'billing_apt',
+        'billing_city',
+        'billing_province',
+        'billing_postcode',
+        'billing_phone',
+        'billing_email',
+        'notes',
     ];
 
     protected $casts = [

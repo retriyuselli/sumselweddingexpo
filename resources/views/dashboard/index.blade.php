@@ -232,6 +232,31 @@
                         </div>
                     </div>
 
+                    @if (!empty($recentOrders) && count($recentOrders) > 0)
+                        <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-base sm:text-lg font-bold">Pesanan Terbaru</h2>
+                            </div>
+                            <div class="space-y-3">
+                                @foreach ($recentOrders as $ord)
+                                    @php $pay = $ord->payments->last(); @endphp
+                                    <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-200">
+                                        <div>
+                                            <p class="text-xs text-neutral-600">Order {{ $ord->code }}</p>
+                                            <p class="text-sm font-semibold text-neutral-900">Rp {{ number_format((float) ($ord->amount_total ?? 0), 0, ',', '.') }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs px-2 py-1 rounded-full border {{ ($ord->status === 'paid') ? 'border-green-300 text-green-700 bg-green-50' : (($ord->status === 'failed') ? 'border-red-300 text-red-700 bg-red-50' : 'border-amber-300 text-amber-700 bg-amber-50') }}">{{ ucfirst($ord->status) }}</span>
+                                            @if ($pay && $pay->external_id)
+                                                <a href="{{ route('payment.success') }}?code={{ urlencode($pay->external_id) }}" class="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium">Lihat Detail</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     @if (!empty($appointmentsPreview) && count($appointmentsPreview) > 0)
                         <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                             <div class="flex items-center justify-between mb-4">

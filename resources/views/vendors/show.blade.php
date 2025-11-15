@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Vendor Detail')
+@section('title', 'Vendor — WeddingExpo')
 
 @section('content')
     <main class="min-h-screen bg-gray-50">
@@ -12,11 +12,49 @@
         </section>
 
         <section class="py-8 sm:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-6">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-1 gap-6">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
+                        <h2 class="text-base sm:text-lg font-bold mb-4">Produk Vendor</h2>
+                        @if (($products->count() ?? 0) === 0)
+                            <p class="text-sm text-neutral-600">Belum ada produk aktif.</p>
+                        @else
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                @foreach ($products as $p)
+                                    @php
+                                        $img = !empty($p->foto_url)
+                                            ? (\Illuminate\Support\Str::startsWith($p->foto_url, ['http://', 'https://'])
+                                                ? $p->foto_url
+                                                : \Illuminate\Support\Facades\Storage::url($p->foto_url))
+                                            : null;
+                                    @endphp
+                                    <div class="rounded-xl border border-neutral-200 overflow-hidden bg-white">
+                                        <div class="w-full bg-neutral-100" style="aspect-ratio: 1 / 1;">
+                                            @if ($img)
+                                                <img src="{{ $img }}" alt="{{ $p->nama_produk }}" class="w-full h-full object-cover object-center">
+                                            @else
+                                                <div class="w-full h-full bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                                                    <span class="text-2xl font-bold text-white">{{ strtoupper(substr($p->nama_produk, 0, 1)) }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="p-4">
+                                            <p class="text-sm font-semibold text-neutral-900">{{ $p->nama_produk }}</p>
+                                            <p class="text-sm text-neutral-700 mt-1">Rp {{ number_format((float) ($p->harga ?? 0), 0, ',', '.') }}</p>
+                                            <div class="mt-3 flex items-center gap-2">
+                                                <a href="{{ route('products.show', $p->slug) }}" class="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50">Lihat Produk</a>
+                                                <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 add-to-cart" data-id="{{ $p->id }}" data-vendor="{{ $vendor->id }}" data-slug="{{ $p->slug }}" data-nama="{{ $p->nama_produk }}" data-harga="{{ (int) ($p->harga ?? 0) }}" data-img="{{ $img }}">Tambah</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                         <h2 class="text-base sm:text-lg font-bold mb-4">Informasi Vendor</h2>
-                        <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
                             <div>
                                 <p class="text-neutral-600">Nama Vendor</p>
                                 <p class="font-semibold text-neutral-900">{{ $vendor->nama_vendor }}</p>
@@ -49,7 +87,7 @@
                             <h2 class="text-base sm:text-lg font-bold">Janji Temu Mendatang</h2>
                             <a href="{{ route('appointments.index') }}" class="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium">Lihat Semua</a>
                         </div>
-                        @if ($upcomingAppointments->count() === 0)
+                        @if (($upcomingAppointments->count() ?? 0) === 0)
                             <p class="text-sm text-neutral-600">Belum ada janji temu yang dijadwalkan.</p>
                         @else
                             <div class="space-y-3">
@@ -63,26 +101,6 @@
                                             </div>
                                             <span class="text-xs px-2 py-1 rounded-full border {{ ($appt->status === 'confirmed') ? 'border-green-300 text-green-700 bg-green-50' : (($appt->status === 'rejected') ? 'border-red-300 text-red-700 bg-red-50' : 'border-amber-300 text-amber-700 bg-amber-50') }}">{{ ucfirst($appt->status) }}</span>
                                         </div>
-
-                                        @if ($appt->status === 'requested')
-                                            <div class="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                                                <input type="text" name="notes" form="confirm-appt-{{ $appt->id }}" placeholder="Catatan (opsional)" class="w-full sm:w-auto flex-1 rounded-lg border border-neutral-300 px-3 py-1.5 text-xs" maxlength="500">
-
-                                                <form id="confirm-appt-{{ $appt->id }}" method="POST" action="{{ route('appointments.updateStatus', $appt->id) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="status" value="confirmed">
-                                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-green-600 text-white hover:bg-green-700">Konfirmasi</button>
-                                                </form>
-                                                <form method="POST" action="{{ route('appointments.updateStatus', $appt->id) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="status" value="rejected">
-                                                    <input type="hidden" name="notes" value="" id="reject-notes-{{ $appt->id }}">
-                                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700" onclick="document.getElementById('reject-notes-{{ $appt->id }}').value = document.querySelector('[form=confirm-appt-{{ $appt->id }}'][name=notes]').value">Tolak</button>
-                                                </form>
-                                            </div>
-                                        @endif
                                     </div>
                                 @endforeach
                             </div>
@@ -92,18 +110,41 @@
                         @endif
                     </div>
                 </div>
-
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
-                        <h2 class="text-base sm:text-lg font-bold mb-4">Aksi</h2>
-                        <div class="space-y-2">
-                            <a href="{{ route('vendors.edit', $vendor->id) }}" class="block w-full px-4 py-2 text-center text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">Edit Vendor</a>
-                            <a href="{{ route('vendors.index') }}" class="block w-full px-4 py-2 text-center text-xs sm:text-sm border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition font-medium">Kembali ke Daftar</a>
-                            <a href="{{ route('checkout') }}?vendor_id={{ $vendor->id }}" class="block w-full px-4 py-2 text-center text-xs sm:text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium">Checkout Vendor Ini</a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
     </main>
+
+    <script>
+        (function(){
+            function readCart(){
+                try { return JSON.parse(localStorage.getItem('cartItems') || '[]'); } catch(e){ return []; }
+            }
+            function writeCart(items){
+                localStorage.setItem('cartItems', JSON.stringify(items));
+                window.dispatchEvent(new Event('storage'));
+            }
+            function addItem(data){
+                const items = readCart();
+                const idx = items.findIndex(i => i.product_vendor_id === data.product_vendor_id);
+                if (idx >= 0) { items[idx].qty = (items[idx].qty || 1) + 1; }
+                else { items.push(data); }
+                writeCart(items);
+            }
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const data = {
+                        product_vendor_id: parseInt(btn.dataset.id, 10),
+                        qty: 1,
+                        vendor_id: parseInt(btn.dataset.vendor, 10),
+                        nama_produk: btn.dataset.nama || '',
+                        harga: parseInt(btn.dataset.harga || '0', 10),
+                        img: btn.dataset.img || null,
+                        slug: btn.dataset.slug || '',
+                        vendor_nama: @json($vendor->nama_vendor ?? '')
+                    };
+                    addItem(data);
+                });
+            });
+        })();
+    </script>
 @endsection

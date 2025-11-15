@@ -127,13 +127,22 @@ class VendorController extends Controller
     public function show(Vendor $vendor)
     {
         $vendor->load('jenisUsaha', 'partisipasis');
+        $firstProduct = \App\Models\ProductVendor::where('vendor_id', $vendor->id)
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+        $products = \App\Models\ProductVendor::where('vendor_id', $vendor->id)
+            ->where('is_active', true)
+            ->latest()
+            ->take(24)
+            ->get();
         $upcomingAppointments = Appointment::with('customer:id,name')
             ->where('vendor_id', $vendor->id)
             ->where('starts_at', '>=', now())
             ->orderBy('starts_at', 'asc')
             ->paginate(10);
 
-        return view('vendors.show', compact('vendor', 'upcomingAppointments'));
+        return view('vendors.show', compact('vendor', 'upcomingAppointments', 'firstProduct', 'products'));
     }
 
     /**

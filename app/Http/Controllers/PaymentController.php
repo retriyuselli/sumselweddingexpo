@@ -21,6 +21,19 @@ class PaymentController extends Controller
             'items.*.product_vendor_id' => ['required','integer','exists:product_vendors,id'],
             'items.*.qty' => ['required','integer','min:1'],
             'vendor_id' => ['nullable','integer','exists:vendors,id'],
+            'billing' => ['required','array'],
+            'billing.first_name' => ['required','string','max:255'],
+            'billing.last_name' => ['required','string','max:255'],
+            'billing.company' => ['nullable','string','max:255'],
+            'billing.country' => ['required','string','max:255'],
+            'billing.street' => ['required','string'],
+            'billing.apt' => ['nullable','string','max:255'],
+            'billing.city' => ['required','string','max:255'],
+            'billing.province' => ['required','string','max:255'],
+            'billing.postcode' => ['nullable','string','max:20'],
+            'billing.phone' => ['required','string','max:50'],
+            'billing.email' => ['required','email','max:255'],
+            'billing.notes' => ['nullable','string'],
         ]);
 
         $user = Auth::user();
@@ -43,6 +56,18 @@ class PaymentController extends Controller
             'amount_subtotal' => 0,
             'amount_total' => 0,
             'status' => 'pending',
+            'billing_first_name' => $data['billing']['first_name'] ?? null,
+            'billing_last_name' => $data['billing']['last_name'] ?? null,
+            'billing_company' => $data['billing']['company'] ?? null,
+            'billing_country' => $data['billing']['country'] ?? null,
+            'billing_street' => $data['billing']['street'] ?? null,
+            'billing_apt' => $data['billing']['apt'] ?? null,
+            'billing_city' => $data['billing']['city'] ?? null,
+            'billing_province' => $data['billing']['province'] ?? null,
+            'billing_postcode' => $data['billing']['postcode'] ?? null,
+            'billing_phone' => $data['billing']['phone'] ?? null,
+            'billing_email' => $data['billing']['email'] ?? null,
+            'notes' => $data['billing']['notes'] ?? null,
         ]);
 
         $itemDetails = [];
@@ -69,6 +94,12 @@ class PaymentController extends Controller
             ];
         }
 
+        if ($subtotal <= 0) {
+            return response()->json([
+                'message' => 'Total transaksi tidak boleh 0. Pastikan harga produk terisi.',
+            ], 422);
+        }
+
         $order->update([
             'amount_subtotal' => $subtotal,
             'amount_total' => $subtotal,
@@ -91,13 +122,26 @@ class PaymentController extends Controller
         ];
         // Do not set merchant_id unless using Midtrans multiple merchants feature
 
-        if ($user) {
-            $payload['customer_details'] = [
-                'first_name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->no_wa_pic ?? null,
-            ];
+        $countryCode = (string) ($data['billing']['country'] ?? '');
+        if (strtolower($countryCode) === 'indonesia') {
+            $countryCode = 'IDN';
         }
+        $payload['customer_details'] = [
+            'first_name' => $data['billing']['first_name'],
+            'last_name' => $data['billing']['last_name'],
+            'email' => $data['billing']['email'],
+            'phone' => $data['billing']['phone'],
+            'billing_address' => [
+                'first_name' => $data['billing']['first_name'],
+                'last_name' => $data['billing']['last_name'],
+                'email' => $data['billing']['email'],
+                'phone' => $data['billing']['phone'],
+                'address' => trim(($data['billing']['street'] ?? '').' '.($data['billing']['apt'] ?? '')),
+                'city' => $data['billing']['city'],
+                'postal_code' => $data['billing']['postcode'] ?? '',
+                'country_code' => $countryCode,
+            ],
+        ];
 
         $svc = new MidtransService();
         $res = $svc->createSnap($payload);

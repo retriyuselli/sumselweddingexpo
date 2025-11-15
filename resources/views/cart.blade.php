@@ -18,24 +18,47 @@
         </section>
 
         <section class="py-8 sm:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div id="empty-state" class="hidden text-center text-sm text-neutral-600">Keranjang kosong.</div>
-                <div id="cart-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
+                        <div id="empty-state" class="hidden text-sm text-neutral-600">Keranjang kosong.</div>
+                        <table id="cart-table" class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-neutral-200">
+                                    <th class="py-2 text-left">Product</th>
+                                    <th class="py-2 text-right">Price</th>
+                                    <th class="py-2 text-center">Quantity</th>
+                                    <th class="py-2 text-right">Subtotal</th>
+                                    <th class="py-2 text-center">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-items"></tbody>
+                        </table>
+                        <div class="mt-4 flex items-center gap-2">
+                            <input id="coupon" type="text" class="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Coupon code">
+                            <button id="apply-coupon" disabled class="rounded-lg border border-neutral-300 px-3 py-2 text-sm opacity-50 cursor-not-allowed">Apply coupon</button>
+                            <button id="update-cart" class="rounded-lg border border-neutral-300 px-3 py-2 text-sm">Update cart</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="summary"
-                    class="mt-6 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-neutral-600">Total</p>
-                        <p id="total-price" class="text-2xl font-bold">Rp 0</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <a id="to-checkout" href="{{ route('checkout') }}"
-                            class="px-4 py-2 rounded-lg border border-neutral-300 text-neutral-700 text-sm hover:bg-neutral-50">Lanjut
-                            ke Checkout</a>
-                        <button id="pay-btn"
-                            class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">Bayar
-                            Sekarang</button>
+                <div>
+                    <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
+                        <h2 class="text-lg font-semibold">Cart totals</h2>
+                        <table class="mt-3 w-full text-sm">
+                            <tbody>
+                                <tr class="border-t border-neutral-200">
+                                    <td class="py-2">Subtotal</td>
+                                    <td id="subtotal-text" class="py-2 text-right">Rp 0</td>
+                                </tr>
+                                
+                                <tr class="border-t border-neutral-200">
+                                    <td class="py-2 font-semibold">Total</td>
+                                    <td id="total-text" class="py-2 text-right font-semibold">Rp 0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a id="to-checkout" href="{{ route('checkout') }}" class="mt-4 w-full inline-flex items-center justify-center rounded-lg bg-green-600 text-white text-sm px-4 py-2 hover:bg-green-700">Proceed to checkout</a>
                     </div>
                 </div>
             </div>
@@ -55,17 +78,14 @@
 
         const render = () => {
             const items = readCart();
-            const list = document.getElementById('cart-list');
             const empty = document.getElementById('empty-state');
-            const summary = document.getElementById('summary');
+            const tbody = document.getElementById('cart-items');
             if (items.length === 0) {
-                list.innerHTML = '';
+                if (tbody) tbody.innerHTML = '';
                 empty.classList.remove('hidden');
-                summary.classList.add('hidden');
                 return;
             }
             empty.classList.add('hidden');
-            summary.classList.remove('hidden');
             list.innerHTML = items.map(it => {
                 const img = it.img ?
                     `<img src="${it.img}" alt="${it.nama_produk || ''}" class="w-full h-full object-cover object-center">` :
@@ -130,6 +150,69 @@
             }
         };
 
+        const renderTable = () => {
+            const items = readCart();
+            const empty = document.getElementById('empty-state');
+            const tbody = document.getElementById('cart-items');
+            if (items.length === 0) {
+                if (tbody) tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            const rows = items.map(it => {
+                const img = it.img ? `<img src="${it.img}" alt="${it.nama_produk || ''}" class="w-14 h-14 rounded object-cover">` : `<div class=\"w-14 h-14 rounded bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xs font-semibold\">${(it.nama_produk||'P').substring(0,1).toUpperCase()}<\/div>`;
+                const price = parseInt(it.harga || 0, 10);
+                const qty = Math.max(1, parseInt(it.qty || 1, 10));
+                const sub = price * qty;
+                return `
+                    <tr class=\"border-b border-neutral-200\">
+                        <td class=\"py-3\"><div class=\"flex items-center gap-3\">${img}<div><p class=\"font-medium\">${it.nama_produk || 'Produk'}<\/p><p class=\"text-xs text-neutral-600\">${it.vendor_nama || '—'}<\/p><\/div><\/div><\/td>
+                        <td class=\"py-3 text-right\">Rp ${formatRupiah(price)}<\/td>
+                        <td class=\"py-3 text-center\"><input type=\"number\" min=\"1\" value=\"${qty}\" class=\"w-16 rounded-lg border border-neutral-300 px-2 py-1 text-xs qty-input\" data-product-id=\"${it.product_vendor_id}\"><\/td>
+                        <td class=\"py-3 text-right\">Rp ${formatRupiah(sub)}<\/td>
+                        <td class=\"py-3 text-center\"><button class=\"text-rose-600 remove-btn\" data-product-id=\"${it.product_vendor_id}\">×<\/button><\/td>
+                    <\/tr>
+                `;
+            }).join('');
+            if (tbody) tbody.innerHTML = rows;
+
+            document.querySelectorAll('.qty-input').forEach(input => {
+                input.addEventListener('change', e => {
+                    const id = parseInt(e.target.dataset.productId, 10);
+                    const qty = Math.max(1, parseInt(e.target.value || '1', 10));
+                    const items = readCart();
+                    const idx = items.findIndex(i => i.product_vendor_id === id);
+                    if (idx >= 0) {
+                        items[idx].qty = qty;
+                        writeCart(items);
+                        updateTotalsTable();
+                    }
+                });
+            });
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const id = parseInt(e.target.dataset.productId, 10);
+                    const items = readCart().filter(i => i.product_vendor_id !== id);
+                    writeCart(items);
+                    renderTable();
+                    updateTotalsTable();
+                });
+            });
+
+            updateTotalsTable();
+            updateCheckoutLink();
+        };
+
+        const updateTotalsTable = () => {
+            const items = readCart();
+            const subtotal = items.reduce((sum, it) => sum + ((it.harga || 0) * (it.qty || 1)), 0);
+            const st = document.getElementById('subtotal-text');
+            const tt = document.getElementById('total-text');
+            if (st) st.textContent = 'Rp ' + formatRupiah(subtotal);
+            if (tt) tt.textContent = 'Rp ' + formatRupiah(subtotal);
+        };
+
         const pay = async () => {
             const raw = readCart();
             if (raw.length === 0) return alert('Keranjang kosong');
@@ -166,6 +249,10 @@
             }
             window.snap.pay(data.snap_token, {
                 onSuccess: function(result) { 
+                    try {
+                        localStorage.removeItem('cartItems');
+                        window.dispatchEvent(new Event('storage'));
+                    } catch (e) {}
                     const code = (result && result.order_id) ? result.order_id : '';
                     window.location.href = '{{ route('payment.success') }}' + (code ? ('?code=' + encodeURIComponent(code)) : '');
                 },
@@ -175,8 +262,18 @@
             });
         };
 
-        document.getElementById('pay-btn').addEventListener('click', pay);
+        document.getElementById('update-cart').addEventListener('click', () => {
+            const items = readCart();
+            document.querySelectorAll('.qty-input').forEach(input => {
+                const id = parseInt(input.dataset.productId, 10);
+                const qty = Math.max(1, parseInt(input.value || '1', 10));
+                const idx = items.findIndex(i => i.product_vendor_id === id);
+                if (idx >= 0) items[idx].qty = qty;
+            });
+            writeCart(items);
+            renderTable();
+        });
 
-        render();
+        renderTable();
     </script>
 @endsection

@@ -216,6 +216,12 @@ class AuthController extends Controller
             $vendorAppointmentsTotalCount = \App\Models\Appointment::where('vendor_id', $currentVendor->id)->count();
         }
 
+        $recentOrders = \App\Models\Order::with('payments')
+            ->where('customer_id', $user->id)
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get();
+
         return view('dashboard.index', [
             'user' => $user,
             'registeredAsExhibitor' => $registeredAsExhibitor,
@@ -228,6 +234,7 @@ class AuthController extends Controller
             'currentVendor' => $currentVendor,
             'eventsAttendedCount' => $eventsAttendedCount,
             'vendorAppointmentsTotalCount' => $vendorAppointmentsTotalCount,
+            'recentOrders' => $recentOrders,
         ]);
     }
 }

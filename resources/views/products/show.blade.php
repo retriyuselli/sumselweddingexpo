@@ -96,18 +96,26 @@
             });
             const data = await res.json();
             if (!data.snap_token) {
-                const err = (data && (data.message || (data.midtrans && (data.midtrans.error_messages || (data.midtrans.body && data.midtrans.body.error_messages))))) || null;
+                const err = (data && (data.message || (data.midtrans && (data.midtrans.error_messages || (data
+                    .midtrans.body && data.midtrans.body.error_messages))))) || null;
                 const msg = Array.isArray(err) ? err.join('\n') : (err || 'Gagal membuat transaksi');
                 alert(msg);
                 return;
             }
             window.snap.pay(data.snap_token, {
                 onSuccess: function(result) {
+                    try {
+                        localStorage.removeItem('cartItems');
+                        window.dispatchEvent(new Event('storage'));
+                    } catch (e) {}
                     const code = (result && result.order_id) ? result.order_id : '';
-                    window.location.href = '{{ route('payment.success') }}' + (code ? ('?code=' + encodeURIComponent(code)) : '');
+                    window.location.href = '{{ route('payment.success') }}' + (code ? ('?code=' +
+                        encodeURIComponent(code)) : '');
                 },
                 onPending: function(result) {},
-                onError: function(result) { alert('Terjadi kesalahan pembayaran'); },
+                onError: function(result) {
+                    alert('Terjadi kesalahan pembayaran');
+                },
                 onClose: function() {}
             });
         });
@@ -156,6 +164,7 @@
                     }
                 }
             }
+
             function setCartButtonState() {
                 const items = JSON.parse(localStorage.getItem('cartItems') || '[]');
                 const exists = items.some(i => i.product_vendor_id === {{ $product->id }});
