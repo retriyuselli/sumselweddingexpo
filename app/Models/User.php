@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Vendor as VendorModel;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
@@ -156,6 +157,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function blogs()
     {
         return $this->hasMany(Blog::class, 'user_id');
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(VendorModel::class);
     }
 
     /**

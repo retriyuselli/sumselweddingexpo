@@ -138,6 +138,7 @@
                     @else
                         <form method="POST" action="{{ route('exhibitor.store') }}" class="mt-4 grid sm:grid-cols-2 gap-4">
                             @csrf
+                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                             <div>
                                 <label for="nama_pendaftar" class="block text-sm text-neutral-600">Nama Pendaftar</label>
                                 <input id="nama_pendaftar" name="nama_pendaftar" type="text"

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\JenisUsaha;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class VendorSeeder extends Seeder
 {
@@ -244,12 +245,19 @@ class VendorSeeder extends Seeder
                     ['email' => $vendor['email']],
                     [
                         'nama_vendor' => $vendor['nama_vendor'],
+                        'slug' => Str::slug($vendor['nama_vendor']),
                         'jenis_usaha_id' => $jenisUsahaId,
                         'alamat' => $vendor['alamat'],
                         'kota' => $vendor['kota'],
                         'no_telepon' => $vendor['no_telepon'],
                         'nama_pic' => $vendor['nama_pic'],
                         'no_wa_pic' => $vendor['no_wa_pic'],
+                        'nama_pendaftar' => $vendor['nama_pic'] ?? null,
+                        'pendamping_tenant' => null,
+                        'paket' => null,
+                        'lokasi_booth' => null,
+                        'harga_jual' => null,
+                        'user_id' => null,
                     ]
                 );
             }

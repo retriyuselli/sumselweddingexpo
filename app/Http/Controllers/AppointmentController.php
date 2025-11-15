@@ -12,14 +12,39 @@ use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+        if (! $user->hasRole('customer') || Vendor::where('user_id', $user->id)->exists()) {
+            return redirect()->route('dashboard')->with('error', 'Janji temu hanya tersedia untuk customer tanpa vendor terdaftar.');
+        }
+
+        $appointments = Appointment::with(['vendor:id,nama_vendor,lokasi_booth,paket', 'expo:id,nama_expo,periode'])
+            ->where('customer_id', $user->id)
+            ->orderByDesc('starts_at')
+            ->paginate(10);
+
+        return view('appointments.index', compact('appointments'));
+    }
+
     public function create()
     {
+        $user = Auth::user();
+        if (! $user->hasRole('customer') || Vendor::where('user_id', $user->id)->exists()) {
+            return redirect()->route('dashboard')->with('error', 'Janji temu hanya bisa dibuat oleh customer yang tidak memiliki vendor.');
+        }
+
         $vendors = Vendor::select('id', 'nama_vendor')->orderBy('nama_vendor')->get();
         return view('appointments.create', compact('vendors'));
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if (! $user->hasRole('customer') || Vendor::where('user_id', $user->id)->exists()) {
+            return redirect()->route('dashboard')->with('error', 'Janji temu hanya bisa dibuat oleh customer yang tidak memiliki vendor.');
+        }
+
         $validated = $request->validate([
             'vendor_id' => ['required', 'exists:vendors,id'],
             'starts_at' => ['required', 'date'],
@@ -67,5 +92,30 @@ class AppointmentController extends Controller
         ]);
 
         return redirect()->route('appointments.create')->with('success', 'Permintaan janji temu dikirim. Menunggu konfirmasi vendor.');
+    }
+
+    public function updateStatus(Request $request, Appointment $appointment)
+    {
+        $user = Auth::user();
+        $vendor = Vendor::where('user_id', $user->id)->first();
+        if (! $vendor || $appointment->vendor_id !== $vendor->id) {
+            return redirect()->route('dashboard')->with('error', 'Anda tidak berhak mengubah status janji temu ini.');
+        }
+
+        $request->validate([
+            'status' => ['required', 'in:confirmed,rejected'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        if ($appointment->status !== 'requested') {
+            return redirect()->back()->with('error', 'Status janji temu tidak dapat diubah.');
+        }
+
+        $appointment->update([
+            'status' => $request->input('status'),
+            'notes' => $request->input('notes'),
+        ]);
+
+        return redirect()->back()->with('success', 'Status janji temu diperbarui.');
     }
 }

@@ -173,11 +173,61 @@ class AuthController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $registeredAsExhibitor = Vendor::where('email', $user->email)->exists();
+        $registeredAsExhibitor = Vendor::where('user_id', $user->id)->exists();
+        $appointmentsCount = \App\Models\Appointment::where('customer_id', $user->id)->count();
+        $nextAppointment = \App\Models\Appointment::with('vendor:id,nama_vendor')
+            ->where('customer_id', $user->id)
+            ->where('starts_at', '>=', now())
+            ->orderBy('starts_at', 'asc')
+            ->first();
+        $isCustomer = $user->hasRole('customer');
+
+        $appointmentsPreview = \App\Models\Appointment::with('vendor:id,nama_vendor')
+            ->where('customer_id', $user->id)
+            ->where('starts_at', '>=', now())
+            ->orderBy('starts_at', 'asc')
+            ->limit(3)
+            ->get();
+
+        if ($appointmentsPreview->isEmpty()) {
+            $appointmentsPreview = \App\Models\Appointment::with('vendor:id,nama_vendor')
+                ->where('customer_id', $user->id)
+                ->orderBy('starts_at', 'desc')
+                ->limit(3)
+                ->get();
+        }
+
+        $currentVendor = Vendor::where('user_id', $user->id)->first();
+        $vendorAppointmentsCount = 0;
+        $vendorAppointmentsPreview = collect();
+        $eventsAttendedCount = 0;
+        $vendorAppointmentsTotalCount = 0;
+        if ($currentVendor) {
+            $vendorAppointmentsCount = \App\Models\Appointment::where('vendor_id', $currentVendor->id)
+                ->where('starts_at', '>=', now())
+                ->count();
+            $vendorAppointmentsPreview = \App\Models\Appointment::with('customer:id,name')
+                ->where('vendor_id', $currentVendor->id)
+                ->where('starts_at', '>=', now())
+                ->orderBy('starts_at', 'asc')
+                ->limit(3)
+                ->get();
+            $eventsAttendedCount = \App\Models\Partisipasi::where('vendor_id', $currentVendor->id)->count();
+            $vendorAppointmentsTotalCount = \App\Models\Appointment::where('vendor_id', $currentVendor->id)->count();
+        }
 
         return view('dashboard.index', [
             'user' => $user,
             'registeredAsExhibitor' => $registeredAsExhibitor,
+            'appointmentsCount' => $appointmentsCount,
+            'nextAppointment' => $nextAppointment,
+            'appointmentsPreview' => $appointmentsPreview,
+            'isCustomer' => $isCustomer,
+            'vendorAppointmentsCount' => $vendorAppointmentsCount,
+            'vendorAppointmentsPreview' => $vendorAppointmentsPreview,
+            'currentVendor' => $currentVendor,
+            'eventsAttendedCount' => $eventsAttendedCount,
+            'vendorAppointmentsTotalCount' => $vendorAppointmentsTotalCount,
         ]);
     }
 }

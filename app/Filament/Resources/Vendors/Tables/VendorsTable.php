@@ -17,48 +17,65 @@ class VendorsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('nama_vendor')
-                    ->searchable()
-                    ->sortable()
-                    ->label('Nama Vendor'),
+        ->columns([
+            TextColumn::make('nama_vendor')
+                ->searchable()
+                ->sortable()
+                ->label('Nama Vendor'),
+                
+            TextColumn::make('user.name')
+                ->label('Customer')
+                ->badge()
+                ->sortable()
+                ->searchable()
+                ->formatStateUsing(fn ($state) => $state ?? '—'),
 
-                TextColumn::make('jenisUsaha.nama_jenis_usaha')
-                    ->sortable()
-                    ->label('Jenis Usaha'),
+            TextColumn::make('jenisUsaha.nama_jenis_usaha')
+                ->sortable()
+                ->label('Jenis Usaha'),
 
-                TextColumn::make('kota')
-                    ->searchable()
-                    ->sortable(),
+            TextColumn::make('kota')
+                ->searchable()
+                ->sortable(),
 
-                TextColumn::make('no_telepon')
-                    ->label('Telepon')
-                    ->toggleable(),
+            TextColumn::make('no_telepon')
+                ->label('Telepon')
+                ->toggleable(),
 
-                TextColumn::make('email')
-                    ->searchable(),
+            TextColumn::make('email')
+                ->searchable(),
 
-                TextColumn::make('nama_pic')
-                    ->label('PIC')
-                    ->toggleable(),
+            TextColumn::make('nama_pic')
+                ->label('PIC')
+                ->toggleable(),
 
-                TextColumn::make('no_wa_pic')
-                    ->label('WA PIC')
-                    ->toggleable(),
+            TextColumn::make('no_wa_pic')
+                ->label('WA PIC')
+                ->toggleable(),
 
-                TextColumn::make('paket')
-                    ->label('Paket')
-                    ->toggleable(),
+            TextColumn::make('paket')
+                ->label('Paket')
+                ->toggleable(),
 
-                TextColumn::make('lokasi_booth')
-                    ->label('Lokasi Booth')
-                    ->toggleable(),
+            TextColumn::make('lokasi_booth')
+                ->label('Lokasi Booth')
+                ->toggleable(),
+
             ])
             ->filters([
                 TrashedFilter::make(),
                 SelectFilter::make('jenis_usaha_id')
                     ->relationship('jenisUsaha', 'nama_jenis_usaha')
                     ->label('Jenis Usaha'),
+                \Filament\Tables\Filters\TernaryFilter::make('has_user')
+                    ->label('Terhubung ke Customer')
+                    ->placeholder('Semua')
+                    ->trueLabel('Hanya yang terhubung')
+                    ->falseLabel('Tanpa customer')
+                    ->queries(
+                        true: fn ($query) => $query->whereHas('user'),
+                        false: fn ($query) => $query->whereDoesntHave('user'),
+                    ),
             ])
             ->recordActions([
                 EditAction::make(),

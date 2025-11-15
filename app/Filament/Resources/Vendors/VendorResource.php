@@ -38,7 +38,7 @@ class VendorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\Vendors\RelationManagers\ProductsRelationManager::class,
         ];
     }
 

@@ -7,6 +7,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PenyelenggaraController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PaymentController;
+use App\Models\ProductVendor;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,11 @@ Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search
 Route::get('/blog/category/{slug}', [BlogController::class, 'category'])->name('blog.category');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
+// Product Detail (public)
+Route::get('/products/{product:slug}', function (ProductVendor $product) {
+    return view('products.show', compact('product'));
+})->name('products.show');
+
 // Halaman Daftar Exhibitor (dengan data dari database)
 Route::get('/exhibitor', [VendorController::class, 'exhibitorPage'])->name('exhibitor');
 // Form Pendaftaran Exhibitor (harus login)
@@ -40,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/vendors', [VendorController::class, 'index'])->name('vendors.index');
     Route::get('/vendors/create', [VendorController::class, 'create'])->name('vendors.create');
     Route::post('/vendors', [VendorController::class, 'store'])->name('vendors.store');
-    Route::get('/vendors/{vendor}', [VendorController::class, 'show'])->name('vendors.show');
+    Route::get('/vendors/{vendor:slug}', [VendorController::class, 'show'])->name('vendors.show');
     Route::get('/vendors/{vendor}/edit', [VendorController::class, 'edit'])->name('vendors.edit');
     Route::put('/vendors/{vendor}', [VendorController::class, 'update'])->name('vendors.update');
     Route::delete('/vendors/{vendor}', [VendorController::class, 'destroy'])->name('vendors.destroy');
@@ -75,6 +82,70 @@ Route::put('/settings', [AuthController::class, 'updateSettings'])->name('settin
 // Dashboard Route
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware(['auth','verified']);
 
+// Checkout (Midtrans Snap)
+Route::view('/checkout', 'checkout')->name('checkout')->middleware(['auth','verified']);
+Route::view('/cart', 'cart')->name('cart')->middleware(['auth','verified']);
+Route::get('/payments/success', function (\Illuminate\Http\Request $request) {
+    $code = (string) $request->query('code', '');
+    $payment = \App\Models\Payment::where('provider', 'midtrans')->where('external_id', $code)->first();
+    return view('payments.success', compact('payment', 'code'));
+})->name('payment.success')->middleware(['auth','verified']);
+Route::get('/payments/status', function (\Illuminate\Http\Request $request) {
+    $code = (string) $request->query('code', '');
+    $payment = \App\Models\Payment::where('provider', 'midtrans')->where('external_id', $code)->first();
+    if (!$payment) {
+        return response()->json(['ok' => false, 'message' => 'Payment not found'], 404);
+    }
+    return response()->json([
+        'ok' => true,
+        'status' => (string) ($payment->status ?? ''),
+        'method' => (string) ($payment->method ?? ''),
+        'amount' => (float) ($payment->amount ?? 0),
+        'paid_at' => $payment->paid_at ? $payment->paid_at->toIso8601String() : null,
+    ]);
+})->name('payments.status')->middleware(['auth','verified']);
+
+Route::post('/payments/refresh', function (\Illuminate\Http\Request $request) {
+    $code = (string) $request->input('code', '');
+    $payment = \App\Models\Payment::where('provider', 'midtrans')->where('external_id', $code)->first();
+    if (!$payment) {
+        return response()->json(['ok' => false, 'message' => 'Payment not found'], 404);
+    }
+    $svc = new \App\Services\MidtransService();
+    $res = $svc->getStatus($code);
+    if (isset($res['error']) && $res['error']) {
+        return response()->json(['ok' => false, 'midtrans' => $res], 400);
+    }
+    $status = (string) ($res['transaction_status'] ?? '');
+    $amount = (float) ($res['gross_amount'] ?? 0);
+    $method = (string) ($res['payment_type'] ?? '');
+    $va = null;
+    if (!empty($res['va_numbers']) && is_array($res['va_numbers'])) {
+        $first = $res['va_numbers'][0] ?? [];
+        $va = $first['va_number'] ?? null;
+    }
+    $payment->update([
+        'transaction_id' => (string) ($res['transaction_id'] ?? ''),
+        'status' => $status,
+        'amount' => $amount,
+        'method' => $method,
+        'va_number' => $va,
+        'paid_at' => in_array($status, ['capture','settlement']) ? now() : null,
+        'raw_response' => $res,
+    ]);
+    $order = $payment->order;
+    if ($order) {
+        if (in_array($status, ['capture','settlement'])) {
+            $order->update(['status' => 'paid']);
+        } elseif ($status === 'pending') {
+            $order->update(['status' => 'pending']);
+        } elseif (in_array($status, ['expire','cancel','failure'])) {
+            $order->update(['status' => 'failed']);
+        }
+    }
+    return response()->json(['ok' => true, 'status' => $status, 'method' => $method, 'amount' => $amount, 'paid_at' => $payment->paid_at ? $payment->paid_at->toIso8601String() : null]);
+})->name('payments.refresh')->middleware(['auth','verified']);
+
 // Email Verification Routes
 Route::get('/email/verify', function () {
     return redirect('/')->with('success', 'Link verifikasi telah dikirim ke email Anda.');
@@ -92,6 +163,12 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 // Appointments (Frontend)
 Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::patch('/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.updateStatus');
+
+    Route::post('/payments/snap', [PaymentController::class, 'createSnap'])->name('payments.snap');
 });
+
+Route::post('/webhooks/midtrans', [PaymentController::class, 'handleWebhook'])->name('webhooks.midtrans');

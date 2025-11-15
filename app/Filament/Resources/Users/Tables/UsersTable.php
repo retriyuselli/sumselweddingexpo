@@ -54,6 +54,13 @@ class UsersTable
                     ->separator(',')
                     ->searchable(),
 
+                TextColumn::make('vendor.nama_vendor')
+                    ->label('Vendor')
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => $state ?? '—'),
+
                 IconColumn::make('email_verified_at')
                     ->label('Verified')
                     ->boolean()
@@ -97,6 +104,16 @@ class UsersTable
                     ->queries(
                         true: fn ($query) => $query->whereNotNull('email_verified_at'),
                         false: fn ($query) => $query->whereNull('email_verified_at'),
+                    ),
+
+                TernaryFilter::make('has_vendor')
+                    ->label('Vendor Terdaftar')
+                    ->placeholder('Semua')
+                    ->trueLabel('Hanya yang punya vendor')
+                    ->falseLabel('Tanpa vendor')
+                    ->queries(
+                        true: fn ($query) => $query->whereHas('vendor'),
+                        false: fn ($query) => $query->whereDoesntHave('vendor'),
                     ),
             ])
             ->recordActions([

@@ -7,11 +7,13 @@ use App\Models\CategoryTenant;
 use App\Models\Expo;
 use App\Models\JenisUsaha;
 use App\Models\Vendor;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
@@ -40,12 +42,20 @@ class VendorController extends Controller
      */
     public function store(Request $request)
     {
-        // Jika user sudah terdaftar sebagai exhibitor, blok pendaftaran ulang (satu user satu vendor)
-        if (Auth::check()) {
+        // Batasi satu user hanya untuk satu vendor
+        if ($request->routeIs('exhibitor.store') && Auth::check()) {
             $alreadyRegistered = Vendor::where('user_id', Auth::id())->exists();
             if ($alreadyRegistered) {
                 return redirect()->route('exhibitor')
                     ->with('error', 'Anda sudah terdaftar sebagai exhibitor. Satu akun hanya bisa mendaftarkan satu vendor.');
+            }
+        } elseif ($request->routeIs('vendors.store') && $request->filled('user_id')) {
+            $targetUserId = (int) $request->input('user_id');
+            $alreadyRegistered = Vendor::where('user_id', $targetUserId)->exists();
+            if ($alreadyRegistered) {
+                return redirect()->back()
+                    ->withErrors(['user_id' => 'User tersebut sudah memiliki vendor.'])
+                    ->withInput();
             }
         }
 
@@ -63,6 +73,7 @@ class VendorController extends Controller
             'paket' => ['required', Rule::enum(CategoryTier::class)],
             'lokasi_booth' => 'nullable|string|max:100',
             'harga_jual' => 'nullable|integer|min:0',
+            'user_id' => 'nullable|integer|exists:users,id|unique:vendors,user_id',
         ]);
 
         if ($validator->fails()) {
@@ -87,14 +98,20 @@ class VendorController extends Controller
             'harga_jual',
         ]);
 
-        // Kaitkan vendor dengan user yang sedang login (jika ada)
-        if (Auth::check()) {
+        $data['slug'] = Str::slug($data['nama_vendor'] ?? '');
+
+        if ($request->routeIs('exhibitor.store') && Auth::check()) {
+            if ($request->filled('user_id') && (int) $request->input('user_id') !== Auth::id()) {
+                return redirect()->back()
+                    ->withErrors(['user_id' => 'User ID tidak sesuai dengan akun yang login.'])
+                    ->withInput();
+            }
+
             $data['user_id'] = Auth::id();
         }
 
         Vendor::create($data);
 
-        // Redirect berbeda untuk frontend exhibitor dan admin
         if ($request->routeIs('exhibitor.store')) {
             return redirect()->route('exhibitor')
                 ->with('success', 'Pendaftaran exhibitor berhasil dikirim! Kami akan segera menghubungi Anda.');
@@ -110,8 +127,13 @@ class VendorController extends Controller
     public function show(Vendor $vendor)
     {
         $vendor->load('jenisUsaha', 'partisipasis');
+        $upcomingAppointments = Appointment::with('customer:id,name')
+            ->where('vendor_id', $vendor->id)
+            ->where('starts_at', '>=', now())
+            ->orderBy('starts_at', 'asc')
+            ->paginate(10);
 
-        return view('vendors.show', compact('vendor'));
+        return view('vendors.show', compact('vendor', 'upcomingAppointments'));
     }
 
     /**
@@ -148,7 +170,9 @@ class VendorController extends Controller
                 ->withInput();
         }
 
-        $vendor->update($request->all());
+        $payload = $request->all();
+        $payload['slug'] = Str::slug($payload['nama_vendor'] ?? $vendor->nama_vendor);
+        $vendor->update($payload);
 
         return redirect()->route('vendors.index')
             ->with('success', 'Vendor berhasil diupdate!');

@@ -10,6 +10,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class VendorForm
 {
@@ -26,7 +28,18 @@ class VendorForm
                             ->maxLength(255)
                             ->label('Nama Vendor/Usaha')
                             ->placeholder('Contoh: Catering Berkah Jaya')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state)))
                             ->columnSpan(1),
+
+                        TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->label('Slug URL')
+                            ->placeholder('nama-vendor')
+                            ->columnSpan(1),
+
 
                         Select::make('jenis_usaha_id')
                             ->relationship('jenisUsaha', 'nama_jenis_usaha')
@@ -35,6 +48,16 @@ class VendorForm
                             ->required()
                             ->label('Jenis Usaha')
                             ->native(false)
+                            ->columnSpan(1),
+
+                        Select::make('user_id')
+                            ->relationship('user', 'name', modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'customer')))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->label('Pemilik Akun (Customer)')
+                            ->helperText('Hubungkan vendor dengan akun customer yang mendaftar')
+                            ->nullable()
                             ->columnSpan(1),
                     ])
                     ->columns(2)
@@ -181,6 +204,7 @@ class VendorForm
                             ->label('Harga Paket')
                             ->disabled()
                             ->dehydrated(true)
+                            ->dehydrateStateUsing(fn ($state) => is_numeric($state) ? (int) $state : (int) preg_replace('/[^0-9]/', '', (string) $state))
                             ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp '.number_format((int) $state, 0, ',', '.'))
                             ->helperText('Otomatis mengikuti kategori pada expo terdekat.')
                             ->columnSpan(1),
