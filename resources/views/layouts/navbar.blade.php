@@ -45,7 +45,7 @@
                             d="M2.25 3h1.386c.51 0 .955.343 1.089.835l.383 1.437M7.5 14.25h9.563a1.5 1.5 0 001.433-1.089L20.25 6.75H5.108m2.392 7.5l-1.5 5.25m10.5-5.25l-1.5 5.25M9.75 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm8.25 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                     </svg>
                     <span id="cart-badge"
-                        class="absolute -top-1 -right-1 sm:top-7 sm:-left-4 z-10 bg-red-600 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                        class="absolute -top-1 -right-6 sm:top-7 sm:left-0 z-5 bg-red-600 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">0</span>
                 </a>
                 <div
                     class="dropdown-menu absolute right-0 mt-2 w-80 rounded-lg border border-neutral-200 bg-white shadow-lg opacity-0 invisible transition-all duration-200">

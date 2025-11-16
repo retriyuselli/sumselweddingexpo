@@ -9,3 +9,16 @@
     --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Mobile-specific styling for cart badge */
+@media (max-width: 640px) {
+    #cart-badge {
+        top: -0.25rem;
+        right: -0.25rem;
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+        border-radius: 9999px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    }
+}
