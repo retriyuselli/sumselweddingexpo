@@ -22,7 +22,7 @@
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                         <div id="empty-state" class="hidden text-sm text-neutral-600">Keranjang kosong.</div>
-                        <table id="cart-table" class="w-full text-sm">
+                        <table id="cart-table" class="w-full text-sm hidden sm:table">
                             <thead>
                                 <tr class="border-b border-neutral-200">
                                     <th class="py-2 text-left">Product</th>
@@ -34,10 +34,11 @@
                             </thead>
                             <tbody id="cart-items"></tbody>
                         </table>
-                        <div class="mt-4 flex items-center gap-2">
+                        <div id="cart-list" class="sm:hidden grid grid-cols-1 gap-3"></div>
+                        <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <input id="coupon" type="text" class="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Coupon code">
-                            <button id="apply-coupon" disabled class="rounded-lg border border-neutral-300 px-3 py-2 text-sm opacity-50 cursor-not-allowed">Apply coupon</button>
-                            <button id="update-cart" class="rounded-lg border border-neutral-300 px-3 py-2 text-sm">Update cart</button>
+                            <button id="apply-coupon" disabled class="w-full sm:w-auto rounded-lg border border-neutral-300 px-3 py-2 text-sm opacity-50 cursor-not-allowed">Apply coupon</button>
+                            <button id="update-cart" class="w-full sm:w-auto rounded-lg border border-neutral-300 px-3 py-2 text-sm">Update cart</button>
                         </div>
                     </div>
                 </div>
@@ -75,17 +76,18 @@
             localStorage.setItem('cartItems', JSON.stringify(items));
             window.dispatchEvent(new Event('storage'));
         };
+        const list = document.getElementById('cart-list');
 
-        const render = () => {
+        const renderList = () => {
             const items = readCart();
             const empty = document.getElementById('empty-state');
-            const tbody = document.getElementById('cart-items');
             if (items.length === 0) {
-                if (tbody) tbody.innerHTML = '';
+                if (list) list.innerHTML = '';
                 empty.classList.remove('hidden');
                 return;
             }
             empty.classList.add('hidden');
+            if (!list) return;
             list.innerHTML = items.map(it => {
                 const img = it.img ?
                     `<img src="${it.img}" alt="${it.nama_produk || ''}" class="w-full h-full object-cover object-center">` :
@@ -114,7 +116,7 @@
                     if (idx >= 0) {
                         items[idx].qty = qty;
                         writeCart(items);
-                        updateTotal();
+                        updateTotalsTable();
                     }
                 });
             });
@@ -123,12 +125,12 @@
                     const id = parseInt(e.target.dataset.productId, 10);
                     const items = readCart().filter(i => i.product_vendor_id !== id);
                     writeCart(items);
-                    render();
-                    updateTotal();
+                    renderList();
+                    updateTotalsTable();
                 });
             });
 
-            updateTotal();
+            updateTotalsTable();
             updateCheckoutLink();
         };
 
@@ -272,8 +274,10 @@
             });
             writeCart(items);
             renderTable();
+            renderList();
         });
 
         renderTable();
+        renderList();
     </script>
 @endsection
