@@ -61,7 +61,7 @@
                     </div>
                 @endif
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
 
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                         <div class="flex items-center justify-between mb-3">
@@ -380,7 +380,7 @@
                         </div>
                         <h3 class="text-sm sm:text-base font-bold mb-2">Need Help?</h3>
                         <p class="text-xs opacity-90 mb-4">Have questions? Our support team is here to help you.</p>
-                        <a href="https://wa.me/6281234567890" target="_blank"
+                        <a href="https://wa.me/6281373183794" target="_blank"
                             class="inline-flex items-center gap-2 text-xs font-medium hover:underline">
                             Contact Support
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

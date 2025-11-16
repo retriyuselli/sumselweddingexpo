@@ -17,14 +17,14 @@ class HomeController extends Controller
         $eventDate = $expo ? $expo->tanggal_mulai->format('Y-m-d H:i:s') : '2026-01-16 00:00:00';
         $eventStart = $expo ? $expo->tanggal_mulai : null;
         $eventEnd = $expo ? $expo->tanggal_selesai : null;
-        $eventLocation = $expo ? $expo->lokasi : 'Grand City Surabaya Convention Hall';
+        $eventLocation = $expo ? $expo->lokasi : 'Palembang Icon';
         $eventName = $expo ? $expo->nama_expo : 'Wedding Expo 2026';
 
         // Ambil data home page dari database
         $home = Home::active()->with('penyelenggara')->first();
         if (! $home) {
             $home = new Home([
-                'tentang_kami' => 'Selamat datang di Sumatra Wedding Expo',
+                'tentang_kami' => 'Selamat datang di Sumatra Selatan Wedding Expo',
                 'hero_subtitle' => 'Temukan Vendor Pernikahan Impian Anda',
                 'highlight_videos' => [],
                 'is_active' => true,

@@ -7,6 +7,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -32,6 +33,37 @@ class HomeForm
                             ->label('Konten Tentang Kami')
                             ->required()
                             ->columnSpanFull(),
+                    ]),
+
+                Section::make('Hero Images')
+                    ->columns(2)
+                    ->schema([
+                        FileUpload::make('hero_bg_image')
+                            ->label('Hero Background')
+                            ->disk('public')
+                            ->directory('home')
+                            ->image()
+                            ->maxSize(4096)
+                            ->helperText('Gambar latar belakang hero. Rekomendasi 1920x1080+')
+                            ->visible(fn () => auth()->user()?->hasRole('super_admin')),
+
+                        FileUpload::make('hero_side_image')
+                            ->label('Hero Side Image')
+                            ->disk('public')
+                            ->directory('home')
+                            ->image()
+                            ->maxSize(4096)
+                            ->helperText('Gambar kartu/overlay di sisi kanan hero')
+                            ->visible(fn () => auth()->user()?->hasRole('super_admin')),
+
+                        FileUpload::make('hero_bg_image_mobile')
+                            ->label('Hero Background (Mobile)')
+                            ->disk('public')
+                            ->directory('home')
+                            ->image()
+                            ->maxSize(4096)
+                            ->helperText('Gambar latar belakang hero khusus mobile')
+                            ->visible(fn () => auth()->user()?->hasRole('super_admin')),
                     ]),
 
                 Section::make('Video Highlight')

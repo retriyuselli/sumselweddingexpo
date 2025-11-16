@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Lokasi Pameran — WeddingExpo')
+@section('title', 'Lokasi Pameran — Sumsel Wedding Expo')
 @push('head')
-    <meta name="description" content="Informasi lokasi pameran WeddingExpo, peta, akses, dan fasilitas.">
+    <meta name="description" content="Informasi lokasi pameran Sumsel Wedding Expo, peta, akses, dan fasilitas.">
 @endpush
 
 @php
@@ -14,8 +14,21 @@
     <!-- Hero: full-bleed image with overlay -->
     <section id="home" class="relative pt-24 md:pt-28">
         <div class="absolute inset-0 -z-10">
-            <img src="https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?q=80&w=1964&auto=format&fit=crop"
-                alt="Hero" class="w-full h-full object-cover" />
+            @php
+                $heroBgDesktop =
+                    ($home->hero_bg_image ?? null) && Storage::disk('public')->exists($home->hero_bg_image)
+                        ? asset('storage/' . $home->hero_bg_image)
+                        : 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?q=80&w=1964&auto=format&fit=crop';
+                $heroBgMobile =
+                    ($home->hero_bg_image_mobile ?? null) &&
+                    Storage::disk('public')->exists($home->hero_bg_image_mobile)
+                        ? asset('storage/' . $home->hero_bg_image_mobile)
+                        : null;
+            @endphp
+            <picture>
+                <source media="(min-width: 768px)" srcset="{{ $heroBgDesktop }}">
+                <img src="{{ $heroBgMobile ?? $heroBgDesktop }}" alt="Hero" class="w-full h-full object-cover" />
+            </picture>
             <div class="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/20"></div>
         </div>
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -27,7 +40,7 @@
                     </div>
                     <h1
                         class="mt-4 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
-                        {{ $eventName ?? 'WeddingExpo 2026' }}</h1>
+                        {{ $eventName ?? 'Sumsel Wedding Expo 2026' }}</h1>
                     <p class="mt-4 max-w-2xl text-xs sm:text-sm text-rose-100">Vendor terbaik, promo eksklusif, talkshow
                         inspiratif, dan
                         aktivitas seru untuk mewujudkan hari istimewa Anda.</p>
@@ -70,9 +83,20 @@
                 </div>
                 <div class="relative hidden md:block">
                     <div class="aspect-4/3 w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/20 bg-white/10">
-                        <div class="h-full w-full bg-cover bg-center opacity-95"
-                            style="background-image:url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1600&auto=format&fit=crop');">
-                        </div>
+                        @php
+                            $heroSide =
+                                ($home->hero_side_image ?? null) &&
+                                Storage::disk('public')->exists($home->hero_side_image)
+                                    ? asset('storage/' . $home->hero_side_image)
+                                    : null;
+                        @endphp
+                        @if ($heroSide)
+                            <img src="{{ $heroSide }}" alt="Hero Side" class="h-full w-full object-cover opacity-95" />
+                        @else
+                            <div class="h-full w-full bg-cover bg-center opacity-95"
+                                style="background-image:url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1600&auto=format&fit=crop');">
+                            </div>
+                        @endif
                     </div>
                     <div
                         class="absolute -bottom-4 -left-4 bg-white/10 backdrop-blur rounded-xl shadow-md ring-1 ring-white/20 px-4 py-3 text-white">
@@ -108,8 +132,8 @@
                             <div class="text-sm text-neutral-600 mt-1">Pengunjung</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-rose-600">5th</div>
-                            <div class="text-sm text-neutral-600 mt-1">Season</div>
+                            <div class="text-3xl font-bold text-rose-600">4th</div>
+                            <div class="text-sm text-neutral-600 mt-1">8 Season</div>
                         </div>
                     </div>
                 </div>
@@ -160,7 +184,7 @@
                 </div>
                 <h2 class="text-2xl sm:text-4xl font-bold mb-4">Mengapa Harus Datang?</h2>
                 <p class="text-lg text-white/90 max-w-2xl mx-auto">Manfaat yang akan Anda dapatkan saat mengunjungi
-                    WeddingExpo</p>
+                    Sumsel Wedding Expo</p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div
@@ -623,8 +647,8 @@
                                 </div>
                             </div>
                             <a href="https://maps.google.com" target="_blank"
-                                class="block w-full text-center px-6 py-3 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition">
-                                Buka di Google Maps
+                                class="block w-full text-center px-6 py-3 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition font-semibold">
+                                <span class="text-sm">Buka di Google Maps</span>
                             </a>
                         </div>
                     </div>
@@ -652,8 +676,8 @@
                 <span class="text-sm font-medium">Daftar Sekarang</span>
             </div>
             <h2 class="text-2xl sm:text-4xl font-bold mb-4">Siap Merencanakan Pernikahan Impian?</h2>
-            <p class="mt-3 text-lg text-neutral-300 max-w-2xl mx-auto">Lihat daftar peserta dan nikmati pengalaman
-                WeddingExpo 2026.</p>
+            <p class="mt-3 text-sm text-neutral-300 max-w-2xl mx-auto">Lihat daftar peserta dan nikmati pengalaman
+                Sumsel Wedding Expo 2026.</p>
             <div class="mt-8 flex justify-center">
                 <a href="#"
                     class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all hover:scale-105 shadow-2xl hover:shadow-rose-500/50 font-semibold">
@@ -662,7 +686,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                     </svg>
-                    Lihat Daftar Peserta
+                    <span class="text-sm">Lihat Daftar Peserta
+                    </span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />

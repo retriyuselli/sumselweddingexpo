@@ -13,6 +13,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class HomeResource extends Resource
 {
@@ -46,5 +47,25 @@ class HomeResource extends Resource
             'create' => CreateHome::route('/create'),
             'edit' => EditHome::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Auth::user()?->hasRole('super_admin') === true;
+    }
+
+    public static function canCreate(): bool
+    {
+        return Auth::user()?->hasRole('super_admin') === true;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return Auth::user()?->hasRole('super_admin') === true;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return Auth::user()?->hasRole('super_admin') === true;
     }
 }

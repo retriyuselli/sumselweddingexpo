@@ -11,6 +11,9 @@ class Home extends Model
         'highlight_videos',
         'hero_subtitle',
         'meta_description',
+        'hero_bg_image',
+        'hero_side_image',
+        'hero_bg_image_mobile',
         'penyelenggara_id',
         'is_active',
     ];
