@@ -47,7 +47,6 @@ class ProductVendorForm
                             ->columnSpanFull(),
 
                         RichEditor::make('deskripsi')
-                            ->rows(4)
                             ->label('Deskripsi')
                             ->columnSpanFull(),
                     ])
@@ -62,6 +61,13 @@ class ProductVendorForm
                             ->minValue(0)
                             ->label('Harga (Rp)')
                             ->placeholder('Contoh: 25000000'),
+
+                        TextInput::make('dp_fixed')
+                            ->numeric()
+                            ->minValue(1)
+                            ->required()
+                            ->label('DP Nominal Tetap (Rp)')
+                            ->helperText('Wajib. Nominal DP yang dibayarkan saat checkout'),
 
                         TextInput::make('stok')
                             ->numeric()

@@ -40,37 +40,91 @@
                     </div>
                     @php
                         $order = $payment?->order;
+                        $totalAmount = (float) ($order?->amount_total ?? 0);
+                        $paidAmount = (float) ($payment?->amount ?? 0);
+                        $remainingAmount = max(0, $totalAmount - $paidAmount);
+                        $isDp = $paidAmount > 0 && $paidAmount < $totalAmount;
+                    @endphp
+                    @if ($isDp)
+                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full bg-amber-100 text-amber-700 text-[10px] sm:text-xs px-2 py-0.5">DP dibayar: Rp {{ number_format($paidAmount, 0, ',', '.') }}</span>
+                            <span class="inline-flex items-center rounded-full bg-blue-100 text-blue-700 text-[10px] sm:text-xs px-2 py-0.5">Sisa: Rp {{ number_format($remainingAmount, 0, ',', '.') }}</span>
+                        </div>
+                    @endif
+                    @if ($isDp)
+                        <div class="mt-3 rounded border border-amber-200 bg-amber-50 p-3 text-xs sm:text-sm text-neutral-800">
+                            <div class="flex items-center justify-between">
+                                <p>Downpayment dibayar</p>
+                                <p class="font-semibold">Rp {{ number_format($paidAmount, 0, ',', '.') }}</p>
+                            </div>
+                            <div class="flex items-center justify-between mt-1">
+                                <p>Sisa pembayaran</p>
+                                <p class="font-semibold">Rp {{ number_format($remainingAmount, 0, ',', '.') }}</p>
+                            </div>
+                            <div class="flex items-center justify-between mt-1">
+                                <p>Total pesanan</p>
+                                <p class="font-semibold">Rp {{ number_format($totalAmount, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    @endif
+                    @php
                         $items = $order?->items ?? collect();
                     @endphp
                     @if ($order && $items->count())
                         <div class="mt-6">
                             <h2 class="text-base font-semibold">Detail Pesanan</h2>
-                            <table class="mt-3 w-full text-sm">
-                                <thead>
-                                    <tr class="border-b border-neutral-200">
-                                        <th class="py-2 text-left">Produk</th>
-                                        <th class="py-2 text-center">Qty</th>
-                                        <th class="py-2 text-right">Harga</th>
-                                        <th class="py-2 text-right">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($items as $it)
-                                        <tr class="border-b border-neutral-100">
-                                            <td class="py-2">{{ $it->name_snapshot }}</td>
-                                            <td class="py-2 text-center">{{ (int) ($it->qty ?? 0) }}</td>
-                                            <td class="py-2 text-right">Rp {{ number_format((float) ($it->price_snapshot ?? 0), 0, ',', '.') }}</td>
-                                            <td class="py-2 text-right">Rp {{ number_format((float) ($it->subtotal ?? 0), 0, ',', '.') }}</td>
+                            <div class="hidden sm:block">
+                                <table class="mt-3 w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-neutral-200">
+                                            <th class="py-2 text-left">Produk</th>
+                                            <th class="py-2 text-center">Qty</th>
+                                            <th class="py-2 text-right">Harga</th>
+                                            <th class="py-2 text-right">Subtotal</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($items as $it)
+                                            <tr class="border-b border-neutral-100">
+                                                <td class="py-2">{{ $it->name_snapshot }}</td>
+                                                <td class="py-2 text-center">{{ (int) ($it->qty ?? 0) }}</td>
+                                                <td class="py-2 text-right">Rp {{ number_format((float) ($it->price_snapshot ?? 0), 0, ',', '.') }}</td>
+                                                <td class="py-2 text-right">Rp {{ number_format((float) ($it->subtotal ?? 0), 0, ',', '.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-t border-neutral-200">
+                                            <td class="py-2 font-semibold" colspan="3">Total</td>
+                                            <td class="py-2 text-right font-semibold">Rp {{ number_format((float) ($order->amount_total ?? 0), 0, ',', '.') }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <div class="block sm:hidden">
+                                <div class="mt-3 space-y-3">
+                                    @foreach ($items as $it)
+                                        <div class="rounded-lg border border-neutral-200 p-3">
+                                            <p class="text-sm font-medium text-neutral-900">{{ $it->name_snapshot }}</p>
+                                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                                <p class="text-xs text-neutral-600">Qty</p>
+                                                <p class="text-xs text-neutral-900 text-right">{{ (int) ($it->qty ?? 0) }}</p>
+                                                <p class="text-xs text-neutral-600">Harga</p>
+                                                <p class="text-xs text-neutral-900 text-right">Rp {{ number_format((float) ($it->price_snapshot ?? 0), 0, ',', '.') }}</p>
+                                                <p class="text-xs text-neutral-600">Subtotal</p>
+                                                <p class="text-xs text-neutral-900 text-right">Rp {{ number_format((float) ($it->subtotal ?? 0), 0, ',', '.') }}</p>
+                                            </div>
+                                        </div>
                                     @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="border-t border-neutral-200">
-                                        <td class="py-2 font-semibold" colspan="3">Total</td>
-                                        <td class="py-2 text-right font-semibold">Rp {{ number_format((float) ($order->amount_total ?? 0), 0, ',', '.') }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    <div class="rounded-lg border border-neutral-200 p-3">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-sm font-semibold">Total</p>
+                                            <p class="text-sm font-semibold">Rp {{ number_format((float) ($order->amount_total ?? 0), 0, ',', '.') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-neutral-600">Nama</p>
@@ -89,6 +143,10 @@
                     @endif
                     <div class="mt-6 flex items-center gap-3">
                         <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm hover:bg-neutral-800">Kembali ke Dashboard</a>
+                        @if (!empty($code))
+                            @php $isSettlement = strtolower((string)($payment?->status ?? '')) === 'settlement'; @endphp
+                            <a id="download-link" href="{{ route('payments.receipt') }}?code={{ urlencode($code) }}" class="px-4 py-2 rounded-lg border border-neutral-300 text-neutral-700 text-sm hover:bg-neutral-50 {{ $isSettlement ? '' : 'hidden' }}">Download Bukti</a>
+                        @endif
                         <a href="{{ route('cart') }}" class="px-4 py-2 rounded-lg border border-neutral-300 text-neutral-700 text-sm hover:bg-neutral-50">Lihat Keranjang</a>
                     </div>
                 </div>
@@ -110,6 +168,14 @@
                 document.getElementById('amount-text').textContent = 'Rp ' + formatRupiah(parseFloat(data.amount || 0));
                 const t = data.paid_at ? new Date(data.paid_at) : null;
                 document.getElementById('time-text').textContent = t ? t.toLocaleString('id-ID', { hour12: false }) : '—';
+                const dl = document.getElementById('download-link');
+                if (dl) {
+                    if ((data.status || '').toLowerCase() === 'settlement') {
+                        dl.classList.remove('hidden');
+                    } else {
+                        dl.classList.add('hidden');
+                    }
+                }
                 if ((data.status || '').toLowerCase() === 'pending') {
                     setTimeout(refreshStatus, 3000);
                 }

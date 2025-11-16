@@ -34,6 +34,7 @@ class PaymentController extends Controller
             'billing.phone' => ['required','string','max:50'],
             'billing.email' => ['required','email','max:255'],
             'billing.notes' => ['nullable','string'],
+            'payment_mode' => ['nullable','in:dp,full'],
         ]);
 
         $user = Auth::user();
@@ -105,20 +106,56 @@ class PaymentController extends Controller
             'amount_total' => $subtotal,
         ]);
 
+        $dpFixedGlobal = (float) (config('services.midtrans.dp_fixed') ?? 0);
+        $mode = (string) ($data['payment_mode'] ?? '');
+        $hasItemDp = collect($data['items'])->some(function ($it) use ($products) {
+            $p = $products[$it['product_vendor_id']];
+            return ((int) ($p->dp_fixed ?? 0)) > 0;
+        });
+        $dpApplicable = ($dpFixedGlobal > 0) || $hasItemDp;
+        $useDp = $dpApplicable && ($mode !== 'full');
+        $dpAmount = $subtotal;
+        if ($useDp) {
+            $dpAmount = 0;
+            foreach ($data['items'] as $it) {
+                $p = $products[$it['product_vendor_id']];
+                $price = (int) round((float) ($p->harga ?? 0));
+                $qty = (int) $it['qty'];
+                $line = $price * $qty;
+                $dpFix = (int) ($p->dp_fixed ?? 0);
+                if ($dpFix > 0) {
+                    $dpAmount += min($line, $dpFix * $qty);
+                }
+            }
+            if ($dpAmount <= 0) {
+                if ($dpFixedGlobal > 0) {
+                    $dpAmount = min($subtotal, (int) round($dpFixedGlobal));
+                }
+                if ($dpAmount <= 0) $dpAmount = 1;
+            }
+        }
+
         $payment = Payment::create([
             'order_id' => $order->id,
             'provider' => 'midtrans',
             'external_id' => $orderCode,
             'status' => 'pending',
-            'amount' => $subtotal,
+            'amount' => $dpAmount,
         ]);
 
         $payload = [
             'transaction_details' => [
                 'order_id' => $orderCode,
-                'gross_amount' => (int) round($subtotal),
+                'gross_amount' => (int) round($dpAmount),
             ],
-            'item_details' => $itemDetails,
+            'item_details' => (!$useDp) ? $itemDetails : [
+                [
+                    'id' => 'dp',
+                    'price' => (int) round($dpAmount),
+                    'quantity' => 1,
+                    'name' => 'Downpayment',
+                ],
+            ],
         ];
         // Do not set merchant_id unless using Midtrans multiple merchants feature
 
@@ -212,7 +249,10 @@ class PaymentController extends Controller
 
         $order = $payment->order;
         if (in_array($status, ['capture','settlement'])) {
-            $order->update(['status' => 'paid']);
+            $paidAmount = (float) $amount;
+            $totalAmount = (float) ($order->amount_total ?? 0);
+            $isDpPaid = $paidAmount > 0 && $paidAmount < $totalAmount;
+            $order->update(['status' => $isDpPaid ? 'dp_paid' : 'paid']);
         } elseif ($status === 'pending') {
             $order->update(['status' => 'pending']);
         } elseif (in_array($status, ['expire','cancel','failure'])) {

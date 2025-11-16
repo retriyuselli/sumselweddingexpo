@@ -51,6 +51,11 @@ class ProductsRelationManager extends RelationManager
                     ->label('Harga (Rp)')
                     ->numeric()
                     ->minValue(0),
+                TextInput::make('dp_fixed')
+                    ->label('DP Nominal (Rp)')
+                    ->numeric()
+                    ->minValue(1)
+                    ->required(),
                 TextInput::make('stok')
                     ->label('Stok')
                     ->numeric()

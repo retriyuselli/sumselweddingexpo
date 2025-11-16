@@ -33,13 +33,14 @@ class OrdersTable
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'success' => 'paid',
+                        'success' => fn ($state) => in_array($state, ['paid','dp_paid']),
                         'warning' => 'pending',
                         'danger' => fn ($state) => in_array($state, ['failed','cancelled','expire']),
                     ])
                     ->formatStateUsing(function ($state) {
                         return match ((string) $state) {
                             'paid' => 'Paid',
+                            'dp_paid' => 'DP Paid',
                             'pending' => 'Pending',
                             'failed' => 'Failed',
                             'cancelled' => 'Cancelled',

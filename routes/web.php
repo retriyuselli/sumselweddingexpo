@@ -146,6 +146,21 @@ Route::post('/payments/refresh', function (\Illuminate\Http\Request $request) {
     return response()->json(['ok' => true, 'status' => $status, 'method' => $method, 'amount' => $amount, 'paid_at' => $payment->paid_at ? $payment->paid_at->toIso8601String() : null]);
 })->name('payments.refresh')->middleware(['auth','verified']);
 
+Route::get('/payments/receipt', function (\Illuminate\Http\Request $request) {
+    $code = (string) $request->query('code', '');
+    $payment = \App\Models\Payment::with(['order.items.vendor'])->where('provider', 'midtrans')->where('external_id', $code)->first();
+    if (!$payment) {
+        abort(404);
+    }
+    $order = $payment->order;
+    $user = auth()->user();
+    if ($user && $order && $order->customer_id && $order->customer_id !== $user->id) {
+        abort(403);
+    }
+    $org = optional(\App\Models\Home::active()->with('penyelenggara')->first())->penyelenggara;
+    return view('payments.receipt', ['payment' => $payment, 'code' => $code, 'penyelenggara' => $org]);
+})->name('payments.receipt')->middleware(['auth','verified']);
+
 // Email Verification Routes
 Route::get('/email/verify', function () {
     return redirect('/')->with('success', 'Link verifikasi telah dikirim ke email Anda.');

@@ -15,7 +15,11 @@
             ? 'https://app.midtrans.com/snap/snap.js'
             : 'https://app.sandbox.midtrans.com/snap/snap.js';
         $clientKey = config('services.midtrans.client_key');
-        $lastOrder = auth()->check() ? \App\Models\Order::where('customer_id', auth()->id())->orderByDesc('id')->first() : null;
+        $lastOrder = auth()->check()
+            ? \App\Models\Order::where('customer_id', auth()->id())
+                ->orderByDesc('id')
+                ->first()
+            : null;
         $lastCountry = $lastOrder ? ($lastOrder->billing_country ?: 'Indonesia') : 'Indonesia';
         $lastProvince = $lastOrder ? ($lastOrder->billing_province ?: 'Sumatera Selatan') : 'Sumatera Selatan';
     @endphp
@@ -36,59 +40,84 @@
                         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-sm">First name *</label>
-                                <input id="bill-first" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Nama depan" value="{{ $lastOrder->billing_first_name ?? '' }}">
+                                <input id="bill-first" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    placeholder="Nama depan" value="{{ $lastOrder->billing_first_name ?? '' }}">
                             </div>
                             <div>
                                 <label class="text-sm">Last name *</label>
-                                <input id="bill-last" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Nama belakang" value="{{ $lastOrder->billing_last_name ?? '' }}">
+                                <input id="bill-last" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    placeholder="Nama belakang" value="{{ $lastOrder->billing_last_name ?? '' }}">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-sm">Company name (optional)</label>
-                                <input id="bill-company" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Perusahaan" value="{{ $lastOrder->billing_company ?? '' }}">
+                                <input id="bill-company" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    placeholder="Perusahaan" value="{{ $lastOrder->billing_company ?? '' }}">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-sm">Country / Region *</label>
-                                <select id="bill-country" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
-                                    <option value="{{ $lastCountry }}" selected>{{ (strtoupper($lastCountry) === 'IDN' || strtoupper($lastCountry) === 'ID') ? 'Indonesia' : $lastCountry }}</option>
+                                <select id="bill-country"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
+                                    <option value="{{ $lastCountry }}" selected>
+                                        {{ strtoupper($lastCountry) === 'IDN' || strtoupper($lastCountry) === 'ID' ? 'Indonesia' : $lastCountry }}
+                                    </option>
                                 </select>
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-sm">Street address *</label>
-                                <input id="bill-street" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Nama jalan dan nomor rumah" value="{{ $lastOrder->billing_street ?? '' }}">
-                                <input id="bill-apt" type="text" class="mt-2 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Apartemen, suite, unit (opsional)" value="{{ $lastOrder->billing_apt ?? '' }}">
+                                <input id="bill-street" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    placeholder="Nama jalan dan nomor rumah" value="{{ $lastOrder->billing_street ?? '' }}">
+                                <input id="bill-apt" type="text"
+                                    class="mt-2 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    placeholder="Apartemen, suite, unit (opsional)"
+                                    value="{{ $lastOrder->billing_apt ?? '' }}">
                             </div>
                             <div>
                                 <label class="text-sm">Town / City *</label>
-                                <input id="bill-city" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" value="{{ $lastOrder->billing_city ?? '' }}">
+                                <input id="bill-city" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    value="{{ $lastOrder->billing_city ?? '' }}">
                             </div>
                             <div>
                                 <label class="text-sm">Province *</label>
-                                <select id="bill-province" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
+                                <select id="bill-province"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
                                     <option value="{{ $lastProvince }}" selected>{{ $lastProvince }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-sm">Postcode / ZIP *</label>
-                                <input id="bill-postcode" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" value="{{ $lastOrder->billing_postcode ?? '' }}">
+                                <input id="bill-postcode" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    value="{{ $lastOrder->billing_postcode ?? '' }}">
                             </div>
                             <div>
                                 <label class="text-sm">Phone *</label>
-                                <input id="bill-phone" type="text" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" value="{{ $lastOrder->billing_phone ?? '' }}">
+                                <input id="bill-phone" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    value="{{ $lastOrder->billing_phone ?? '' }}">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-sm">Email address *</label>
-                                <input id="bill-email" type="email" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" value="{{ $lastOrder->billing_email ?? '' }}">
+                                <input id="bill-email" type="email"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    value="{{ $lastOrder->billing_email ?? '' }}">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="inline-flex items-center gap-2 text-sm opacity-60 cursor-not-allowed">
                                     <input id="ship-diff" type="checkbox" class="rounded" disabled>
                                     Ship to a different address?
                                 </label>
-                                <p class="mt-1 text-[12px] text-neutral-600">Produk berupa jasa, pengiriman fisik tidak diperlukan.</p>
+                                <p class="mt-1 text-[12px] text-neutral-600">Produk berupa jasa, pengiriman fisik tidak
+                                    diperlukan.</p>
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-sm">Order notes (optional)</label>
-                                <textarea id="order-notes" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" rows="4" placeholder="Catatan untuk pesanan">{{ $lastOrder->notes ?? '' }}</textarea>
+                                <textarea id="order-notes" class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" rows="4"
+                                    placeholder="Catatan untuk pesanan">{{ $lastOrder->notes ?? '' }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -108,10 +137,20 @@
                             <tbody id="order-items"></tbody>
                             <tfoot>
                                 <tr class="border-t border-neutral-200">
-                                    <td class="py-2">Subtotal</td>
-                                    <td id="subtotal-text" class="py-2 text-right">Rp 0</td>
+                                    <td class="py-2 text-xs sm:text-sm">Subtotal</td>
+                                    <td id="subtotal-text" class="py-2 text-right text-xs sm:text-sm">Rp 0</td>
                                 </tr>
-                                
+
+                                <tr class="border-t border-neutral-200">
+                                    <td class="py-2 text-xs sm:text-sm">Downpayment dibayar</td>
+                                    <td id="dp-text" class="py-2 text-right text-xs sm:text-sm">Rp 0</td>
+                                </tr>
+
+                                <tr class="border-t border-neutral-200">
+                                    <td class="py-2 text-xs sm:text-sm">Sisa pembayaran</td>
+                                    <td id="remaining-text" class="py-2 text-right text-xs sm:text-sm">Rp 0</td>
+                                </tr>
+
                                 <tr class="border-t border-neutral-200">
                                     <td class="py-2 font-semibold">Total</td>
                                     <td id="total-text" class="py-2 text-right font-semibold">Rp 0</td>
@@ -119,14 +158,40 @@
                             </tfoot>
                         </table>
 
-                        <div class="mt-4 flex items-center gap-2">
-                            <input id="coupon" type="text" class="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Coupon code">
-                            <button id="apply-coupon" class="rounded-lg border border-neutral-300 px-3 py-2 text-sm">Apply coupon</button>
+                        <div class="mt-4 flex items-center gap-2 flex-wrap">
+                            <input id="coupon" type="text"
+                                class="w-full md:w-2/3 min-w-0 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                placeholder="Coupon code">
+                            <button id="apply-coupon"
+                                class="shrink-0 rounded-lg border border-neutral-300 px-3 py-2 text-sm">Apply
+                                coupon</button>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-xs text-neutral-600">Metode pembayaran</p>
+                                <div class="mt-2 flex items-center gap-4">
+                                    <label class="flex items-center gap-2 text-xs sm:text-sm">
+                                        <input type="radio" name="payment-mode" id="mode-dp" value="dp" class="rounded" />
+                                        Bayar DP
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs sm:text-sm">
+                                        <input type="radio" name="payment-mode" id="mode-full" value="full" class="rounded" />
+                                        Bayar Lunas
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="payment-info" class="rounded border border-blue-100 bg-blue-50 p-3 text-xs text-neutral-700">
+                                Sistem menggunakan Downpayment (DP). Nominal yang dibayarkan sekarang adalah DP, sedangkan sisa pembayaran dapat diselesaikan sesuai ketentuan.
+                            </div>
                         </div>
                         <div class="mt-4 rounded border border-blue-100 bg-blue-50 p-3 text-xs text-neutral-700">
-                            Sorry, it seems that there are no available payment methods. Please contact us if you require assistance or wish to make alternate arrangements.
+                            Sistem menggunakan Downpayment (DP). Nominal yang dibayarkan sekarang adalah DP, sedangkan sisa
+                            pembayaran dapat diselesaikan sesuai ketentuan.
                         </div>
-                        <button id="pay-btn" class="mt-4 w-full rounded-lg bg-green-600 text-white text-sm px-4 py-2 hover:bg-green-700">Place order</button>
+                        <button id="pay-btn"
+                            class="mt-4 w-full rounded-lg bg-green-600 text-white text-sm px-4 py-2 hover:bg-green-700">Place
+                            order</button>
                     </div>
                 </div>
             </div>
@@ -136,8 +201,12 @@
     <script src="{{ $snapBase }}" data-client-key="{{ $clientKey }}"></script>
     <script>
         const csrfToken = '{{ csrf_token() }}';
+        const dpFixedGlobal = {{ (float) (config('services.midtrans.dp_fixed') ?? 0) }};
         const readCart = () => JSON.parse(localStorage.getItem('cartItems') || '[]');
         const formatRupiah = (n) => new Intl.NumberFormat('id-ID').format(n || 0);
+        const dpApplicable = (dpFixedGlobal > 0) || readCart().some(it => (parseInt(it.dp_fixed || '0', 10) > 0));
+        let paymentMode = dpApplicable ? 'dp' : 'full';
+
         function renderSummary() {
             const items = readCart();
             const tbody = document.getElementById('order-items');
@@ -156,20 +225,63 @@
             tbody.innerHTML = items.map(it => {
                 const name = (it.nama_produk || 'Produk') + ' × ' + (it.qty || 1);
                 const sub = (it.harga || 0) * (it.qty || 1);
-                return `<tr><td class="py-2">${name}</td><td class="py-2 text-right">Rp ${formatRupiah(sub)}</td></tr>`;
+                return `<tr><td class="py-2 text-xs sm:text-sm">${name}</td><td class="py-2 text-right text-xs sm:text-sm">Rp ${formatRupiah(sub)}</td></tr>`;
             }).join('');
             const subtotal = items.reduce((s, it) => s + ((it.harga || 0) * (it.qty || 1)), 0);
+            const dpAmountPerItem = items.reduce((sum, it) => {
+                const priceLine = (it.harga || 0) * (it.qty || 1);
+                const dpFix = parseInt(it.dp_fixed || '0', 10);
+                if (dpFix > 0) return sum + Math.min(priceLine, dpFix * (it.qty || 1));
+                return sum;
+            }, 0);
+            const dpAmountGlobal = dpFixedGlobal > 0 ? Math.min(subtotal, Math.round(dpFixedGlobal)) : subtotal;
+            const dpAmountCalc = (dpAmountPerItem > 0) ? dpAmountPerItem : dpAmountGlobal;
+            const dpAmount = paymentMode === 'dp' ? dpAmountCalc : subtotal;
+            const remaining = paymentMode === 'dp' ? Math.max(0, subtotal - dpAmount) : 0;
             document.getElementById('subtotal-text').textContent = 'Rp ' + formatRupiah(subtotal);
-            document.getElementById('total-text').textContent = 'Rp ' + formatRupiah(subtotal);
+            document.getElementById('dp-text').textContent = 'Rp ' + formatRupiah(dpAmount);
+            document.getElementById('remaining-text').textContent = 'Rp ' + formatRupiah(remaining);
+            document.getElementById('total-text').textContent = 'Rp ' + formatRupiah(dpAmount);
         }
         renderSummary();
         const payBtn = document.getElementById('pay-btn');
+
+        const modeDp = document.getElementById('mode-dp');
+        const modeFull = document.getElementById('mode-full');
+        const infoBox = document.getElementById('payment-info');
+        if (modeDp && modeFull) {
+            if (dpApplicable) {
+                modeDp.checked = true;
+                infoBox.textContent = 'Anda memilih bayar DP. Nominal yang ditagihkan sekarang adalah DP; sisa pembayaran dapat diselesaikan kemudian.';
+            } else {
+                modeFull.checked = true;
+                infoBox.textContent = 'DP tidak tersedia. Pembayaran akan ditagihkan penuh.';
+            }
+            modeDp.addEventListener('change', () => {
+                paymentMode = 'dp';
+                infoBox.textContent = 'Anda memilih bayar DP. Nominal yang ditagihkan sekarang adalah DP; sisa pembayaran dapat diselesaikan kemudian.';
+                renderSummary();
+            });
+            modeFull.addEventListener('change', () => {
+                paymentMode = 'full';
+                infoBox.textContent = 'Anda memilih bayar lunas. Nominal yang ditagihkan adalah total pesanan.';
+                renderSummary();
+            });
+        }
+
         function validateBilling() {
-            const required = ['bill-first','bill-last','bill-country','bill-street','bill-city','bill-province','bill-postcode','bill-phone','bill-email'];
-            const missing = required.filter(id => !document.getElementById(id) || !document.getElementById(id).value.trim());
-            if (missing.length) { alert('Lengkapi data Billing details'); return false; }
+            const required = ['bill-first', 'bill-last', 'bill-country', 'bill-street', 'bill-city', 'bill-province',
+                'bill-postcode', 'bill-phone', 'bill-email'
+            ];
+            const missing = required.filter(id => !document.getElementById(id) || !document.getElementById(id).value
+                .trim());
+            if (missing.length) {
+                alert('Lengkapi data Billing details');
+                return false;
+            }
             return true;
         }
+
         function collectBilling() {
             return {
                 first_name: document.getElementById('bill-first').value.trim(),
@@ -190,7 +302,10 @@
             if (!validateBilling()) return;
             const items = [];
             const savedCart = readCart();
-            savedCart.forEach(it => items.push({ product_vendor_id: it.product_vendor_id, qty: it.qty || 1 }));
+            savedCart.forEach(it => items.push({
+                product_vendor_id: it.product_vendor_id,
+                qty: it.qty || 1
+            }));
             if (items.length === 0) {
                 alert('Pilih minimal satu produk');
                 return;
@@ -206,11 +321,13 @@
                     items,
                     vendor_id: {{ $vendor ? $vendor->id : 'null' }},
                     billing: collectBilling(),
+                    payment_mode: paymentMode,
                 })
             });
             const data = await res.json();
             if (!data.snap_token) {
-                const err = (data && (data.message || (data.midtrans && (data.midtrans.error_messages || (data.midtrans.body && data.midtrans.body.error_messages))))) || null;
+                const err = (data && (data.message || (data.midtrans && (data.midtrans.error_messages || (data
+                    .midtrans.body && data.midtrans.body.error_messages))))) || null;
                 const msg = Array.isArray(err) ? err.join('\n') : (err || 'Gagal membuat transaksi');
                 console.error('Midtrans error:', data);
                 alert(msg);
@@ -223,11 +340,19 @@
                         window.dispatchEvent(new Event('storage'));
                     } catch (e) {}
                     const code = (result && result.order_id) ? result.order_id : '';
-                    window.location.href = '{{ route('payment.success') }}' + (code ? ('?code=' + encodeURIComponent(code)) : '');
+                    window.location.href = '{{ route('payment.success') }}' + (code ? ('?code=' +
+                        encodeURIComponent(code)) : '');
                 },
-                onPending: function(result) { console.log(result); },
-                onError: function(result) { console.error(result); alert('Terjadi kesalahan pembayaran'); },
-                onClose: function() { console.log('Popup ditutup'); }
+                onPending: function(result) {
+                    console.log(result);
+                },
+                onError: function(result) {
+                    console.error(result);
+                    alert('Terjadi kesalahan pembayaran');
+                },
+                onClose: function() {
+                    console.log('Popup ditutup');
+                }
             });
         });
     </script>

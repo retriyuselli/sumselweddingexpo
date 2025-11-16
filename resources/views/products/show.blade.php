@@ -135,7 +135,8 @@
                     harga: {{ (int) ($product->harga ?? 0) }},
                     img: @json($img ?? null),
                     slug: @json($product->slug ?? ''),
-                    vendor_nama: @json($product->vendor->nama_vendor ?? '')
+                    vendor_nama: @json($product->vendor->nama_vendor ?? ''),
+                    dp_fixed: {{ (int) ($product->dp_fixed ?? 0) }}
                 });
             }
             localStorage.setItem('cartItems', JSON.stringify(items));

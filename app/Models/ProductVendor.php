@@ -15,6 +15,7 @@ class ProductVendor extends Model
         'nama_produk',
         'slug',
         'harga',
+        'dp_fixed',
         'deskripsi',
         'foto_url',
         'stok',
@@ -23,6 +24,7 @@ class ProductVendor extends Model
 
     protected $casts = [
         'harga' => 'decimal:2',
+        'dp_fixed' => 'integer',
         'is_active' => 'boolean',
     ];
 
