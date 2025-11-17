@@ -303,21 +303,22 @@
             <div class="relative flex items-center justify-center gap-4">
                 <!-- Left Arrow Button -->
                 <button id="scrollLeft"
-                    class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
+                    class="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="w-6 h-6">
+                        stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
                 </button>
 
                 <!-- Scrollable Container -->
-                <div id="sponsorScroll" class="flex-1 flex overflow-x-auto snap-x snap-mandatory gap-2 scroll-smooth"
+                <div id="sponsorScroll"
+                    class="flex-1 flex overflow-x-auto snap-x snap-mandatory gap-1 sm:gap-2 scroll-smooth"
                     style="scrollbar-width: none;">
                     @forelse($sponsors as $sponsor)
                         @if ($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
-                            <div class="shrink-0 w-40 snap-center">
+                            <div class="shrink-0 w-32 sm:w-40 snap-center">
                                 <div
-                                    class="relative w-full h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
+                                    class="relative w-full h-24 sm:h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
                                     <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}"
                                         class="w-full h-full object-contain hover:brightness-110 transition-all">
                                 </div>
@@ -332,9 +333,9 @@
 
                 <!-- Right Arrow Button -->
                 <button id="scrollRight"
-                    class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
+                    class="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-rose-600 text-white hover:bg-rose-700 transition-all duration-300 hover:scale-110 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="w-6 h-6">
+                        stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5L15.75 12l-7.5 7.5" />
                     </svg>
                 </button>
