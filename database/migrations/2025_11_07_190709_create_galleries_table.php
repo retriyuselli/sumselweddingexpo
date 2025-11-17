@@ -15,21 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('expo_id')->constrained('expos')->onDelete('cascade');
             $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('image_path');
-            $table->string('photographer_name')->nullable();
-            $table->date('photo_date')->nullable();
-            $table->integer('display_order')->default(0);
-            $table->boolean('is_featured')->default(false);
-            $table->boolean('is_published')->default(true);
-            $table->json('tags')->nullable();
+            $table->json('image_path')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->index('expo_id');
-            $table->index('is_featured');
-            $table->index('is_published');
-            $table->index('display_order');
         });
     }
 

@@ -36,8 +36,7 @@ class GalleriesTable
                     ->label('Title')
                     ->searchable()
                     ->sortable()
-                    ->weight('medium')
-                    ->description(fn ($record) => $record->description ? substr($record->description, 0, 50).'...' : null),
+                    ->weight('medium'),
 
                 TextColumn::make('expo.nama_expo')
                     ->label('Event')
@@ -46,39 +45,10 @@ class GalleriesTable
                     ->badge()
                     ->color('info'),
 
-                TextColumn::make('photographer_name')
-                    ->label('Photographer')
-                    ->searchable()
-                    ->toggleable(),
-
-                TextColumn::make('photo_date')
-                    ->label('Date')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->toggleable(),
-
-                IconColumn::make('is_featured')
-                    ->label('Featured')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-star')
-                    ->falseIcon('heroicon-o-star')
-                    ->trueColor('warning')
-                    ->falseColor('gray')
-                    ->alignCenter(),
-
-                IconColumn::make('is_published')
-                    ->label('Published')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger')
-                    ->alignCenter(),
-
-                TextColumn::make('display_order')
-                    ->label('Order')
-                    ->sortable()
-                    ->toggleable()
+                TextColumn::make('photos')
+                    ->label('Photos')
+                    ->getStateUsing(fn ($record) => is_array($record->image_path) ? count($record->image_path) : 0)
+                    ->badge()
                     ->alignCenter(),
 
                 TextColumn::make('created_at')
@@ -94,18 +64,6 @@ class GalleriesTable
                     ->searchable()
                     ->preload(),
 
-                TernaryFilter::make('is_featured')
-                    ->label('Featured')
-                    ->placeholder('All photos')
-                    ->trueLabel('Featured only')
-                    ->falseLabel('Not featured'),
-
-                TernaryFilter::make('is_published')
-                    ->label('Published')
-                    ->placeholder('All photos')
-                    ->trueLabel('Published only')
-                    ->falseLabel('Unpublished only'),
-
                 TrashedFilter::make(),
             ])
             ->recordActions([
@@ -119,7 +77,7 @@ class GalleriesTable
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('display_order', 'asc')
+            ->defaultSort('created_at', 'desc')
             ->striped()
             ->persistFiltersInSession()
             ->persistSortInSession();

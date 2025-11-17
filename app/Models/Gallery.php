@@ -14,21 +14,10 @@ class Gallery extends Model
     protected $fillable = [
         'expo_id',
         'title',
-        'description',
         'image_path',
-        'photographer_name',
-        'photo_date',
-        'display_order',
-        'is_featured',
-        'is_published',
-        'tags',
     ];
 
     protected $casts = [
-        'photo_date' => 'date',
-        'is_featured' => 'boolean',
-        'is_published' => 'boolean',
-        'tags' => 'array',
         'image_path' => 'array',
     ];
 
@@ -72,30 +61,9 @@ class Gallery extends Model
         return $urls[0] ?? asset('images/placeholder-gallery.jpg');
     }
 
-    // Legacy accessor for backward compatibility
-    public function getImageUrlAttribute(): string
-    {
-        return $this->primary_image_url;
-    }
-
     // Scopes
-    public function scopePublished($query)
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeFeatured($query)
-    {
-        return $query->where('is_featured', true);
-    }
-
     public function scopeForExpo($query, $expoId)
     {
         return $query->where('expo_id', $expoId);
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('display_order', 'asc')->orderBy('created_at', 'desc');
     }
 }

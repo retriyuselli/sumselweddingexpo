@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
+use App\Models\Gallery;
 use App\Http\Controllers\PenyelenggaraController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AppointmentController;
@@ -18,8 +19,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/lokasi', 'lokasi')->name('lokasi');
 // Halaman Penyelenggara (via controller)
 Route::get('/penyelenggara', [PenyelenggaraController::class, 'index'])->name('penyelenggara');
-// Halaman Gallery
-Route::view('/gallery', 'gallery')->name('gallery');
+// Halaman Gallery (menampilkan image_path dari model Gallery)
+Route::get('/gallery', function () {
+    $galleries = Gallery::orderBy('created_at', 'desc')->get();
+    return view('gallery', compact('galleries'));
+})->name('gallery');
 // Halaman Partners
 Route::view('/partners', 'partners')->name('partners');
 // Halaman Jadwal
