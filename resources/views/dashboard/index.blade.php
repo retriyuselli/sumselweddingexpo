@@ -160,6 +160,21 @@
                                 </div>
                             </a>
 
+                            @if (($registeredAsExhibitor ?? false) && !empty($currentVendor))
+                                <a href="{{ route('vendors.show', $currentVendor->slug) }}#add-product-form"
+                                    class="flex items-center gap-3 p-4 border border-neutral-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition group">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xs sm:text-sm font-semibold text-neutral-900">Tambah Produk Vendor</h3>
+                                        <p class="text-xs text-neutral-600">Buat produk baru untuk vendor Anda</p>
+                                    </div>
+                                </a>
+                            @endif
+
                             @if (($isCustomer ?? false) && !($registeredAsExhibitor ?? false))
                                 <a href="{{ route('appointments.create') }}"
                                     class="flex items-center gap-3 p-4 border border-neutral-200 rounded-lg hover:border-rose-300 hover:bg-rose-50 transition group">

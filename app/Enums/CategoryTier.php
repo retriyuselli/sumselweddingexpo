@@ -6,12 +6,14 @@ enum CategoryTier: string
 {
     case Silver = 'silver';
     case Gold = 'gold';
+    case Platinum = 'platinum';
 
     public function label(): string
     {
         return match ($this) {
             self::Silver => 'Silver',
             self::Gold => 'Gold',
+            self::Platinum => 'Platinum',
         };
     }
 
@@ -20,6 +22,7 @@ enum CategoryTier: string
         return [
             self::Silver->value => self::Silver->label(),
             self::Gold->value => self::Gold->label(),
+            self::Platinum->value => self::Platinum->label(),
         ];
     }
 }

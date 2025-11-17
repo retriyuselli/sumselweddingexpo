@@ -198,6 +198,112 @@ class VendorController extends Controller
             ->with('success', 'Vendor berhasil dihapus!');
     }
 
+    public function storeProduct(Request $request, Vendor $vendor)
+    {
+        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama_produk' => 'required|string|max:255',
+            'harga' => 'required|integer|min:0',
+            'dp_fixed' => 'nullable|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'foto' => 'nullable|image|max:1024',
+            'stok' => 'nullable|integer|min:0',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('product_photos', 'public');
+        }
+        $slugBase = Str::slug($data['nama_produk']);
+        $slug = $slugBase;
+        $i = 1;
+        while (\App\Models\ProductVendor::where('slug', $slug)->exists()) {
+            $slug = $slugBase.'-'.$i;
+            $i++;
+        }
+
+            \App\Models\ProductVendor::create([
+                'vendor_id' => $vendor->id,
+                'nama_produk' => $data['nama_produk'],
+                'slug' => $slug,
+                'harga' => (int) ($data['harga'] ?? 0),
+                'dp_fixed' => (int) ($data['dp_fixed'] ?? 0),
+                'deskripsi' => $data['deskripsi'] ?? null,
+                'foto_url' => $fotoPath ?? null,
+                'stok' => (int) ($data['stok'] ?? 0),
+                'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : true,
+            ]);
+
+        return redirect()->route('vendors.show', $vendor->slug)->with('success', 'Produk berhasil ditambahkan!');
+    }
+
+    public function updateProduct(Request $request, Vendor $vendor, \App\Models\ProductVendor $productVendor)
+    {
+        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
+        if ((int) $productVendor->vendor_id !== (int) $vendor->id) {
+            abort(404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama_produk' => 'required|string|max:255',
+            'harga' => 'required|integer|min:0',
+            'dp_fixed' => 'nullable|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'foto' => 'nullable|image|max:1024',
+            'stok' => 'nullable|integer|min:0',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
+        $update = [
+            'nama_produk' => $data['nama_produk'],
+            'harga' => (int) ($data['harga'] ?? 0),
+            'dp_fixed' => (int) ($data['dp_fixed'] ?? 0),
+            'deskripsi' => $data['deskripsi'] ?? null,
+            'stok' => (int) ($data['stok'] ?? 0),
+            'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : ($productVendor->is_active ?? true),
+        ];
+
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('product_photos', 'public');
+            $update['foto_url'] = $fotoPath;
+        }
+
+        $productVendor->update($update);
+
+        return redirect()->route('vendors.show', $vendor->slug)->with('success', 'Produk berhasil diupdate!');
+    }
+
+    public function editProduct(Vendor $vendor, \App\Models\ProductVendor $productVendor)
+    {
+        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
+        if ((int) $productVendor->vendor_id !== (int) $vendor->id) {
+            abort(404);
+        }
+
+        return view('vendors.products.edit', [
+            'vendor' => $vendor,
+            'product' => $productVendor,
+        ]);
+    }
+
     /**
      * Get all vendors (for API or AJAX requests)
      */

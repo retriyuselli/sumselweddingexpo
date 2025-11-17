@@ -56,6 +56,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/vendors/search', [VendorController::class, 'search'])->name('vendors.search');
     Route::get('/api/vendors', [VendorController::class, 'getAllVendors'])->name('vendors.api.all');
     Route::get('/api/vendors/jenis-usaha/{jenisUsahaId}', [VendorController::class, 'getByJenisUsaha'])->name('vendors.api.by-jenis-usaha');
+    Route::post('/vendors/{vendor}/products', [VendorController::class, 'storeProduct'])
+        ->name('vendors.products.store')
+        ->middleware(['verified']);
+    Route::get('/vendors/{vendor}/products/{productVendor}/edit', [VendorController::class, 'editProduct'])
+        ->name('vendors.products.edit')
+        ->middleware(['verified']);
+    Route::put('/vendors/{vendor}/products/{productVendor}', [VendorController::class, 'updateProduct'])
+        ->name('vendors.products.update')
+        ->middleware(['verified']);
 });
 
 // Authentication Routes

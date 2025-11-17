@@ -16,7 +16,85 @@
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-1 gap-6">
                 <div class="space-y-6">
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
-                        <h2 class="text-base sm:text-lg font-bold mb-4">Produk Vendor</h2>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-base sm:text-lg font-bold">Produk Vendor</h2>
+                            @if (auth()->check() && (int) auth()->id() === (int) ($vendor->user_id ?? 0))
+                                <button id="btn-open-add-product" type="button"
+                                    class="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50">Tambah
+                                    Produk</button>
+                            @endif
+                        </div>
+                        @if (auth()->check() && (int) auth()->id() === (int) ($vendor->user_id ?? 0))
+                            <div id="add-product-form" class="hidden mb-4">
+                                <form method="POST" action="{{ route('vendors.products.store', $vendor) }}"
+                                    enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    @csrf
+                                    <div>
+                                        <label class="text-xs text-neutral-600">Nama Produk</label>
+                                        <input name="nama_produk" type="text" required
+                                            class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                            placeholder="Contoh: Paket Wedding Basic" value="{{ old('nama_produk') }}">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-neutral-600">Harga</label>
+                                        <input name="harga" type="number" min="0" required
+                                            class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                            placeholder="120000000" value="{{ old('harga') }}">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-neutral-600">DP (opsional)</label>
+                                        <input name="dp_fixed" type="number" min="0"
+                                            class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                            placeholder="10000000" value="{{ old('dp_fixed') }}">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-neutral-600">Foto Produk (opsional)</label>
+                                        <input name="foto" type="file" accept="image/*"
+                                            class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
+                                        <p class="mt-1 text-[11px] text-neutral-500">Max 1MB</p>
+                                        <img id="foto-preview-create" class="mt-2 h-20 w-20 object-cover rounded hidden"
+                                            alt="Preview">
+                                        <p id="foto-error-create" class="mt-1 text-[11px] text-rose-600 hidden"></p>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="text-xs text-neutral-600">Deskripsi (opsional)</label>
+                                        <div class="mt-1 rounded-lg border border-neutral-300">
+                                            <div
+                                                class="flex items-center gap-1 p-2 border-b border-neutral-200 bg-neutral-50">
+                                                <button type="button" data-cmd="bold"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300">B</button>
+                                                <button type="button" data-cmd="italic"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300"><em>I</em></button>
+                                                <button type="button" data-cmd="underline"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300"><u>U</u></button>
+                                                <span class="mx-2 h-4 w-px bg-neutral-300"></span>
+                                                <button type="button" data-cmd="insertUnorderedList"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300">•
+                                                    List</button>
+                                                <button type="button" data-cmd="insertOrderedList"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300">1.
+                                                    List</button>
+                                                <button type="button" id="btn-insert-link"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300">Link</button>
+                                                <span class="mx-2 h-4 w-px bg-neutral-300"></span>
+                                                <button type="button" data-cmd="removeFormat"
+                                                    class="px-2 py-1 text-xs rounded border border-neutral-300">Clear</button>
+                                            </div>
+                                            <div id="rich-desc" class="min-h-[120px] p-3 text-sm" contenteditable="true"
+                                                placeholder="Detail paket, fasilitas, dll."></div>
+                                            <textarea id="rich-desc-textarea" name="deskripsi" class="hidden">{{ old('deskripsi') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 sm:col-span-2">
+                                        <label class="inline-flex items-center gap-2 text-xs text-neutral-700"><input
+                                                type="checkbox" name="is_active" value="1" class="rounded" checked>
+                                            Aktifkan produk</label>
+                                        <button type="submit"
+                                            class="ml-auto px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs hover:bg-indigo-700">Simpan</button>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
                         @if (($products->count() ?? 0) === 0)
                             <p class="text-sm text-neutral-600">Belum ada produk aktif.</p>
                         @else
@@ -32,7 +110,7 @@
                                                 : \Illuminate\Support\Facades\Storage::url($p->foto_url))
                                             : null;
                                     @endphp
-                                    <div class="rounded-xl border border-neutral-200 overflow-hidden bg-white">
+                                    <div class="rounded-xl border border-neutral-200 overflow-hidden bg-white flex flex-col">
                                         <div class="w-full bg-neutral-100" style="aspect-ratio: 1 / 1;">
                                             @if ($img)
                                                 <img src="{{ $img }}" alt="{{ $p->nama_produk }}"
@@ -45,21 +123,40 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="p-4">
+                                        <div class="p-4 flex flex-col flex-1">
                                             <p class="text-sm font-semibold text-neutral-900">{{ $p->nama_produk }}</p>
                                             <p class="text-sm text-neutral-700 mt-1">Rp
                                                 {{ number_format((float) ($p->harga ?? 0), 0, ',', '.') }}</p>
-                                            <div class="mt-3 flex items-center gap-2">
+                                            <div class="mt-auto pt-3 flex items-center gap-2">
                                                 <a href="{{ route('products.show', $p->slug) }}"
-                                                    class="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50">Detail</a>
+                                                    class="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+                                                    aria-label="Lihat detail">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                    <span class="sr-only">Detail</span>
+                                                </a>
                                                 <button
                                                     class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 add-to-cart"
                                                     data-id="{{ $p->id }}" data-vendor="{{ $vendor->id }}"
                                                     data-slug="{{ $p->slug }}" data-nama="{{ $p->nama_produk }}"
                                                     data-harga="{{ (int) ($p->harga ?? 0) }}"
                                                     data-dp-fixed="{{ (int) ($p->dp_fixed ?? 0) }}"
-                                                    data-img="{{ $img }}">Tambah</button>
+                                                    data-img="{{ $img }}" aria-label="Tambah ke keranjang">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 7M7 13l-2 9h12m-6-9v9" />
+                                                        <circle cx="9" cy="21" r="1" />
+                                                        <circle cx="15" cy="21" r="1" />
+                                                    </svg>
+                                                    <span class="sr-only">Tambah</span>
+                                                </button>
+                                                @if (auth()->check() && (int) auth()->id() === (int) ($vendor->user_id ?? 0))
+                                                    <a href="{{ route('vendors.products.edit', [$vendor, $p]) }}"
+                                                        class="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50">Edit</a>
+                                                @endif
                                             </div>
+
                                         </div>
                                     </div>
                                 @endforeach
@@ -141,7 +238,8 @@
             <div class="w-full max-w-sm bg-white rounded-xl shadow-xl border border-neutral-200">
                 <div class="p-4 flex items-center gap-3">
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100">
-                        <img id="cart-modal-img" src="" alt="" class="w-full h-full object-cover hidden" />
+                        <img id="cart-modal-img" src="" alt=""
+                            class="w-full h-full object-cover hidden" />
                     </div>
                     <div class="flex-1">
                         <p id="cart-modal-name" class="text-sm font-semibold text-neutral-900"></p>
@@ -151,8 +249,12 @@
                 <div class="border-t border-neutral-100 p-3 flex items-center justify-between">
                     <p class="text-sm text-neutral-700">Ditambahkan ke keranjang</p>
                     <div class="flex items-center gap-2">
-                        <button id="cart-modal-close" type="button" class="px-3 py-1.5 rounded-lg border border-neutral-300 text-neutral-700 text-xs hover:bg-neutral-50">Lanjut belanja</button>
-                        <a href="{{ route('cart') }}" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs hover:bg-rose-700">Lihat keranjang</a>
+                        <button id="cart-modal-close" type="button"
+                            class="px-3 py-1.5 rounded-lg border border-neutral-300 text-neutral-700 text-xs hover:bg-neutral-50">Lanjut
+                            belanja</button>
+                        <a href="{{ route('cart') }}"
+                            class="px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs hover:bg-rose-700">Lihat
+                            keranjang</a>
                     </div>
                 </div>
             </div>
@@ -161,6 +263,89 @@
 
     <script>
         (function() {
+            const btnOpen = document.getElementById('btn-open-add-product');
+            const formWrap = document.getElementById('add-product-form');
+            if (btnOpen && formWrap) {
+                btnOpen.addEventListener('click', () => {
+                    formWrap.classList.toggle('hidden');
+                });
+            }
+
+            const rte = document.getElementById('rich-desc');
+            const rteHidden = document.getElementById('rich-desc-textarea');
+            const rteBtns = document.querySelectorAll('#add-product-form [data-cmd]');
+            const linkBtn = document.getElementById('btn-insert-link');
+            const formEl = document.querySelector('#add-product-form form');
+            if (rte && rteHidden && formEl) {
+                if (rteHidden.value) {
+                    rte.innerHTML = rteHidden.value;
+                }
+                rteBtns.forEach(b => {
+                    b.addEventListener('click', () => {
+                        document.execCommand(b.dataset.cmd, false, null);
+                        rte.focus();
+                    });
+                });
+                if (linkBtn) {
+                    linkBtn.addEventListener('click', () => {
+                        const url = prompt('Masukkan URL');
+                        if (url) {
+                            document.execCommand('createLink', false, url);
+                        }
+                        rte.focus();
+                    });
+                }
+                formEl.addEventListener('submit', () => {
+                    rteHidden.value = rte.innerHTML.trim();
+                });
+            }
+
+            const createFotoInput = document.querySelector('#add-product-form input[name="foto"]');
+            const createFotoPreview = document.getElementById('foto-preview-create');
+            const createFotoErr = document.getElementById('foto-error-create');
+            const MAX_SIZE = 1024 * 1024;
+
+            function previewImage(file, imgEl, errEl) {
+                errEl.classList.add('hidden');
+                errEl.textContent = '';
+                if (!file) {
+                    if (imgEl) imgEl.classList.add('hidden');
+                    return;
+                }
+                if (file.size > MAX_SIZE) {
+                    errEl.textContent = 'Ukuran file melebihi 1MB';
+                    errEl.classList.remove('hidden');
+                    if (imgEl) imgEl.classList.add('hidden');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    if (imgEl) {
+                        imgEl.src = e.target.result;
+                        imgEl.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            if (createFotoInput) {
+                createFotoInput.addEventListener('change', () => {
+                    const file = createFotoInput.files && createFotoInput.files[0];
+                    previewImage(file, createFotoPreview, createFotoErr);
+                });
+                const addForm = document.querySelector('#add-product-form form');
+                if (addForm) {
+                    addForm.addEventListener('submit', (e) => {
+                        const file = createFotoInput.files && createFotoInput.files[0];
+                        if (file && file.size > MAX_SIZE) {
+                            e.preventDefault();
+                            previewImage(file, createFotoPreview, createFotoErr);
+                        }
+                    });
+                }
+            }
+
+            // Edit dipindahkan ke halaman terpisah
+
             function readCart() {
                 try {
                     return JSON.parse(localStorage.getItem('cartItems') || '[]');
