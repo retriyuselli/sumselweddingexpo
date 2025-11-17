@@ -4,13 +4,13 @@ namespace App\Enums;
 
 enum CategoryTier: string
 {
-    case Platinum = 'platinum';
+    case Silver = 'silver';
     case Gold = 'gold';
 
     public function label(): string
     {
         return match ($this) {
-            self::Platinum => 'Platinum',
+            self::Silver => 'Silver',
             self::Gold => 'Gold',
         };
     }
@@ -18,7 +18,7 @@ enum CategoryTier: string
     public static function options(): array
     {
         return [
-            self::Platinum->value => self::Platinum->label(),
+            self::Silver->value => self::Silver->label(),
             self::Gold->value => self::Gold->label(),
         ];
     }
