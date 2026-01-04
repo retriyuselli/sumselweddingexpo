@@ -11,6 +11,8 @@ use App\Filament\Resources\Orders\OrderResource;
 
 class RecentOrders extends TableWidget
 {
+    protected static ?int $sort = 2;
+
     protected int | string | array $columnSpan = 'full';
     
     protected static ?string $heading = 'Pesanan Terbaru';
