@@ -7,6 +7,7 @@ use Filament\Widgets\TableWidget;
 use App\Models\Order;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use App\Filament\Resources\Orders\OrderResource;
 
 class RecentOrders extends TableWidget
 {
@@ -46,7 +47,7 @@ class RecentOrders extends TableWidget
             ->recordActions([
                 Action::make('view')
                     ->label('Lihat')
-                    ->url(fn (Order $record): string => route('filament.admin.resources.orders.view', $record))
+                    ->url(fn (Order $record): string => OrderResource::getUrl('view', ['record' => $record]))
                     ->icon('heroicon-m-eye'),
             ]);
     }
