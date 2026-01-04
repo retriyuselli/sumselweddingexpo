@@ -23,7 +23,6 @@ class PartisipasiForm
                         Select::make('expo_id')
                             ->relationship('expo', 'nama_expo')
                             ->getOptionLabelFromRecordUsing(fn (Expo $record) => $record->nama_expo.' ('.$record->periode.')')
-                            ->searchable()
                             ->required()
                             ->live()
                             ->label('Expo')
@@ -70,9 +69,9 @@ class PartisipasiForm
 
                                 return CategoryTenant::where('expo_id', $expoId)
                                     ->where('status', true)
-                                    ->pluck('category', 'id');
+                                    ->get()
+                                    ->mapWithKeys(fn ($item) => [$item->id => $item->category->label()]);
                             })
-                            ->searchable()
                             ->required()
                             ->live()
                             ->label('Kategori Tenant')
