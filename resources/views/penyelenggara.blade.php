@@ -104,7 +104,7 @@
 
         <!-- Foto Slider -->
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
-            <h2 class="text-lg sm:text-xl font-bold mb-4">Galeri Kegiatan</h2>
+            <h2 class="text-lg sm:text-xl font-bold mb-4">Galeri</h2>
             <div class="relative overflow-hidden rounded-xl border border-neutral-200 bg-white">
                 <!-- Slider Container -->
                 <div class="slider-container relative">
