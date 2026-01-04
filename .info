@@ -1,0 +1,19 @@
+[PERBAIKAN] Masalah Error 405 & Layar Hitam Hostinger CDN
+Tanggal: 04-01-2026
+
+Masalah:
+
+-   Layar hitam pada panel admin Filament.
+-   Error 405 saat memuat aset melalui CDN/Proxy.
+-   Aplikasi tidak mendeteksi HTTPS dengan benar di belakang proxy.
+
+Perubahan yang Dilakukan:
+
+1. Mengaktifkan Trust Proxies di `bootstrap/app.php`:
+
+    - Menambahkan `$middleware->trustProxies(at: '*');`
+    - Ini memungkinkan Laravel mempercayai header dari load balancer/proxy untuk mengidentifikasi IP klien dan protokol (HTTP vs HTTPS) dengan benar.
+
+2. Memaksa HTTPS di Production pada `app/Providers/AppServiceProvider.php`:
+    - Menambahkan pengecekan: `if (app()->environment('production')) { URL::forceScheme('https'); }`
+    - Ini memastikan semua tautan yang dibuat (termasuk tautan aset) menggunakan `https://` saat aplikasi dalam mode production, mencegah error mixed content.
