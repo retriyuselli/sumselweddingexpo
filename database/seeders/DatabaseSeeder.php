@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             SponsorSeeder::class,
             HomeSeeder::class,
             RoleSeeder::class,
+            RundownSeeder::class,
         ]);
     }
 }

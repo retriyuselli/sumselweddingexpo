@@ -44,4 +44,9 @@ class Expo extends Model
     {
         return $this->hasMany(Gallery::class);
     }
+
+    public function rundowns()
+    {
+        return $this->hasMany(Rundown::class);
+    }
 }

@@ -308,8 +308,10 @@
                         @forelse($sponsors as $sponsor)
                             @if ($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
                                 <div class="shrink-0 w-32 sm:w-40">
-                                    <div class="relative w-full h-24 sm:h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
-                                        <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain hover:brightness-110 transition-all">
+                                    <div
+                                        class="relative w-full h-24 sm:h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
+                                        <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}"
+                                            class="w-full h-full object-contain hover:brightness-110 transition-all">
                                     </div>
                                 </div>
                             @endif
@@ -318,11 +320,13 @@
                                 <p>Belum ada sponsor dengan logo</p>
                             </div>
                         @endforelse
-                        @foreach($sponsors as $sponsor)
+                        @foreach ($sponsors as $sponsor)
                             @if ($sponsor->logo && Storage::disk('public')->exists($sponsor->logo))
                                 <div class="shrink-0 w-32 sm:w-40">
-                                    <div class="relative w-full h-24 sm:h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
-                                        <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}" class="w-full h-full object-contain hover:brightness-110 transition-all">
+                                    <div
+                                        class="relative w-full h-24 sm:h-32 transition-all duration-300 hover:scale-110 flex items-center justify-center overflow-hidden">
+                                        <img src="{{ asset('storage/' . $sponsor->logo) }}" alt="{{ $sponsor->name }}"
+                                            class="w-full h-full object-contain hover:brightness-110 transition-all">
                                     </div>
                                 </div>
                             @endif
@@ -331,7 +335,7 @@
                 </div>
 
 
-                </div>
+            </div>
 
             <style>
                 #sponsorScroll::-webkit-scrollbar {
@@ -339,10 +343,28 @@
                 }
             </style>
             <style>
-                #sponsorScroll { position: relative; }
-                #sponsorTrack { width: max-content; animation: sponsor-marquee 30s linear infinite; }
-                #sponsorScroll:hover #sponsorTrack { animation-play-state: paused; }
-                @keyframes sponsor-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+                #sponsorScroll {
+                    position: relative;
+                }
+
+                #sponsorTrack {
+                    width: max-content;
+                    animation: sponsor-marquee 30s linear infinite;
+                }
+
+                #sponsorScroll:hover #sponsorTrack {
+                    animation-play-state: paused;
+                }
+
+                @keyframes sponsor-marquee {
+                    from {
+                        transform: translateX(0);
+                    }
+
+                    to {
+                        transform: translateX(-50%);
+                    }
+                }
             </style>
 
             <script>
@@ -519,7 +541,7 @@
                         @if ($eventStart && $eventEnd)
                             @php
                                 $duration = $eventStart->diffInDays($eventEnd) + 1;
-                                $days = ['Jumat', 'Sabtu', 'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis'];
+                                $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                             @endphp
                             @for ($i = 0; $i < $duration; $i++)
                                 @php

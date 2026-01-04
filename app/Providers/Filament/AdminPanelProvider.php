@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->default()
             ->favicon('/storage/logo/logoswe.png')
-            ->brandName('Filament Demo')
+            ->brandName('Sumsel Wedding Expo')
             ->brandLogo('/storage/logo/logoswe.png')
             ->brandLogoHeight('3rem')
             ->login()

@@ -33,8 +33,17 @@
                             </svg>
                             <h3 class="text-base sm:text-xl font-semibold">Tanggal</h3>
                         </div>
-                        <p class="text-xl sm:text-2xl font-bold">17 - 19 Januari 2025</p>
-                        <p class="text-xs sm:text-sm opacity-90 mt-1">Jumat - Minggu</p>
+                        @if (isset($expo) && $expo)
+                            <p class="text-xl sm:text-2xl font-bold">
+                                {{ $expo->tanggal_mulai->locale('id')->translatedFormat('d') }} -
+                                {{ $expo->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}</p>
+                            <p class="text-xs sm:text-sm opacity-90 mt-1">
+                                {{ $expo->tanggal_mulai->locale('id')->translatedFormat('l') }} -
+                                {{ $expo->tanggal_selesai->locale('id')->translatedFormat('l') }}</p>
+                        @else
+                            <p class="text-xl sm:text-2xl font-bold">16 - 18 Januari 2026</p>
+                            <p class="text-xs sm:text-sm opacity-90 mt-1">Jumat - Minggu</p>
+                        @endif
                     </div>
 
                     <div class="bg-linear-to-br from-purple-500 to-indigo-600 rounded-lg p-6 text-white">
@@ -72,420 +81,79 @@
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10">Rundown Acara</h2>
 
-                <!-- Tabs -->
-                <div class="flex justify-center gap-2 sm:gap-4 mb-8 flex-wrap">
-                    <button onclick="showDay('day1')" id="btn-day1"
-                        class="day-tab px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold bg-rose-600 text-white text-sm sm:text-base">
-                        Hari 1 - Jumat, 17 Jan
-                    </button>
-                    <button onclick="showDay('day2')" id="btn-day2"
-                        class="day-tab px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm sm:text-base">
-                        Hari 2 - Sabtu, 18 Jan
-                    </button>
-                    <button onclick="showDay('day3')" id="btn-day3"
-                        class="day-tab px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm sm:text-base">
-                        Hari 3 - Minggu, 19 Jan
-                    </button>
-                </div>
+                @php
+                    $days = [];
+                    if (isset($expo)) {
+                        $current = $expo->tanggal_mulai->copy();
+                        while ($current->lte($expo->tanggal_selesai)) {
+                            $days[] = $current->copy();
+                            $current->addDay();
+                        }
+                    }
+                @endphp
 
-                <!-- Day 1 -->
-                <div id="day1" class="day-content">
-                    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8">
-                        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-rose-600">Jumat, 17 Januari
-                            2025</h3>
+                @if (count($days) > 0)
+                    <!-- Tabs -->
+                    <div class="flex justify-center gap-2 sm:gap-4 mb-8 flex-wrap">
+                        @foreach ($days as $index => $day)
+                            <button onclick="showDay('day{{ $index + 1 }}')" id="btn-day{{ $index + 1 }}"
+                                class="day-tab px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold {{ $index === 0 ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} text-sm sm:text-base">
+                                Hari {{ $index + 1 }} - {{ $day->translatedFormat('l, d M') }}
+                            </button>
+                        @endforeach
+                    </div>
 
-                        <div class="space-y-4 sm:space-y-6">
-                            <!-- Timeline Item -->
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">10:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Pembukaan & Grand
-                                        Opening</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Pembukaan resmi Sumsel Wedding
-                                        Expo 2025 oleh Walikota Palembang dan perwakilan penyelenggara.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
+                    <!-- Day Content -->
+                    @foreach ($days as $index => $day)
+                        <div id="day{{ $index + 1 }}" class="day-content {{ $index === 0 ? '' : 'hidden' }}">
+                            <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8">
+                                <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-rose-600">
+                                    {{ $day->translatedFormat('l, d F Y') }}</h3>
 
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">11:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Pameran Vendor Dibuka
-                                    </h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">100+ booth vendor pernikahan
-                                        siap melayani pengunjung dengan berbagai promo eksklusif.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-green-100 text-green-700 rounded text-xs font-medium">Semua
-                                        Area</span>
-                                </div>
-                            </div>
+                                <div class="space-y-4 sm:space-y-6">
+                                    @php
+                                        $dailyRundowns = $expo->rundowns
+                                            ->filter(function ($rundown) use ($day) {
+                                                return $rundown->tanggal->isSameDay($day);
+                                            })
+                                            ->sortBy('waktu');
+                                    @endphp
 
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">13:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Talkshow: Tips
-                                        Memilih Vendor Pernikahan</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Narasumber: Wedding Planner
-                                        Profesional & Couples yang berpengalaman.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">15:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Workshop: Makeup
-                                        Tutorial untuk Pengantin</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Belajar teknik makeup pengantin
-                                        dari MUA profesional. Kuota terbatas!</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-blue-100 text-blue-700 rounded text-xs font-medium">Workshop
-                                        Area</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">17:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Fashion Show: Koleksi
-                                        Gaun Pengantin 2025</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Persembahan dari desainer
-                                        lokal dan nasional dengan koleksi terbaru.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">19:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Live Music &
-                                        Entertainment</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Hiburan musik live dari band
-                                        dan penyanyi lokal Palembang.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">21:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Penutupan Hari
-                                        Pertama</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Acara ditutup, pengunjung
-                                        dapat melanjutkan eksplorasi booth.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-gray-100 text-gray-700 rounded text-xs font-medium">Semua
-                                        Area</span>
+                                    @if ($dailyRundowns->count() > 0)
+                                        @foreach ($dailyRundowns as $rundown)
+                                            <div class="flex gap-3 sm:gap-4 md:gap-6">
+                                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
+                                                    <span
+                                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">
+                                                        {{ $rundown->waktu }}
+                                                    </span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">
+                                                        {{ $rundown->acara }}</h4>
+                                                    @if ($rundown->deskripsi)
+                                                        <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">
+                                                            {{ $rundown->deskripsi }}</p>
+                                                    @endif
+                                                    @if ($rundown->lokasi)
+                                                        <span
+                                                            class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">{{ $rundown->lokasi }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p class="text-center text-gray-500">Belum ada jadwal untuk hari ini.</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-8">
+                        <p class="text-gray-500">Jadwal acara belum tersedia.</p>
                     </div>
-                </div>
-
-                <!-- Day 2 -->
-                <div id="day2" class="day-content hidden">
-                    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8">
-                        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-rose-600">Sabtu, 18 Januari
-                            2025</h3>
-
-                        <div class="space-y-4 sm:space-y-6">
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">10:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Pembukaan Hari Kedua
-                                    </h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Pameran dibuka kembali dengan
-                                        promo spesial weekend!</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-green-100 text-green-700 rounded text-xs font-medium">Semua
-                                        Area</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">11:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Talkshow: Manajemen
-                                        Budget Pernikahan</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Tips mengatur budget
-                                        pernikahan agar tetap hemat namun berkelas.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">13:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Workshop: DIY
-                                        Wedding Decoration</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Buat dekorasi pernikahan
-                                        sendiri dengan budget terjangkau.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-blue-100 text-blue-700 rounded text-xs font-medium">Workshop
-                                        Area</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">14:30</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Games & Doorprize
-                                    </h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Berbagai hadiah menarik
-                                        menanti pengunjung yang beruntung!</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-amber-100 text-amber-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">16:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Talkshow:
-                                        Pre-Wedding Photography Tips</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Rahasia foto pre-wedding yang
-                                        instagramable dari fotografer profesional.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">17:30</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Fashion Show: Kebaya
-                                        Modern</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Koleksi kebaya modern dan
-                                        tradisional untuk resepsi pernikahan.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">19:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Live Performance &
-                                        Entertainment</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Penampilan artis dan hiburan
-                                        spesial malam minggu.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">21:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Penutupan Hari Kedua
-                                    </h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Pameran ditutup, sampai jumpa
-                                        besok di hari terakhir!</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-gray-100 text-gray-700 rounded text-xs font-medium">Semua
-                                        Area</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Day 3 -->
-                <div id="day3" class="day-content hidden">
-                    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 md:p-8">
-                        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-rose-600">Minggu, 19 Januari
-                            2025 - Hari Terakhir!</h3>
-
-                        <div class="space-y-4 sm:space-y-6">
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">10:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Pembukaan Hari
-                                        Terakhir</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Last chance! Promo super
-                                        spesial di hari terakhir pameran.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-green-100 text-green-700 rounded text-xs font-medium">Semua
-                                        Area</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">11:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Talkshow: Persiapan
-                                        Mental Menuju Pernikahan</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Bersama psikolog dan konselor
-                                        pernikahan berpengalaman.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">13:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Workshop: Wedding
-                                        Invitation Design</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Desain undangan pernikahan
-                                        sendiri dengan tools digital modern.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-blue-100 text-blue-700 rounded text-xs font-medium">Workshop
-                                        Area</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">15:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Grand Doorprize &
-                                        Giveaway</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Hadiah utama menanti! Paket
-                                        honeymoon, voucher vendor, dan banyak lagi.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-amber-100 text-amber-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">16:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Talkshow: Trend
-                                        Wedding 2025</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Trend terkini pernikahan tahun
-                                        2025 dari wedding planner profesional.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">17:30</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Grand Fashion Show
-                                        Finale</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Penutupan megah dengan fashion
-                                        show koleksi terbaik dari semua desainer.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">19:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Special Performance
-                                        & Closing Ceremony</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Penampilan artis spesial dan
-                                        penutupan resmi Sumsel Wedding Expo 2025.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-purple-100 text-purple-700 rounded text-xs font-medium">Main
-                                        Stage</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 sm:gap-4 md:gap-6">
-                                <div class="shrink-0 w-16 sm:w-24 md:w-32">
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-rose-100 text-rose-700 rounded-lg font-semibold text-xs sm:text-sm">21:00</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Penutupan Sumsel
-                                        Wedding Expo 2025</h4>
-                                    <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Terima kasih atas kunjungan
-                                        Anda! Sampai jumpa di Wedding Expo berikutnya.</p>
-                                    <span
-                                        class="inline-block px-2 py-1 sm:px-3 bg-gray-100 text-gray-700 rounded text-xs font-medium">Semua
-                                        Area</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
         </section>
 

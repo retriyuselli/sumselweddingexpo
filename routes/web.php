@@ -27,7 +27,26 @@ Route::get('/gallery', function () {
 // Halaman Partners
 Route::view('/partners', 'partners')->name('partners');
 // Halaman Jadwal
-Route::view('/jadwal', 'jadwal')->name('jadwal');
+Route::get('/jadwal', function () {
+    $expo = \App\Models\Expo::where('status', true)
+        ->whereDate('tanggal_mulai', '>=', now()->toDateString())
+        ->with(['rundowns' => function ($query) {
+            $query->orderBy('tanggal', 'asc')->orderBy('waktu', 'asc');
+        }])
+        ->orderBy('tanggal_mulai', 'asc')
+        ->first();
+
+    if (! $expo) {
+        $expo = \App\Models\Expo::where('status', true)
+            ->with(['rundowns' => function ($query) {
+                $query->orderBy('tanggal', 'asc')->orderBy('waktu', 'asc');
+            }])
+            ->orderBy('tanggal_mulai', 'desc')
+            ->first();
+    }
+
+    return view('jadwal', compact('expo'));
+})->name('jadwal');
 
 // Blog Routes
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
