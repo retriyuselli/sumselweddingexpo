@@ -20,6 +20,12 @@ class DataPembayaransTable
     {
         return $table
             ->columns([
+                TextColumn::make('nama_pembayar')
+                    ->label('Penyetor')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('partisipasi.vendor.nama_vendor')
                     ->label('Vendor')
                     ->sortable()
@@ -38,13 +44,15 @@ class DataPembayaransTable
                 BadgeColumn::make('metode_pembayaran')
                     ->label('Metode')
                     ->colors([
-                        'primary' => fn ($state) => $state === 'tf',
-                        'warning' => fn ($state) => $state === 'cash',
+                        'primary' => fn ($state) => $state === 'Transfer Bank',
+                        'warning' => fn ($state) => $state === 'Tunai',
+                        'success' => fn ($state) => $state === 'QRIS',
                     ])
-                    ->formatStateUsing(fn ($state) => $state === 'tf' ? 'Transfer' : 'Cash'),
+                    ->formatStateUsing(fn ($state) => $state ?? '-'),
 
                 TextColumn::make('rekeningTujuan.nama_bank')
-                    ->label('Rekening Tujuan')
+                    ->label('Bank Tujuan')
+                    ->formatStateUsing(fn ($state, $record) => $record?->rekeningTujuan?->nama_bank.' - '.$record?->rekeningTujuan?->nomor_rekening)
                     ->toggleable(),
 
                 ImageColumn::make('bukti_transfer')
@@ -52,18 +60,33 @@ class DataPembayaransTable
                     ->square()
                     ->size(40)
                     ->toggleable(),
+
+                TextColumn::make('keterangan')
+                    ->label('Keterangan')
+                    ->limit(40)
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TrashedFilter::make(),
                 SelectFilter::make('metode_pembayaran')
                     ->options([
-                        'tf' => 'Transfer',
-                        'cash' => 'Cash',
+                        'Transfer Bank' => 'Transfer Bank',
+                        'Tunai' => 'Tunai',
+                        'QRIS' => 'QRIS',
                     ])
                     ->label('Metode'),
                 SelectFilter::make('rekening_tujuan_id')
                     ->relationship('rekeningTujuan', 'nama_bank')
                     ->label('Rekening Tujuan'),
+                SelectFilter::make('partisipasi_id')
+                    ->relationship('partisipasi.vendor', 'nama_vendor')
+                    ->label('Vendor'),
             ])
             ->recordActions([
                 EditAction::make(),

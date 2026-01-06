@@ -6,9 +6,11 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -59,6 +61,12 @@ class UsersTable
                     ->badge()
                     ->sortable()
                     ->searchable()
+                    ->formatStateUsing(fn ($state) => $state ?? '—'),
+
+                TextColumn::make('jabatan')
+                    ->label('Jabatan')
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn ($state) => $state ?? '—'),
 
                 IconColumn::make('email_verified_at')
@@ -115,6 +123,32 @@ class UsersTable
                         true: fn ($query) => $query->whereHas('vendor'),
                         false: fn ($query) => $query->whereDoesntHave('vendor'),
                     ),
+
+                TernaryFilter::make('has_avatar')
+                    ->label('Memiliki Avatar')
+                    ->placeholder('Semua')
+                    ->trueLabel('Hanya yang punya avatar')
+                    ->falseLabel('Tanpa avatar')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('avatar_url'),
+                        false: fn ($query) => $query->whereNull('avatar_url'),
+                    ),
+
+                Filter::make('created_between')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Dari Tanggal')
+                            ->native(false),
+                        DatePicker::make('created_until')
+                            ->label('Sampai Tanggal')
+                            ->native(false),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['created_from'] ?? null, fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'] ?? null, fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    })
+                    ->label('Tanggal Daftar'),
             ])
             ->recordActions([
                 ViewAction::make(),
