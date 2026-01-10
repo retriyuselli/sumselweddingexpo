@@ -34,9 +34,10 @@
                     <a href="/lokasi" class="block px-3 py-2 hover:bg-neutral-50">Lokasi Pameran</a>
                     <a href="/penyelenggara" class="block px-3 py-2 hover:bg-neutral-50">Penyelenggara</a>
                     <a href="/gallery" class="block px-3 py-2 hover:bg-neutral-50">Gallery</a>
+                    <a href="/partners" class="block px-3 py-2 hover:bg-neutral-50">Vendor</a>
                 </div>
             </div>
-            <a href="/partners" class="hover:text-rose-600">Vendor</a>
+            <a href="/peserta" class="hover:text-rose-600">Peserta</a>
             <a href="/jadwal" class="hover:text-rose-600">Jadwal</a>
             <a href="/blog" class="hover:text-rose-600">Blog</a>
             @auth
@@ -268,10 +269,12 @@
                         class="block px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900">Penyelenggara</a>
                     <a href="/gallery"
                         class="block px-3 py-2 text-sm text-neutral-600 hover:text-neutral-900">Gallery</a>
+                    <a href="/partners" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Vendor</a>
                 </div>
             </details>
 
-            <a href="/partners" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Vendor</a>
+            {{-- <a href="/partners" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Vendor</a> --}}
+            <a href="/peserta" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Peserta</a>
             <a href="/jadwal" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Jadwal</a>
             <a href="/blog" class="block px-3 py-2 rounded-lg hover:bg-neutral-50 text-sm">Blog</a>
             @auth

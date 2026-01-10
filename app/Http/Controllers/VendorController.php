@@ -18,6 +18,24 @@ use Illuminate\Support\Str;
 class VendorController extends Controller
 {
     /**
+     * Display the partners page (public).
+     */
+    public function partners()
+    {
+        $vendors = Vendor::with('jenisUsaha')
+            ->withCount([
+                'products as products_active_count' => function ($q) {
+                    $q->where('is_active', true);
+                },
+            ])
+            ->latest()
+            ->get();
+        $jenisUsahas = JenisUsaha::withCount('vendors')->orderBy('nama_jenis_usaha')->get();
+
+        return view('partners', compact('vendors', 'jenisUsahas'));
+    }
+
+    /**
      * Display a listing of the vendors.
      */
     public function index()

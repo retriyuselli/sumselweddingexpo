@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+use Filament\Forms\Components\FileUpload;
+
 class VendorForm
 {
     public static function configure(Schema $schema): Schema
@@ -23,6 +25,14 @@ class VendorForm
                 Section::make('Informasi Vendor')
                     ->description('Data identitas dan kategori vendor')
                     ->schema([
+                        FileUpload::make('logo')
+                            ->label('Logo Vendor')
+                            ->image()
+                            ->imageEditor()
+                            ->disk('public')
+                            ->directory('vendor-logos')
+                            ->columnSpanFull(),
+
                         TextInput::make('nama_vendor')
                             ->required()
                             ->maxLength(255)

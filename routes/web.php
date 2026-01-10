@@ -9,6 +9,7 @@ use App\Http\Controllers\PenyelenggaraController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PesertaController;
 use App\Models\ProductVendor;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -24,8 +25,11 @@ Route::get('/gallery', function () {
     $galleries = Gallery::orderBy('created_at', 'desc')->get();
     return view('gallery', compact('galleries'));
 })->name('gallery');
+// Halaman Peserta (Daftar Vendor Partisipan)
+Route::get('/peserta', [PesertaController::class, 'index'])->name('peserta.index');
+Route::get('/peserta/{vendor:slug}', [PesertaController::class, 'show'])->name('peserta.show');
 // Halaman Partners
-Route::view('/partners', 'partners')->name('partners');
+Route::get('/partners', [VendorController::class, 'partners'])->name('partners');
 // Halaman Jadwal
 Route::get('/jadwal', function () {
     $expo = \App\Models\Expo::where('status', true)
@@ -65,12 +69,15 @@ Route::get('/exhibitor', [VendorController::class, 'exhibitorPage'])->name('exhi
 Route::get('/exhibitor/daftar', [VendorController::class, 'showRegistrationForm'])->name('exhibitor.form')->middleware(['auth','verified']);
 Route::post('/exhibitor/daftar', [VendorController::class, 'store'])->name('exhibitor.store')->middleware(['auth','verified']);
 
+// Halaman Detail Vendor (Public)
+Route::get('/vendors/{vendor:slug}', [VendorController::class, 'show'])->name('vendors.show');
+
 // Vendor Resource Routes (untuk admin/management)
 Route::middleware('auth')->group(function () {
     Route::get('/vendors', [VendorController::class, 'index'])->name('vendors.index');
     Route::get('/vendors/create', [VendorController::class, 'create'])->name('vendors.create');
     Route::post('/vendors', [VendorController::class, 'store'])->name('vendors.store');
-    Route::get('/vendors/{vendor:slug}', [VendorController::class, 'show'])->name('vendors.show');
+    // Route::get('/vendors/{vendor:slug}', [VendorController::class, 'show'])->name('vendors.show'); // Moved to public
     Route::get('/vendors/{vendor}/edit', [VendorController::class, 'edit'])->name('vendors.edit');
     Route::put('/vendors/{vendor}', [VendorController::class, 'update'])->name('vendors.update');
     Route::delete('/vendors/{vendor}', [VendorController::class, 'destroy'])->name('vendors.destroy');

@@ -3,17 +3,6 @@
 @section('title', 'Partners — WeddingExpo')
 
 @section('content')
-    @php
-        $vendors = \App\Models\Vendor::with('jenisUsaha')
-            ->withCount([
-                'products as products_active_count' => function ($q) {
-                    $q->where('is_active', true);
-                },
-            ])
-            ->latest()
-            ->get();
-        $jenisUsahas = \App\Models\JenisUsaha::withCount('vendors')->orderBy('nama_jenis_usaha')->get();
-    @endphp
     <main class="min-h-screen bg-gray-50">
         <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -80,8 +69,8 @@
                                         {{ number_format($v->products_active_count ?? 0) }}</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $v->no_wa_pic) }}"
-                                        target="_blank" class="text-green-600 hover:text-green-700">WhatsApp</a>
+                                    <a href="https://wa.me/{{ $v->whatsapp_number }}" target="_blank"
+                                        class="text-green-600 hover:text-green-700">WhatsApp</a>
                                 </div>
                             </div>
                             <div class="mt-3">

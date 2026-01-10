@@ -26,6 +26,7 @@ class Vendor extends Model
         'paket',
         'lokasi_booth',
         'harga_jual',
+        'logo',
     ];
 
     public function jenisUsaha()
@@ -46,5 +47,17 @@ class Vendor extends Model
     public function products()
     {
         return $this->hasMany(ProductVendor::class);
+    }
+
+    public function getWhatsappNumberAttribute()
+    {
+        $number = preg_replace('/[^0-9]/', '', $this->no_wa_pic);
+
+        // Jika diawali angka 0, ganti dengan 62
+        if (substr($number, 0, 1) === '0') {
+            $number = '62' . substr($number, 1);
+        }
+
+        return $number;
     }
 }
