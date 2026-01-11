@@ -85,7 +85,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="relative hidden md:block">
+                <div class="relative block mt-12 md:mt-0">
                     <div class="aspect-4/3 w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/20 bg-white/10">
                         @php
                             $heroSide =
@@ -106,7 +106,7 @@
                         @endif
                     </div>
                     <div
-                        class="absolute -bottom-4 -left-4 bg-white/10 backdrop-blur rounded-xl shadow-md ring-1 ring-white/20 px-4 py-3 text-white">
+                        class="absolute -bottom-4 left-4 md:-left-4 bg-white/10 backdrop-blur rounded-xl shadow-md ring-1 ring-white/20 px-4 py-3 text-white">
                         <div class="text-xs text-rose-100">Pengunjung tahun lalu</div>
                         <div class="text-base font-bold">12.500+</div>
                     </div>
