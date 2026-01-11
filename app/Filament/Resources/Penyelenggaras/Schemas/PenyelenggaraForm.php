@@ -28,6 +28,31 @@ class PenyelenggaraForm
                     ->disk('public')
                     ->maxSize(5120),
 
+                FileUpload::make('favicon')
+                    ->label('Favicon')
+                    ->image()
+                    ->directory('penyelenggaras/favicons')
+                    ->disk('public')
+                    ->maxSize(1024),
+
+                FileUpload::make('banner')
+                    ->label('Banner Home')
+                    ->image()
+                    ->directory('penyelenggaras/banners')
+                    ->disk('public')
+                    ->maxSize(5120)
+                    ->helperText('Rekomendasi ukuran: 1920x1080px (Landscape Full Width).')
+                    ->columnSpanFull(),
+
+                FileUpload::make('banner_2')
+                    ->label('Banner Samping (Desktop)')
+                    ->image()
+                    ->directory('penyelenggaras/banners')
+                    ->disk('public')
+                    ->maxSize(5120)
+                    ->helperText('Rekomendasi ukuran: 800x600px atau rasio 4:3.')
+                    ->columnSpanFull(),
+
                 TextInput::make('jam_operasional')
                     ->label('Jam Operasional')
                     ->placeholder('Contoh: Senin–Jumat 09:00–17:00')

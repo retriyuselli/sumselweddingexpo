@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'WeddingExpo')</title>
 
-    <link rel="icon" type="image/png" href="{{ asset('storage/logo/favicon_swe.png') }}">
-    <link rel="shortcut icon" href="{{ asset('storage/logo/favicon_swe.png') }}">
+    @php
+        $sitePenyelenggara = $penyelenggara ?? \App\Models\Penyelenggara::first();
+        $faviconPath = $sitePenyelenggara?->favicon && \Illuminate\Support\Facades\Storage::disk('public')->exists($sitePenyelenggara->favicon)
+            ? 'storage/' . $sitePenyelenggara->favicon
+            : 'storage/logo/favicon_swe.png';
+    @endphp
+    <link rel="icon" type="image/png" href="{{ asset($faviconPath) }}">
+    <link rel="shortcut icon" href="{{ asset($faviconPath) }}">
 
     <!-- Font: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -15,10 +15,14 @@
     <section id="home" class="relative pt-24 md:pt-28">
         <div class="absolute inset-0 -z-10">
             @php
+                // Prioritize Penyelenggara Banner if available
                 $heroBgDesktop =
-                    ($home->hero_bg_image ?? null) && Storage::disk('public')->exists($home->hero_bg_image)
-                        ? asset('storage/' . $home->hero_bg_image)
-                        : 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?q=80&w=1964&auto=format&fit=crop';
+                    ($penyelenggara->banner ?? null) && Storage::disk('public')->exists($penyelenggara->banner)
+                        ? asset('storage/' . $penyelenggara->banner)
+                        : (($home->hero_bg_image ?? null) && Storage::disk('public')->exists($home->hero_bg_image)
+                            ? asset('storage/' . $home->hero_bg_image)
+                            : 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?q=80&w=1964&auto=format&fit=crop');
+
                 $heroBgMobile =
                     ($home->hero_bg_image_mobile ?? null) &&
                     Storage::disk('public')->exists($home->hero_bg_image_mobile)
@@ -85,10 +89,13 @@
                     <div class="aspect-4/3 w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/20 bg-white/10">
                         @php
                             $heroSide =
-                                ($home->hero_side_image ?? null) &&
-                                Storage::disk('public')->exists($home->hero_side_image)
-                                    ? asset('storage/' . $home->hero_side_image)
-                                    : null;
+                                ($penyelenggara->banner_2 ?? null) &&
+                                Storage::disk('public')->exists($penyelenggara->banner_2)
+                                    ? asset('storage/' . $penyelenggara->banner_2)
+                                    : (($home->hero_side_image ?? null) &&
+                                    Storage::disk('public')->exists($home->hero_side_image)
+                                        ? asset('storage/' . $home->hero_side_image)
+                                        : null);
                         @endphp
                         @if ($heroSide)
                             <img src="{{ $heroSide }}" alt="Hero Side" class="h-full w-full object-cover opacity-95" />
