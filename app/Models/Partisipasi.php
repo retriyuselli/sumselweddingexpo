@@ -23,6 +23,7 @@ class Partisipasi extends Model
 
     protected $casts = [
         'tanggal_booking' => 'date',
+        'vendor_pendamping' => 'array',
     ];
 
     public function expo()
@@ -43,5 +44,10 @@ class Partisipasi extends Model
     public function dataPembayarans()
     {
         return $this->hasMany(DataPembayaran::class);
+    }
+
+    public function doorprizes()
+    {
+        return $this->hasMany(Doorprize::class);
     }
 }

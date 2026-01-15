@@ -15,6 +15,24 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/form-tring-pegadaian.pdf', function () {
+    $penyelenggara = \App\Models\Penyelenggara::first();
+    $pdf = Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.form-tring-pegadaian', compact('penyelenggara'));
+
+    return $pdf->stream('form-tring-pegadaian.pdf');
+})->name('form.tring-pegadaian.pdf');
+
+Route::get('/doorprizes/{doorprize}/form-tring-pegadaian.pdf', function (\App\Models\Doorprize $doorprize) {
+    $penyelenggara = \App\Models\Penyelenggara::first();
+
+    $pdf = Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.form-tring-pegadaian', [
+        'penyelenggara' => $penyelenggara,
+        'doorprize' => $doorprize,
+    ]);
+
+    return $pdf->stream('form-tring-pegadaian-' . $doorprize->id . '.pdf');
+})->middleware(['auth'])->name('doorprizes.form-tring-pegadaian.pdf');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
 Route::view('/lokasi', 'lokasi')->name('lokasi');

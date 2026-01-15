@@ -43,12 +43,7 @@ class PartisipasisTable
                     ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp '.number_format((int) $state, 0, ',', '.')),
 
                 BadgeColumn::make('status_pembayaran')
-                    ->label('Status Pembayaran')
-                    ->colors([
-                        'success' => fn ($state) => $state === 'lunas',
-                        'warning' => fn ($state) => $state === 'belum_lunas',
-                    ])
-                    ->formatStateUsing(fn ($state) => $state === 'lunas' ? 'Lunas' : 'Belum Lunas'),
+                    ->label('Status Pembayaran'),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -62,8 +57,11 @@ class PartisipasisTable
                     ->options([
                         'lunas' => 'Lunas',
                         'belum_lunas' => 'Belum Lunas',
+                        'dp' => 'DP (Down Payment)',
+                        'cicilan' => 'Cicilan',
                     ]),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

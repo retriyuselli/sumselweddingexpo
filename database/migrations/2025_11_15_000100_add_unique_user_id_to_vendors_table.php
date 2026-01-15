@@ -16,8 +16,14 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->dropUnique('vendors_user_id_unique');
-        });
+        try {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->dropUnique('vendors_user_id_unique');
+            });
+        } catch (\Throwable $e) {
+            // Biarkan jika index tidak bisa di-drop karena terikat foreign key.
+            // Index akan ikut terhapus ketika tabel `vendors` di-drop oleh
+            // migration create_vendors_table saat rollback penuh.
+        }
     }
 };

@@ -47,12 +47,17 @@ class PartisipasiForm
                             ->label('Vendor Utama')
                             ->columnSpan(1),
 
-                        TextInput::make('vendor_pendamping')
-                            ->maxLength(255)
+                        Select::make('vendor_pendamping')
+                            ->options(function () {
+                                return \App\Models\Vendor::all()->pluck('nama_vendor', 'id');
+                            })
+                            ->searchable()
+                            ->multiple()
+                            ->preload()
                             ->label('Vendor Pendamping')
                             ->placeholder('Opsional')
                             ->nullable()
-                            ->columnSpan(1),
+                            ->columnSpan(1),    
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -112,12 +117,12 @@ class PartisipasiForm
 
                         Select::make('status_pembayaran')
                             ->options([
-                                'Lunas' => 'Lunas',
-                                'Belum Lunas' => 'Belum Lunas',
-                                'DP' => 'DP (Down Payment)',
-                                'Cicilan' => 'Cicilan',
+                                'lunas' => 'Lunas',
+                                'belum_lunas' => 'Belum Lunas',
+                                'dp' => 'DP (Down Payment)',
+                                'cicilan' => 'Cicilan',
                             ])
-                            ->default('Belum Lunas')
+                            ->default('belum_lunas')
                             ->required()
                             ->native(false)
                             ->label('Status Pembayaran')
