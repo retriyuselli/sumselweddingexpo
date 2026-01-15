@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Form Leads Pengunjung</title>
+    @if (isset($penyelenggara->favicon) && file_exists(public_path('storage/' . $penyelenggara->favicon)))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $penyelenggara->favicon) }}">
+    @endif
     <style>
         * {
             box-sizing: border-box;
