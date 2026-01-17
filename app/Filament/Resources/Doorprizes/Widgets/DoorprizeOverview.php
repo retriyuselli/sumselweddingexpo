@@ -53,12 +53,12 @@ class DoorprizeOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('danger'),
 
-            Stat::make('Total Transaksi', 'Rp ' . number_format($totalTransaksi, 0, ',', '.'))
+            Stat::make('Total Transaksi', '' . number_format($totalTransaksi, 0, ',', '.'))
                 ->description('Akumulasi nominal transaksi')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('warning'),
 
-            Stat::make('Total Revenue', 'Rp ' . number_format($totalRevenue, 0, ',', '.'))
+            Stat::make('Total Revenue', '' . number_format($totalRevenue, 0, ',', '.'))
                 ->description('Akumulasi nominal revenue')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('info'),
