@@ -148,8 +148,8 @@
         }
 
         .header-kop {
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
             border-bottom: 1px solid #d1d5db;
         }
 

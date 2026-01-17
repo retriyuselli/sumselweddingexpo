@@ -20,6 +20,8 @@ php artisan db:seed --class=VendorSeeder
 
 # Server Deployment Commands (Run setelah git pull)
 
+php artisan make:filament-widget DoorprizeOverview --resource=DoorprizeResource
+
 git pull origin main
 
 php artisan cache:clear
