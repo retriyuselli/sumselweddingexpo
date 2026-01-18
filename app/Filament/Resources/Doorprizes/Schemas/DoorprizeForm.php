@@ -101,7 +101,6 @@ class DoorprizeForm
                                             ->label('Foto KTP')
                                             ->image()
                                             ->directory('doorprizes/ktp')
-                                            ->required()
                                             ->columnSpanFull(),
                                         FileUpload::make('surat_penyataan')
                                             ->label('Surat Pernyataan')
