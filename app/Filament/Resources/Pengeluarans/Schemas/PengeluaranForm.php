@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pengeluarans\Schemas;
 
+use Dom\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -81,10 +82,16 @@ class PengeluaranForm
                             ->relationship('rekeningTujuan', 'nama_bank')
                             ->searchable()
                             ->preload()
-                            ->required()
-                            ->label('Rekening Tujuan')
+                            ->label('Sumber Dana')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening)
                             ->native(false),
+                        
+                        TextInput::make('rek_transfer')
+                            ->label('No Rekening Penerima')
+                            ->numeric(),
+
+                        TextInput::make('nama_rekening_penerima')
+                            ->label('Nama Rekening Penerima'),
 
                         FileUpload::make('bukti_transfer')
                             ->directory('bukti-transfer')

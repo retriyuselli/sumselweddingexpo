@@ -17,6 +17,8 @@ class Pengeluaran extends Model
         'nominal',
         'tanggal',
         'rekening_tujuan_id',
+        'rek_transfer',
+        'nama_rekening_penerima',
         'bukti_transfer',
         'user_id',
     ];
