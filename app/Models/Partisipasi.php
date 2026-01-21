@@ -19,12 +19,60 @@ class Partisipasi extends Model
         'category_tenant_id',
         'blok_tenant',
         'harga_jual',
+        'diskon',
+        'harga_bersih',
+        'total_pembayaran',
+        'sisa_pembayaran',
+        'keterangan',
     ];
 
     protected $casts = [
         'tanggal_booking' => 'date',
         'vendor_pendamping' => 'array',
+        'harga_jual' => 'integer',
+        'diskon' => 'integer',
+        'harga_bersih' => 'integer',
+        'total_pembayaran' => 'integer',
+        'sisa_pembayaran' => 'integer',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($partisipasi) {
+            $hargaJual = (int) str_replace(',', '', $partisipasi->harga_jual);
+            $diskon = (int) str_replace(',', '', $partisipasi->diskon);
+            $partisipasi->harga_bersih = max(0, $hargaJual - $diskon);
+
+            // Jika sedang update (sudah ada ID), hitung ulang status pembayaran
+            // Ini untuk handle kasus edit harga/diskon yang mempengaruhi status lunas
+            if ($partisipasi->exists) {
+                $partisipasi->recalculatePaymentStatus();
+            }
+        });
+    }
+
+    public function recalculatePaymentStatus()
+    {
+        // Pastikan harga_bersih up to date (jika dipanggil manual sebelum saving)
+        $hargaJual = (int) str_replace(',', '', $this->harga_jual);
+        $diskon = (int) str_replace(',', '', $this->diskon);
+        $this->harga_bersih = max(0, $hargaJual - $diskon);
+
+        // Hitung total pembayaran dari relasi
+        $total = $this->dataPembayarans()->sum('nominal');
+        $this->total_pembayaran = $total;
+        
+        // Hitung sisa pembayaran
+        $this->sisa_pembayaran = max(0, $this->harga_bersih - $total);
+
+        // Tentukan status
+        if ($total >= $this->harga_bersih && $this->harga_bersih > 0) {
+            $this->status_pembayaran = 'Lunas';
+        } else {
+            $this->status_pembayaran = 'Belum Lunas';
+        }
+    }
+
 
     public function expo()
     {

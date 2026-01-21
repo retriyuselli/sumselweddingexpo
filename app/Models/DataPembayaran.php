@@ -18,12 +18,26 @@ class DataPembayaran extends Model
         'metode_pembayaran',
         'bukti_transfer',
         'rekening_tujuan_id',
+        'termin_pembayaran',
         'keterangan',
     ];
 
     protected $casts = [
         'tanggal_bayar' => 'date',
     ];
+
+    protected static function booted()
+    {
+        static::saved(function ($dataPembayaran) {
+            $dataPembayaran->partisipasi->recalculatePaymentStatus();
+            $dataPembayaran->partisipasi->saveQuietly();
+        });
+
+        static::deleted(function ($dataPembayaran) {
+            $dataPembayaran->partisipasi->recalculatePaymentStatus();
+            $dataPembayaran->partisipasi->saveQuietly();
+        });
+    }
 
     public function partisipasi()
     {
