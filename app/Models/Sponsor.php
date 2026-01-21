@@ -28,6 +28,11 @@ class Sponsor extends Model
         return $this->belongsToMany(Home::class, 'home_sponsor');
     }
 
+    public function expo()
+    {
+        return $this->belongsTo(Expo::class);
+    }
+
     // Accessor untuk mendapatkan hanya nama file dari logo (jika ada prefix path)
     public function getLogoFileNameAttribute()
     {

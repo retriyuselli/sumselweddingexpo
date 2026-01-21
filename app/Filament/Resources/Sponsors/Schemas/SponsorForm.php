@@ -20,6 +20,12 @@ class SponsorForm
                 Section::make('Informasi Sponsor')
                     ->columns(2)
                     ->schema([
+                        Select::make('expo_id')
+                            ->relationship('expo', 'nama_expo')
+                            ->label('Nama Expo')
+                            ->required()
+                            ->columnSpanFull(),
+
                         TextInput::make('name')
                             ->label('Nama Sponsor')
                             ->required()
