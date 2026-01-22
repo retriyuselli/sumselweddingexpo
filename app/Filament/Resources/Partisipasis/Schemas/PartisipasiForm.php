@@ -94,6 +94,9 @@ class PartisipasiForm
                                     if ($categoryTenant) {
                                         $hargaJual = $categoryTenant->harga_jual;
                                         $set('harga_jual', $hargaJual);
+
+                                        $diskon = (int) str_replace(',', '', $get('diskon') ?? 0);
+                                        $set('harga_bersih', max(0, $hargaJual - $diskon));
                                     }
                                 }
                             }),
@@ -109,6 +112,7 @@ class PartisipasiForm
                             ->prefix('Rp')
                             ->required()
                             ->disabled()
+                            ->dehydrated()
                             ->minValue(0)
                             ->mask(RawJs::make('$money($input)'))
                             ->stripCharacters(',')
@@ -125,6 +129,12 @@ class PartisipasiForm
                             ->stripCharacters(',')
                             ->rule('numeric')
                             ->label('Diskon / Potongan Harga')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                $hargaJual = (int) str_replace(',', '', $get('harga_jual') ?? 0);
+                                $diskon = (int) str_replace(',', '', $state ?? 0);
+                                $set('harga_bersih', max(0, $hargaJual - $diskon));
+                            })
                             ->columnSpan(1),
 
                         TextInput::make('harga_bersih')
