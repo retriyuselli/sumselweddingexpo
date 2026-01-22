@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Pengeluarans\Pages;
 
 use App\Filament\Resources\Pengeluarans\PengeluaranResource;
+use App\Filament\Resources\Pengeluarans\Widgets\PengeluaranOverview;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListPengeluarans extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PengeluaranOverview::class,
         ];
     }
 }
