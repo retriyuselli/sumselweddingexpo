@@ -8,9 +8,12 @@ use App\Models\Order;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\Orders\OrderResource;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class RecentOrders extends TableWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = 'full';
@@ -20,7 +23,22 @@ class RecentOrders extends TableWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn () => Order::query()->latest()->limit(5))
+            ->query(function () {
+                $query = Order::query()->latest();
+
+                $startDate = $this->filters['startDate'] ?? null;
+                $endDate = $this->filters['endDate'] ?? null;
+
+                if ($startDate) {
+                    $query->whereDate('created_at', '>=', $startDate);
+                }
+
+                if ($endDate) {
+                    $query->whereDate('created_at', '<=', $endDate);
+                }
+
+                return $query->limit(5);
+            })
             ->columns([
                 TextColumn::make('code')
                     ->label('No. Pesanan')

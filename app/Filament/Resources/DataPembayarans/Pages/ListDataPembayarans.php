@@ -11,12 +11,12 @@ class ListDataPembayarans extends ListRecords
 {
     protected static string $resource = DataPembayaranResource::class;
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            DataPembayaranOverview::class,
-        ];
-    }
+    // protected function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         DataPembayaranOverview::class,
+    //     ];
+    // }
 
     protected function getHeaderActions(): array
     {

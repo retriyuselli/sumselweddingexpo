@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\DataPembayarans\Widgets;
+namespace App\Filament\Widgets;
 
 use App\Models\DataPembayaran;
 use App\Models\Partisipasi;
@@ -39,7 +39,7 @@ class DataPembayaranOverview extends BaseWidget
         }
 
         return [
-            Stat::make('Total Pembayaran', 'Rp ' . number_format($query->sum('nominal'), 0, ',', '.'))
+            Stat::make('Total Pembayaran', '' . number_format($query->sum('nominal'), 0, ',', '.'))
                 ->description('Total semua pembayaran yang masuk')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
@@ -53,12 +53,18 @@ class DataPembayaranOverview extends BaseWidget
                 ->description('Total partisipasi belum lunas')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('danger'),
-                
+
+            Stat::make('Nominal Belum Lunas', 'Rp ' . number_format((clone $partisipasiQuery)->where('status_pembayaran', 'Belum Lunas')->sum('sisa_pembayaran'), 0, ',', '.'))
+                ->description('Total sisa tagihan')
+                ->descriptionIcon('heroicon-m-currency-dollar')
+                ->color('danger'),
+
             Stat::make('Jumlah Transaksi', $query->count())
                 ->description('Total transaksi tercatat')
                 ->descriptionIcon('heroicon-m-list-bullet')
                 ->color('primary'),
-            Stat::make('Pembayaran Hari Ini', 'Rp ' . number_format(DataPembayaran::whereDate('tanggal_bayar', today())->sum('nominal'), 0, ',', '.'))
+                
+            Stat::make('Pembayaran Hari Ini', '' . number_format(DataPembayaran::whereDate('tanggal_bayar', today())->sum('nominal'), 0, ',', '.'))
                 ->description('Total pembayaran tanggal ' . today()->format('d M Y'))
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
