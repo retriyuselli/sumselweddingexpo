@@ -18,16 +18,31 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use App\Models\Penyelenggara;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $favicon = '/storage/logo/logoswe.png';
+
+        try {
+            if (Schema::hasTable('penyelenggaras')) {
+                $penyelenggara = Penyelenggara::first();
+                if ($penyelenggara && $penyelenggara->favicon) {
+                    $favicon = Storage::disk('public')->url($penyelenggara->favicon);
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
         return $panel
             ->id('admin')
             ->path('admin')
             ->default()
-            ->favicon('/storage/logo/logoswe.png')
+            ->favicon($favicon)
             ->brandName('Sumsel Wedding Expo')
             ->brandLogo('/storage/logo/logoswe.png')
             ->brandLogoHeight('3rem')

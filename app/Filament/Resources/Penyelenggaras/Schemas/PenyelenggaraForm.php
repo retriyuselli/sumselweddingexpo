@@ -32,6 +32,7 @@ class PenyelenggaraForm
                     ->label('Favicon')
                     ->image()
                     ->directory('penyelenggaras/favicons')
+                    ->openable()
                     ->disk('public')
                     ->maxSize(1024),
 
