@@ -13,6 +13,8 @@ class PengeluaranOverview extends StatsOverviewWidget
         return [
             Stat::make('Total Pengeluaran', '' . number_format(Pengeluaran::sum('nominal'), 0, ',', '.')),
             Stat::make('Jumlah Transaksi', Pengeluaran::count()),
+            Stat::make('Tanpa Bukti Transfer', Pengeluaran::whereNull('bukti_transfer')->count())
+                ->color('danger'),
         ];
     }
 }

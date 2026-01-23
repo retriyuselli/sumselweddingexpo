@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\DataPembayarans\Schemas;
 
+use App\Models\Partisipasi;
+use App\Models\RekeningTujuan;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -9,93 +11,89 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 
 class DataPembayaranForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(2)
             ->components([
                 Section::make('Informasi Pembayaran')
-                    ->description('Detail identitas pembayar dan transaksi')
+                    ->columns(2)
                     ->schema([
                         Select::make('partisipasi_id')
                             ->relationship('partisipasi', 'id')
+                            ->getOptionLabelFromRecordUsing(fn (Partisipasi $record) => "{$record->vendor->nama_vendor} - {$record->expo->nama_expo}")
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Vendor / Partisipasi')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => optional($record->vendor)->nama_vendor . ' (Partisipasi #' . $record->id . ')')
+                            ->label('Vendor & Expo')
                             ->columnSpanFull(),
 
                         TextInput::make('nama_pembayar')
                             ->required()
                             ->maxLength(255)
-                            ->label('Nama Penyetor')
-                            ->placeholder('Contoh: Budi Santoso')
-                            ->prefixIcon('heroicon-m-user'),
+                            ->label('Nama Penyetor'),
 
                         DatePicker::make('tanggal_bayar')
                             ->required()
                             ->native(false)
-                            ->displayFormat('d F Y')
-                            ->label('Tanggal Pembayaran')
-                            ->default(now()),
+                            ->displayFormat('d/m/Y')
+                            ->default(now())
+                            ->label('Tanggal Bayar'),
+
+                        TextInput::make('nominal')
+                            ->required()
+                            ->prefix('Rp')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->numeric()
+                            ->label('Nominal Pembayaran'),
 
                         Select::make('metode_pembayaran')
                             ->options([
                                 'Transfer Bank' => 'Transfer Bank',
-                                'Tunai' => 'Tunai',
+                                'Cash' => 'Cash',
                                 'QRIS' => 'QRIS',
+                                'Cek' => 'Cek',
+                                'Giro' => 'Giro',
                             ])
-                            ->default('Transfer Bank')
                             ->required()
-                            ->label('Metode Pembayaran')
-                            ->native(false),
-                            
+                            ->default('Transfer Bank')
+                            ->label('Metode Pembayaran'),
+
                         Select::make('rekening_tujuan_id')
                             ->relationship('rekeningTujuan', 'nama_bank')
+                            ->getOptionLabelFromRecordUsing(fn (RekeningTujuan $record) => "{$record->nama_bank} - {$record->nomor_rekening} ({$record->nama_pemilik})")
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Bank Tujuan')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening)
-                            ->native(false),
-                    ])
-                    ->columns(2)
-                    ->columnSpan(1),
+                            ->label('Rekening Tujuan'),
 
-                Section::make('Nominal & Bukti')
-                    ->description('Jumlah pembayaran dan bukti transfer')
-                    ->schema([
-                        TextInput::make('nominal')
-                            ->numeric()
-                            ->prefix('Rp')
+                        Select::make('termin_pembayaran')
+                            ->options([
+                                'Termin 1' => 'Termin 1',
+                                'Termin 2' => 'Termin 2',
+                                'Termin 3' => 'Termin 3',
+                                'Pelunasan' => 'Pelunasan',
+                            ])
                             ->required()
-                            ->label('Nominal Pembayaran')
-                            ->placeholder('0')
-                            ->minValue(1),
+                            ->label('Tahap Pembayaran'),
+
+                        Textarea::make('keterangan')
+                            ->columnSpanFull()
+                            ->label('Keterangan Tambahan'),
 
                         FileUpload::make('bukti_transfer')
                             ->directory('bukti-transfer')
                             ->image()
-                            ->imageEditor()
-                            ->required()
-                            ->label('Bukti Transfer')
                             ->openable()
                             ->downloadable()
-                            ->columnSpanFull(),
-                            
-                        Textarea::make('keterangan')
-                            ->rows(3)
-                            ->nullable()
-                            ->label('Catatan Tambahan')
-                            ->placeholder('Opsional, jika ada catatan khusus')
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->label('Bukti Transfer'),
                     ])
-                    ->columns(1)
-                    ->columnSpan(1),
+                    ->columnSpanFull(),
             ]);
     }
 }
