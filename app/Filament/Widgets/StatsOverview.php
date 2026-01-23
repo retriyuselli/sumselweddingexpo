@@ -15,24 +15,17 @@ class StatsOverview extends StatsOverviewWidget
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 1;
+    protected ?string $heading = 'Vendor dan User';
 
     protected function getStats(): array
     {
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
-        $expoId = $this->filters['expo_id'] ?? null;
 
         $vendorQuery = Vendor::query();
         $userQuery = User::query();
         $orderQuery = Order::query();
         $partisipasiQuery = Partisipasi::query();
-
-        if ($expoId) {
-            $partisipasiQuery->where('expo_id', $expoId);
-            $vendorQuery->whereHas('partisipasis', function ($q) use ($expoId) {
-                $q->where('expo_id', $expoId);
-            });
-        }
 
         if ($startDate) {
             $vendorQuery->whereDate('created_at', '>=', $startDate);
@@ -59,10 +52,10 @@ class StatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-users')
                 ->color('success'),
 
-            Stat::make('Total Transaksi', $orderQuery->where('status', 'paid')->count())
-                ->description('Total transaksi berhasil')
-                ->descriptionIcon('heroicon-m-shopping-cart')
-                ->color('warning'),
+            // Stat::make('Total Transaksi', $orderQuery->where('status', 'paid')->count())
+            //     ->description('Total transaksi berhasil')
+            //     ->descriptionIcon('heroicon-m-shopping-cart')
+            //     ->color('warning'),
                 
             Stat::make('Peserta Expo', $partisipasiQuery->count())
                 ->description('Total peserta expo')

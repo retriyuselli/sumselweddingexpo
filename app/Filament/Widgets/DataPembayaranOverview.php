@@ -12,6 +12,8 @@ class DataPembayaranOverview extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected ?string $heading = 'Data Pemasukan';
+
     protected function getStats(): array
     {
         $startDate = $this->filters['startDate'] ?? null;
@@ -54,7 +56,7 @@ class DataPembayaranOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('danger'),
 
-            Stat::make('Nominal Belum Lunas', 'Rp ' . number_format((clone $partisipasiQuery)->where('status_pembayaran', 'Belum Lunas')->sum('sisa_pembayaran'), 0, ',', '.'))
+            Stat::make('Nominal Belum Lunas', '' . number_format((clone $partisipasiQuery)->where('status_pembayaran', 'Belum Lunas')->sum('sisa_pembayaran'), 0, ',', '.'))
                 ->description('Total sisa tagihan')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('danger'),
