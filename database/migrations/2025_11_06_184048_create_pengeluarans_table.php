@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('nominal');
             $table->date('tanggal');
             $table->foreignId('rekening_tujuan_id')->constrained('rekening_tujuans')->onDelete('cascade');
-            $table->string('bukti_transfer');
+            $table->string('bukti_transfer')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
             $table->softDeletes();

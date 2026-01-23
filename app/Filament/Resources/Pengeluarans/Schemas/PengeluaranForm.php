@@ -97,7 +97,6 @@ class PengeluaranForm
                             ->directory('bukti-transfer')
                             ->image()
                             ->imageEditor()
-                            ->required()
                             ->label('Bukti Transfer')
                             ->openable()
                             ->downloadable()
