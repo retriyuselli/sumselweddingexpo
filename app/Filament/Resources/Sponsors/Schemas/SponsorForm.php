@@ -7,7 +7,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Components\Section;
+use Filament\Support\RawJs;
 use Filament\Schemas\Schema;
 use App\Enums\SponsorType;
 
@@ -61,6 +64,36 @@ class SponsorForm
                             ->label('Deskripsi')
                             ->rows(3)
                             ->columnSpan(2),
+                    ]),
+
+                Section::make('Detail Kesepakatan')
+                    ->schema([
+                        TagsInput::make('bantuan')
+                            ->label('Bentuk Bantuan')
+                            ->suggestions([
+                                'Uang Tunai',
+                                'Promosi',
+                                'Barang',
+                                'Jasa',
+                                'Venue',
+                                'Konsumsi',
+                            ])
+                            ->placeholder('Tambah bentuk bantuan')
+                            ->live()
+                            ->columnSpanFull(),
+                        
+                        TextInput::make('nominal')
+                            ->label('Nominal Uang Tunai')
+                            ->prefix('Rp')
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->visible(fn ($get) => in_array('Uang Tunai', $get('bantuan') ?? []))
+                            ->columnSpanFull(),
+
+                        RichEditor::make('kewajiban')
+                            ->label('Kewajiban & Kesepakatan')
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Status')

@@ -25,6 +25,17 @@ class SponsorsTable
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
+                TextColumn::make('bantuan')
+                    ->label('Bantuan')
+                    ->badge()
+                    ->separator(',')
+                    ->limitList(2)
+                    ->toggleable(),
+                TextColumn::make('nominal')
+                    ->label('Nominal')
+                    ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp '.number_format($state, 0, ',', '.'))
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('website')
                     ->label('Website')
                     ->searchable()

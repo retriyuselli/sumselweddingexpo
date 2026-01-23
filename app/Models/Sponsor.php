@@ -15,11 +15,15 @@ class Sponsor extends Model
         'jenis_sponsor',
         'is_active',
         'order',
+        'bantuan',
+        'nominal',
+        'kewajiban',
     ];
 
     protected $casts = [
         'jenis_sponsor' => SponsorType::class,
         'is_active' => 'boolean',
+        'bantuan' => 'array',
     ];
 
     // Relasi ke Home (jika diperlukan)

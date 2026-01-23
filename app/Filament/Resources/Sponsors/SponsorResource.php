@@ -20,7 +20,7 @@ class SponsorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-star';
 
-    protected static ?string $cluster = SponsorsCluster::class;
+    // protected static ?string $cluster = SponsorsCluster::class;
 
     public static function form(Schema $schema): Schema
     {
