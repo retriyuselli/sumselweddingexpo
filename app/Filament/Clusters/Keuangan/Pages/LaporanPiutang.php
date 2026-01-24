@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Keuangan\Pages;
 
 use App\Filament\Clusters\Keuangan;
+use App\Filament\Widgets\LaporanPiutangStatsOverview;
 use App\Models\Partisipasi;
 use BackedEnum;
 use Filament\Pages\Page;
@@ -29,6 +30,13 @@ class LaporanPiutang extends Page implements HasTable
     protected static ?string $navigationLabel = 'Piutang Tenant';
 
     protected static ?int $navigationSort = 2;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            LaporanPiutangStatsOverview::class,
+        ];
+    }
 
     public function table(Table $table): Table
     {
