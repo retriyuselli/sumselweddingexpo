@@ -7,6 +7,7 @@ use App\Filament\Widgets\LabaRugiStatsOverview;
 use App\Models\Expo;
 use App\Models\DataPembayaran;
 use App\Models\Sponsor;
+use App\Models\Partisipasi;
 use App\Models\Pengeluaran;
 use BackedEnum;
 use Filament\Pages\Page;
@@ -86,6 +87,17 @@ class LabaRugiReport extends Page implements HasTable
                     })
                     ->color('danger')
                     ->weight('bold')
+                    ->alignRight(),
+
+                TextColumn::make('piutang')
+                    ->label('Piutang')
+                    ->state(function (Expo $record): string {
+                        $total = Partisipasi::where('expo_id', $record->id)
+                            ->where('status_pembayaran', '!=', 'Lunas')
+                            ->sum('sisa_pembayaran');
+                        return 'Rp ' . number_format($total, 0, ',', '.');
+                    })
+                    ->color('warning')
                     ->alignRight(),
                 
                 TextColumn::make('status_laba_rugi')
