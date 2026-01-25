@@ -11,6 +11,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -152,8 +153,30 @@ class PartisipasiForm
                             ->columnSpan(1),
 
                         Textarea::make('keterangan')
-                            ->label('Keterangan')
+                            ->label('Keterangan1')
                             ->nullable(),
+
+                        Toggle::make('is_barter')
+                            ->label('Apakah ada barter?')
+                            ->live()
+                            ->columnSpanFull(),
+
+                        Textarea::make('barter_description')
+                            ->label('Keterangan Tambahan Barter')
+                            ->visible(fn (Get $get) => $get('is_barter'))
+                            ->required(fn (Get $get) => $get('is_barter'))
+                            ->columnSpanFull(),
+
+                        TextInput::make('barter_nominal')
+                            ->label('Nominal Barter')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->visible(fn (Get $get) => $get('is_barter'))
+                            ->required(fn (Get $get) => $get('is_barter'))
+                            ->helperText('Tidak termasuk dalam total pembayaran ke perusahaan')
+                            ->columnSpanFull(),
                         
                         Select::make('status_pembayaran')
                             ->options([
@@ -169,7 +192,7 @@ class PartisipasiForm
                             ->live()
                             ->columnSpan(1),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
 
                 Section::make('Pembayaran')
@@ -182,9 +205,6 @@ class PartisipasiForm
                             ->disabled()
                             ->dehydrated()
                             ->formatStateUsing(fn ($state) => number_format($state, 0, '.', ',')),
-                        Textarea::make('keterangan')
-                            ->rows(3)
-                            ->columnSpanFull(),
                         Repeater::make('dataPembayarans')
                             ->relationship()
                             ->collapsible()

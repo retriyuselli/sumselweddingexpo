@@ -24,6 +24,9 @@ class Partisipasi extends Model
         'total_pembayaran',
         'sisa_pembayaran',
         'keterangan',
+        'is_barter',
+        'barter_description',
+        'barter_nominal',
     ];
 
     protected $casts = [
@@ -34,6 +37,8 @@ class Partisipasi extends Model
         'harga_bersih' => 'integer',
         'total_pembayaran' => 'integer',
         'sisa_pembayaran' => 'integer',
+        'is_barter' => 'boolean',
+        'barter_nominal' => 'integer',
     ];
 
     protected static function booted()
