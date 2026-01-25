@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard as PagesDashboard;
 use App\Filament\Widgets\DataPembayaranOverview;
+use App\Filament\Widgets\LabaRugiStatsOverview;
 use App\Filament\Widgets\PengeluaranOverview;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -66,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
+                LabaRugiStatsOverview::class,
                 DataPembayaranOverview::class,
                 PengeluaranOverview::class,
             ])

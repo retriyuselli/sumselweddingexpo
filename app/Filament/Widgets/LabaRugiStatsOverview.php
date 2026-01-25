@@ -13,6 +13,8 @@ use Filament\Support\Icons\Heroicon;
 
 class LabaRugiStatsOverview extends BaseWidget
 {
+    public ?string $heading = 'Data Laba Rugi';
+    
     protected function getStats(): array
     {
         $expos = Expo::all();
@@ -45,20 +47,20 @@ class LabaRugiStatsOverview extends BaseWidget
         $totalLabaRugiGlobal = $totalPemasukanGlobal - $totalPengeluaranGlobal;
 
         return [
-            Stat::make('Total Pemasukan', 'Rp ' . number_format($totalPemasukanGlobal, 0, ',', '.'))
+            Stat::make('Total Pemasukan', '' . number_format($totalPemasukanGlobal, 0, ',', '.'))
                 ->icon(Heroicon::OutlinedArrowTrendingUp)
                 ->color('success'),
             
-            Stat::make('Total Pengeluaran', 'Rp ' . number_format($totalPengeluaranGlobal, 0, ',', '.'))
+            Stat::make('Total Pengeluaran', '' . number_format($totalPengeluaranGlobal, 0, ',', '.'))
                 ->icon(Heroicon::OutlinedArrowTrendingDown)
                 ->color('danger'),
             
-            Stat::make('Total Piutang', 'Rp ' . number_format($totalPiutangGlobal, 0, ',', '.'))
+            Stat::make('Total Piutang', '' . number_format($totalPiutangGlobal, 0, ',', '.'))
                 ->icon(Heroicon::OutlinedExclamationCircle)
                 ->description('Potensi pemasukan tertunda')
                 ->color('warning'),
 
-            Stat::make('Laba Bersih', 'Rp ' . number_format($totalLabaRugiGlobal, 0, ',', '.'))
+            Stat::make('Laba Bersih', '' . number_format($totalLabaRugiGlobal, 0, ',', '.'))
                 ->icon(Heroicon::OutlinedBanknotes)
                 ->description('Berdasarkan uang masuk (Cash Basis)')
                 ->color($totalLabaRugiGlobal >= 0 ? 'primary' : 'danger'),

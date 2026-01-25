@@ -9,6 +9,8 @@ use Filament\Support\Icons\Heroicon;
 
 class LaporanPiutangStatsOverview extends BaseWidget
 {
+    public ?string $heading = 'Laporan Piutang';
+    
     protected function getStats(): array
     {
         $query = Partisipasi::query()
@@ -20,7 +22,7 @@ class LaporanPiutangStatsOverview extends BaseWidget
         $piutangTertinggi = $query->max('sisa_pembayaran');
 
         return [
-            Stat::make('Total Piutang Tertunggak', 'Rp ' . number_format($totalPiutang, 0, ',', '.'))
+            Stat::make('Total Piutang Tertunggak', '' . number_format($totalPiutang, 0, ',', '.'))
                 ->description('Total tagihan yang belum dibayar')
                 ->descriptionIcon(Heroicon::OutlinedBanknotes)
                 ->color('danger'),
@@ -30,7 +32,7 @@ class LaporanPiutangStatsOverview extends BaseWidget
                 ->descriptionIcon(Heroicon::OutlinedUsers)
                 ->color('warning'),
 
-            Stat::make('Piutang Tertinggi', 'Rp ' . number_format($piutangTertinggi, 0, ',', '.'))
+            Stat::make('Piutang Tertinggi', '' . number_format($piutangTertinggi, 0, ',', '.'))
                 ->description('Nominal tunggakan terbesar')
                 ->descriptionIcon(Heroicon::OutlinedExclamationCircle)
                 ->color('danger'),
