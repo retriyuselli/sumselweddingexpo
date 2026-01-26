@@ -153,7 +153,7 @@ class PartisipasiForm
                             ->columnSpan(1),
 
                         Textarea::make('keterangan')
-                            ->label('Keterangan1')
+                            ->label('Keterangan')
                             ->nullable(),
 
                         Toggle::make('is_barter')
