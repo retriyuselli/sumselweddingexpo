@@ -99,6 +99,17 @@ class LabaRugiReport extends Page implements HasTable
                     })
                     ->color('warning')
                     ->alignRight(),
+
+                TextColumn::make('barter')
+                    ->label('Barter')
+                    ->state(function (Expo $record): string {
+                        $total = Partisipasi::where('expo_id', $record->id)
+                            ->where('is_barter', true)
+                            ->sum('barter_nominal');
+                        return 'Rp ' . number_format($total, 0, ',', '.');
+                    })
+                    ->color('info')
+                    ->alignRight(),
                 
                 TextColumn::make('status_laba_rugi')
                     ->label('Status')
