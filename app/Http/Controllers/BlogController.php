@@ -18,12 +18,21 @@ class BlogController extends Controller
             ->orderBy('date', 'desc')
             ->paginate(9);
 
+        // Process images for paginated blogs
+        foreach ($blogs as $blog) {
+            $this->processBlogImage($blog);
+        }
+
         $categories = BlogCategory::withCount('blogs')->get();
 
         $featuredBlog = Blog::with(['category', 'user'])
             ->where('is_published', true)
             ->orderBy('date', 'desc')
             ->first();
+
+        if ($featuredBlog) {
+            $this->processBlogImage($featuredBlog);
+        }
 
         return view('blog.index', compact('blogs', 'categories', 'featuredBlog'));
     }
@@ -38,6 +47,8 @@ class BlogController extends Controller
             ->where('is_published', true)
             ->firstOrFail();
 
+        $this->processBlogImage($blog);
+
         // Get related blogs from same category
         $relatedBlogs = Blog::with(['category', 'user'])
             ->where('blog_category_id', $blog->blog_category_id)
@@ -47,6 +58,10 @@ class BlogController extends Controller
             ->limit(3)
             ->get();
 
+        foreach ($relatedBlogs as $related) {
+            $this->processBlogImage($related);
+        }
+
         // Get recent blogs
         $recentBlogs = Blog::with(['category', 'user'])
             ->where('is_published', true)
@@ -55,8 +70,14 @@ class BlogController extends Controller
             ->limit(4)
             ->get();
 
+        foreach ($recentBlogs as $recent) {
+            $this->processBlogImage($recent);
+        }
+
         // Format article data for view
         $article = $blog->toArticleArray();
+        // Ensure article array has the correct image URL
+        $article['image'] = $blog->image_url;
 
         return view('blog.show', compact('article', 'relatedBlogs', 'recentBlogs', 'blog'));
     }
@@ -73,6 +94,10 @@ class BlogController extends Controller
             ->where('is_published', true)
             ->orderBy('date', 'desc')
             ->paginate(9);
+
+        foreach ($blogs as $blog) {
+            $this->processBlogImage($blog);
+        }
 
         $categories = BlogCategory::withCount('blogs')->get();
 
@@ -96,8 +121,37 @@ class BlogController extends Controller
             ->orderBy('date', 'desc')
             ->paginate(9);
 
+        foreach ($blogs as $blog) {
+            $this->processBlogImage($blog);
+        }
+
         $categories = BlogCategory::withCount('blogs')->get();
 
-        return view('blog.search', compact('blogs', 'query', 'categories'));
+        return view('blog.index', compact('blogs', 'categories'));
+    }
+
+    /**
+     * Process blog image URL
+     */
+    private function processBlogImage($blog)
+    {
+        $defaultImage = 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop&auto=format&q=80';
+
+        if (empty($blog->image)) {
+            $blog->setAttribute('image_url', $defaultImage);
+            return;
+        }
+
+        if (filter_var($blog->image, FILTER_VALIDATE_URL)) {
+            $blog->setAttribute('image_url', $blog->image);
+            return;
+        }
+
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($blog->image)) {
+            $blog->setAttribute('image_url', asset('storage/' . $blog->image));
+            return;
+        }
+
+        $blog->setAttribute('image_url', $defaultImage);
     }
 }

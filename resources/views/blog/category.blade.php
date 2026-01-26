@@ -76,7 +76,7 @@
                         <article
                             class="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
                             <div class="relative overflow-hidden">
-                                <img src="{{ $blog->image ?: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop&auto=format&q=80' }}"
+                                <img src="{{ $blog->image_url ?: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop&auto=format&q=80' }}"
                                     alt="{{ $blog->title }}"
                                     class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                                 <span

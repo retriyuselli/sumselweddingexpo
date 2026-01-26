@@ -56,21 +56,25 @@ class Blog extends Model
     public function toArticleArray()
     {
         return [
+            'id' => $this->id,
             'title' => $this->title,
             'breadcrumb' => $this->title,
+            'slug' => $this->slug,
             'excerpt' => $this->excerpt,
-            'category' => $this->category->name ?? null,
+            'content' => $this->content,
+            'category' => $this->category ? $this->category->name : 'Uncategorized',
             'category_color' => $this->category_color,
+            'read_time' => $this->read_time,
+            'image' => $this->image, // Return raw image, let controller handle URL
+            'date' => $this->date ? $this->date->isoFormat('D MMMM Y') : $this->created_at->isoFormat('D MMMM Y'),
+            'datetime' => $this->date ? $this->date->format('Y-m-d') : $this->created_at->format('Y-m-d'),
             'author' => [
-                'name' => $this->user->name ?? null,
-                'role' => $this->user->getRoleNameAttribute() ?? null,
-                'bio' => $this->user->bio ?? null,
+                'name' => $this->user ? $this->user->name : 'Admin',
+                'avatar' => ($this->user && $this->user->avatar) ? $this->user->avatar : 'https://ui-avatars.com/api/?name=' . ($this->user ? urlencode($this->user->name) : 'Admin'),
+                'role' => ($this->user && $this->user->roles->first()) ? $this->user->roles->first()->name : 'Admin',
+                'bio' => $this->user ? $this->user->bio : null,
                 'color' => $this->user->author_color ?? '3b82f6',
             ],
-            'date' => $this->date->format('d F Y'),
-            'read_time' => $this->read_time,
-            'image' => $this->image,
-            'content' => $this->content,
         ];
     }
 

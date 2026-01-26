@@ -63,8 +63,7 @@
                         </a>
                     </div>
                     <div class="order-1 md:order-2">
-                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop&auto=format&q=80"
-                            alt="Featured Article" class="w-full h-full object-cover">
+                        <img src="{{ $featuredBlog->image_url }}" alt="Featured Article" class="w-full h-full object-cover">
                     </div>
                 </div>
             </div>
@@ -104,8 +103,7 @@
                             class="blog-item bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300"
                             data-category="{{ $blog->category->slug }}">
                             <div class="relative overflow-hidden">
-                                <img src="{{ $blog->image ?: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop&auto=format&q=80' }}"
-                                    alt="{{ $blog->title }}"
+                                <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}"
                                     class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                                 <span
                                     class="absolute top-4 left-4 px-3 py-1 bg-{{ $blog->category_color ?: 'purple' }}-600 text-white text-xs font-semibold rounded-full">
@@ -130,7 +128,7 @@
                                         </svg>
                                         {{ $blog->date->format('d M Y') }}
                                     </span>
-                                    <span>{{ $blog->read_time }} min baca</span>
+                                    <span>{{ $blog->read_time }} 123min baca</span>
                                 </div>
                             </div>
                         </article>

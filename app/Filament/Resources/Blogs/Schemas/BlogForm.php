@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Blogs\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -118,10 +119,14 @@ class BlogForm
                 Section::make('Media & Publikasi')
                     ->description('Upload gambar atau gunakan URL gambar eksternal')
                     ->schema([
-                        TextInput::make('image')
-                            ->label('URL Gambar')
-                            ->placeholder('https://images.unsplash.com/photo-xxx atau upload file')
-                            ->helperText('Masukkan URL gambar (Unsplash, dll) ATAU upload file di bawah. Rekomendasi: 1200x600px')
+                        FileUpload::make('image')
+                            ->image()
+                            ->imageEditor()
+                            ->disk('public') // Pastikan menggunakan disk public
+                            ->visibility('public')
+                            ->directory('blog-images')
+                            ->label('Upload Gambar')
+                            ->helperText('Rekomendasi: 1200x600px')
                             ->columnSpanFull(),
 
                         DatePicker::make('date')
