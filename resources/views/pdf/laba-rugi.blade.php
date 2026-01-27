@@ -252,9 +252,10 @@
                 <thead>
                     <tr>
                         <th width="5%" class="text-center">No</th>
-                        <th width="35%">Vendor</th>
-                        <th width="15%">Blok</th>
-                        <th width="15%">Status</th>
+                        <th width="25%">Vendor</th>
+                        <th width="8%">Blok</th>
+                        <th width="8%">Status</th>
+                        <th width="12%">Tanggal Bayar</th>
                         <th width="15%" class="text-right">Nominal Bayar</th>
                         <th width="15%" class="text-right">Total Tagihan</th>
                     </tr>
@@ -266,6 +267,18 @@
                             <td>{{ $partisipasi->vendor->nama_vendor ?? '-' }}</td>
                             <td>{{ $partisipasi->blok_tenant }}</td>
                             <td>{{ $partisipasi->status_pembayaran }}</td>
+                            <td>
+                                @if ($partisipasi->dataPembayarans->isNotEmpty())
+                                    <dl style="padding-left: 0px; margin: 0;">
+                                        @foreach ($partisipasi->dataPembayarans as $pembayaran)
+                                            <dt>{{ $pembayaran->tanggal_bayar ? $pembayaran->tanggal_bayar->format('d M Y') : '-' }}
+                                            </dt>
+                                        @endforeach
+                                    </dl>
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="text-right">{{ number_format($partisipasi->total_pembayaran, 0, ',', '.') }}
                             </td>
                             <td class="text-right text-gray-500">
@@ -273,11 +286,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">Tidak ada data partisipasi</td>
+                            <td colspan="7" class="text-center">Tidak ada data partisipasi</td>
                         </tr>
                     @endforelse
                     <tr class="total-row">
-                        <td colspan="4" class="text-right">Subtotal Partisipasi</td>
+                        <td colspan="5" class="text-right">Subtotal Partisipasi</td>
                         <td class="text-right">{{ number_format($totalPartisipasi, 0, ',', '.') }}</td>
                         <td></td>
                     </tr>
@@ -338,8 +351,9 @@
                 <thead>
                     <tr>
                         <th width="5%" class="text-center">No</th>
-                        <th width="40%">Judul Pengeluaran</th>
-                        <th width="35%">Keterangan</th>
+                        <th width="30%">Judul Pengeluaran</th>
+                        <th width="15%">Tanggal</th>
+                        <th width="30%">Keterangan</th>
                         <th width="20%" class="text-right">Nominal</th>
                     </tr>
                 </thead>
@@ -348,16 +362,17 @@
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
                             <td>{{ $pengeluaran->nama_pengeluaran }}</td>
+                            <td>{{ $pengeluaran->tanggal ? $pengeluaran->tanggal->format('d M Y') : '-' }}</td>
                             <td>{{ $pengeluaran->keterangan ?? '-' }}</td>
                             <td class="text-right">{{ number_format($pengeluaran->nominal, 0, ',', '.') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center">Tidak ada data pengeluaran</td>
+                            <td colspan="5" class="text-center">Tidak ada data pengeluaran</td>
                         </tr>
                     @endforelse
                     <tr class="total-row">
-                        <td colspan="3" class="text-right">Total Pengeluaran</td>
+                        <td colspan="4" class="text-right">Total Pengeluaran</td>
                         <td class="text-right danger">{{ number_format($totalPengeluaran, 0, ',', '.') }}</td>
                     </tr>
                 </tbody>
