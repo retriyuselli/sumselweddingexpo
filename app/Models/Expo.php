@@ -35,6 +35,11 @@ class Expo extends Model
         return $this->hasMany(Partisipasi::class);
     }
 
+    public function sponsors()
+    {
+        return $this->hasMany(Sponsor::class);
+    }
+
     public function pengeluarans()
     {
         return $this->hasMany(Pengeluaran::class);

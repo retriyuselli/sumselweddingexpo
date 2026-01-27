@@ -8,8 +8,11 @@ use App\Models\Expo;
 use App\Models\DataPembayaran;
 use App\Models\Sponsor;
 use App\Models\Partisipasi;
+use App\Models\Penyelenggara;
 use App\Models\Pengeluaran;
 use BackedEnum;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -145,24 +148,20 @@ class LabaRugiReport extends Page implements HasTable
                         $pemasukan = $partisipasi + $sponsor;
                         
                         $pengeluaran = Pengeluaran::where('expo_id', $record->id)->sum('nominal');
-                        $labaRugi = $pemasukan - $pengeluaran;
+                        $total = $pemasukan - $pengeluaran;
 
-                        return 'Rp ' . number_format($labaRugi, 0, ',', '.');
+                        return 'Rp ' . number_format($total, 0, ',', '.');
                     })
-                    ->color(function (Expo $record): string {
-                        $partisipasi = DataPembayaran::whereHas('partisipasi', function ($query) use ($record) {
-                            $query->where('expo_id', $record->id);
-                        })->sum('nominal');
-                        $sponsor = Sponsor::where('expo_id', $record->id)->sum('nominal');
-                        $pemasukan = $partisipasi + $sponsor;
-                        
-                        $pengeluaran = Pengeluaran::where('expo_id', $record->id)->sum('nominal');
-                        $labaRugi = $pemasukan - $pengeluaran;
-                        
-                        return $labaRugi >= 0 ? 'success' : 'danger';
-                    })
+                    ->color(fn (string $state): string => str_contains($state, '-') ? 'danger' : 'success')
                     ->weight('bold')
                     ->alignRight(),
+            ])
+            ->actions([
+                Action::make('download')
+                    ->label('Download Laporan')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Expo $record) => route('laporan.laba-rugi.stream', $record))
+                    ->openUrlInNewTab(),
             ])
             ->paginated(false);
     }

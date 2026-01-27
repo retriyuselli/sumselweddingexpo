@@ -15,6 +15,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\LabaRugiReportController;
+
 Route::get('/form-tring-pegadaian.pdf', function () {
     $penyelenggara = \App\Models\Penyelenggara::first();
     $pdf = Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.form-tring-pegadaian', compact('penyelenggara'));
@@ -32,6 +34,9 @@ Route::get('/doorprizes/{doorprize}/form-tring-pegadaian.pdf', function (\App\Mo
 
     return $pdf->stream('form-tring-pegadaian-' . $doorprize->id . '.pdf');
 })->middleware(['auth'])->name('doorprizes.form-tring-pegadaian.pdf');
+
+Route::get('/laporan-laba-rugi/{record}', [LabaRugiReportController::class, 'stream'])->name('laporan.laba-rugi.stream');
+Route::get('/laporan-laba-rugi/{record}/download', [LabaRugiReportController::class, 'download'])->name('laporan.laba-rugi.download');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
