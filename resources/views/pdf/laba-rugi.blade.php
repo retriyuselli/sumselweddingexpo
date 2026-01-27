@@ -6,7 +6,7 @@
     <title>Laporan Detail Laba Rugi</title>
     <style>
         @page {
-            margin: 130px 35px 35px 60px;
+            margin: 110px 35px 35px 60px;
         }
 
         body {
@@ -17,7 +17,7 @@
 
         header {
             position: fixed;
-            top: -90px;
+            top: -70px;
             left: 0px;
             right: 0px;
             height: 120px;
@@ -298,8 +298,18 @@
                     @forelse($expo->sponsors as $i => $sponsor)
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
-                            <td>{{ $sponsor->nama_sponsor }}</td>
-                            <td>{{ $sponsor->keterangan ?? '-' }}</td>
+                            <td>{{ $sponsor->name }}</td>
+                            <td>
+                                @if (isset($sponsor->kewajiban) && is_array($sponsor->kewajiban))
+                                    <ul style="padding-left: 15px; margin: 0;">
+                                        @foreach ($sponsor->kewajiban as $kewajiban)
+                                            <li>{{ $kewajiban }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    {{ $sponsor->kewajiban ?? '-' }}
+                                @endif
+                            </td>
                             <td class="text-right">{{ number_format($sponsor->nominal, 0, ',', '.') }}</td>
                         </tr>
                     @empty
@@ -337,7 +347,7 @@
                     @forelse($expo->pengeluarans as $i => $pengeluaran)
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
-                            <td>{{ $pengeluaran->judul }}</td>
+                            <td>{{ $pengeluaran->nama_pengeluaran }}</td>
                             <td>{{ $pengeluaran->keterangan ?? '-' }}</td>
                             <td class="text-right">{{ number_format($pengeluaran->nominal, 0, ',', '.') }}</td>
                         </tr>

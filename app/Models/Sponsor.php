@@ -25,6 +25,7 @@ class Sponsor extends Model
         'jenis_sponsor' => SponsorType::class,
         'is_active' => 'boolean',
         'bantuan' => 'array',
+        'kewajiban' => 'array',
     ];
 
     // Relasi ke Home (jika diperlukan)

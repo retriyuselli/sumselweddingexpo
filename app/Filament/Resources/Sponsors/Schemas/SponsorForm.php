@@ -91,7 +91,7 @@ class SponsorForm
                             ->visible(fn ($get) => in_array('Uang Tunai', $get('bantuan') ?? []))
                             ->columnSpanFull(),
 
-                        RichEditor::make('kewajiban')
+                        Textarea::make('kewajiban')
                             ->label('Kewajiban & Kesepakatan')
                             ->columnSpanFull(),
                     ]),
