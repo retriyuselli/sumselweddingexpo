@@ -33,12 +33,16 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $favicon = '/storage/logo/logoswe.png';
+        $brandLogo = '/storage/logo/logoswe.png';
 
         try {
             if (Schema::hasTable('penyelenggaras')) {
                 $penyelenggara = Penyelenggara::first();
                 if ($penyelenggara && $penyelenggara->favicon) {
                     $favicon = Storage::disk('public')->url($penyelenggara->favicon);
+                }
+                if ($penyelenggara && $penyelenggara->logo) {
+                    $brandLogo = Storage::disk('public')->url($penyelenggara->logo);
                 }
             }
         } catch (\Throwable $e) {
@@ -51,8 +55,8 @@ class AdminPanelProvider extends PanelProvider
             ->favicon($favicon)
             ->brandName('Sumsel Wedding Expo')
             ->maxContentWidth(Width::Full)
-            ->brandLogo('/storage/logo/logoswe.png')
-            ->brandLogoHeight('3rem')
+            ->brandLogo($brandLogo)
+            ->brandLogoHeight('2rem')
             ->sidebarCollapsibleOnDesktop(true)
             ->login()
             ->colors([
