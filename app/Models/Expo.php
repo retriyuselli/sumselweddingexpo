@@ -15,6 +15,7 @@ class Expo extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'lokasi',
+        'alamat',
         'status',
         'periode',
     ];

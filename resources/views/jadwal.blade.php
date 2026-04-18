@@ -69,8 +69,8 @@
                             </svg>
                             <h3 class="text-base sm:text-xl font-semibold">Lokasi</h3>
                         </div>
-                        <p class="text-xl sm:text-2xl font-bold">Palembang Icon</p>
-                        <p class="text-xs sm:text-sm opacity-90 mt-1">Akhiren, Palembang</p>
+                        <p class="text-xl sm:text-2xl font-bold">{{ $expo->lokasi ?? 'Palembang Icon' }}</p>
+                        <p class="text-xs sm:text-sm opacity-90 mt-1">{{ $expo->alamat ?? 'PI, Palembang' }}</p>
                     </div>
                 </div>
             </div>

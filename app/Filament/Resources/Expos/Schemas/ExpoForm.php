@@ -32,6 +32,10 @@ class ExpoForm
                     ->required()
                     ->maxLength(255),
 
+                TextInput::make('alamat')
+                    ->required()
+                    ->maxLength(255),
+
                 Toggle::make('status')
                     ->label('Aktif'),
 
