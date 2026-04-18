@@ -143,7 +143,7 @@
                                             </div>
                                         @endforeach
                                     @else
-                                        <p class="text-center text-gray-500">Belum ada jadwal untuk hari ini.</p>
+                                        <p class="text-center text-gray-500">Coming Soon.</p>
                                     @endif
                                 </div>
                             </div>
