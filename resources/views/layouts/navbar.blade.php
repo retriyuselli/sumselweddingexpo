@@ -12,9 +12,9 @@
         <a href="/" class="flex items-center gap-2 justify-self-center md:justify-self-start">
             @if (isset($penyelenggara) && $penyelenggara?->logo)
                 <img src="{{ asset('storage/' . $penyelenggara->logo) }}" alt="{{ $penyelenggara->name }}"
-                    class="h-10 w-auto">
+                    class="h-8 md:h-10 w-auto">
             @else
-                <img src="/storage/logo/logoswe.png" alt="WeddingExpo Logo" class="h-10 w-auto">
+                <img src="/storage/logo/logoswe.png" alt="WeddingExpo Logo" class="h-8 md:h-10 w-auto">
             @endif
         </a>
         <nav class="hidden md:flex items-center gap-8 text-sm">
@@ -44,16 +44,19 @@
                 <a href="{{ route('appointments.index') }}" class="hover:text-rose-600">Janji Temu</a>
             @endauth
         </nav>
-        <div class="flex items-center gap-1 justify-self-end">
+        <div class="flex items-center gap-2 justify-self-end">
             <div class="relative dropdown-hover">
                 <a href="{{ route('cart') }}" class="relative p-2 rounded-lg hover:bg-neutral-100 active:bg-neutral-200 transition-colors block" aria-label="Keranjang">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.25 3h1.386c.51 0 .955.343 1.089.835l.383 1.437M7.5 14.25h9.563a1.5 1.5 0 001.433-1.089L20.25 6.75H5.108m2.392 7.5l-1.5 5.25m10.5-5.25l-1.5 5.25M9.75 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm8.25 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                    </svg>
-                    <span id="cart-badge"
-                        class="hidden absolute -top-0.5 -right-0.5 z-10 bg-rose-500 text-white text-[9px] font-bold rounded-full min-w-4 h-4 px-0.5 items-center justify-center leading-none"></span>
+                    {{-- Wrapper relative agar badge tidak overflow keluar header --}}
+                    <div class="relative w-5 h-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 3h1.386c.51 0 .955.343 1.089.835l.383 1.437M7.5 14.25h9.563a1.5 1.5 0 001.433-1.089L20.25 6.75H5.108m2.392 7.5l-1.5 5.25m10.5-5.25l-1.5 5.25M9.75 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm8.25 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                        <span id="cart-badge"
+                            class="hidden absolute -top-2 -right-2 z-10 bg-rose-500 text-white text-[8px] font-bold rounded-full min-w-4 h-4 px-0.5 items-center justify-center leading-none"></span>
+                    </div>
                 </a>
                 <div
                     class="dropdown-menu absolute right-0 mt-2 w-80 rounded-lg border border-neutral-200 bg-white shadow-lg opacity-0 invisible transition-all duration-200">
@@ -74,13 +77,13 @@
             </div>
             @auth
                 <div class="relative md:hidden" id="mobile-profile">
-                    <button id="mobile-profile-button" class="flex items-center justify-center rounded-full hover:ring-2 hover:ring-rose-300 active:ring-rose-400 transition-all" aria-label="Profile">
+                    <button id="mobile-profile-button" class="flex items-center justify-center p-0.5 rounded-full ring-2 ring-neutral-200 hover:ring-rose-400 active:ring-rose-500 transition-all" aria-label="Profile">
                         @if (auth()->user()->avatar)
                             <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
-                                class="w-8 h-8 rounded-full object-cover">
+                                class="w-7 h-7 rounded-full object-cover">
                         @else
                             <div
-                                class="w-8 h-8 rounded-full bg-linear-to-br from-rose-400 to-pink-600 flex items-center justify-center text-white font-semibold text-sm select-none">
+                                class="w-7 h-7 rounded-full bg-linear-to-br from-rose-400 to-pink-600 flex items-center justify-center text-white font-semibold text-xs select-none">
                                 {{ auth()->user()->initials }}
                             </div>
                         @endif
