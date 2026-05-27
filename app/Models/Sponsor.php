@@ -4,9 +4,20 @@ namespace App\Models;
 
 use App\Enums\SponsorType;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
 
 class Sponsor extends Model
 {
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Sponsor {$eventName}");
+    }
     protected $fillable = [
         'expo_id',
         'name',

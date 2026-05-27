@@ -116,7 +116,7 @@
     </section>
 
     <!-- Tentang -->
-    <section class="py-16 sm:py-20 bg-white">
+    <section class="py-10 sm:py-14 bg-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-1 gap-12 items-center">
                 <div>
@@ -171,7 +171,7 @@
 
     <!-- Highlight - Mengapa Harus Datang -->
     <section
-        class="py-16 sm:py-20 bg-linear-to-br from-rose-600 via-pink-600 to-pink-700 text-white relative overflow-hidden">
+        class="py-10 sm:py-14 bg-linear-to-br from-rose-600 via-pink-600 to-pink-700 text-white relative overflow-hidden">
         <!-- Decorative Elements -->
         <div class="absolute inset-0 opacity-10">
             <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -179,7 +179,7 @@
         </div>
 
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <div
                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-lg border border-white/30 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -247,7 +247,7 @@
     </section>
 
     <!-- Video Highlight -->
-    <section class="py-16 sm:py-20 bg-neutral-900 text-white">
+    <section class="py-10 sm:py-14 bg-neutral-900 text-white">
         <style>
             /* Reduce YouTube play button size */
             iframe[src*="youtube.com"] {
@@ -263,7 +263,7 @@
             }
         </style>
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <h2 class="text-xl sm:text-3xl font-bold">Video Highlight</h2>
                 <p class="mt-3 text-neutral-300">Lihat kembali moment-moment terbaik dari acara sebelumnya</p>
             </div>
@@ -289,9 +289,9 @@
     </section>
 
     <!-- Sponsor & Exhibitor -->
-    <section id="sponsor" class="py-16 sm:py-20 bg-neutral-50">
+    <section id="sponsor" class="py-10 sm:py-14 bg-neutral-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <div
                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-700 text-sm font-medium mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -391,7 +391,7 @@
     </section>
 
     <!-- Instagram Widget -->
-    <section class="py-16 sm:py-20 relative overflow-hidden">
+    <section class="py-10 sm:py-14 relative overflow-hidden">
         <!-- Decorative Elements -->
         <div class="absolute inset-0 opacity-10 pointer-events-none">
             <div class="absolute top-10 left-10 w-96 h-96"></div>
@@ -400,7 +400,7 @@
 
         <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <div
                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-purple-100 via-pink-100 to-rose-100 mb-4">
                     <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
@@ -454,80 +454,10 @@
         </div>
     </section>
 
-    <!-- Gallery -->
-    {{-- <section class="py-16 sm:py-20 bg-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-xl sm:text-3xl font-bold text-neutral-900">Gallery</h2>
-                <p class="mt-3 text-neutral-600">Dokumentasi acara WeddingExpo sebelumnya</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 1" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 2" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 3" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1460364157752-926555421a7e?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 4" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 5" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1522413452208-996ff3f3e740?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 6" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 7" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 8" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 9" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 10" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 11" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-                <div class="group cursor-pointer overflow-hidden rounded-xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?q=80&w=600&auto=format&fit=crop"
-                        alt="Gallery 12" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                </div>
-            </div>
-            <div class="mt-12 text-center">
-                <a href="/gallery"
-                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white transition">
-                    Lihat Semua Gallery
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </section> --}}
-
     <!-- Jadwal & Lokasi -->
-    <section id="jadwal" class="py-16 sm:py-20 bg-neutral-50">
+    <section id="jadwal" class="py-10 sm:py-14 bg-neutral-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <h2 class="text-xl sm:text-3xl font-bold text-neutral-900">Jadwal & Lokasi</h2>
                 <p class="mt-3 text-neutral-600">Catat tanggalnya dan jangan sampai terlewat!</p>
             </div>
@@ -668,7 +598,7 @@
 
     <!-- CTA Tiket -->
     <section id="tiket"
-        class="py-20 sm:py-24 bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white relative overflow-hidden">
+        class="py-10 sm:py-14 bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white relative overflow-hidden">
         <!-- Decorative Elements -->
         <div class="absolute inset-0 opacity-5">
             <div class="absolute top-0 right-0 w-96 h-96 bg-rose-500 rounded-full blur-3xl"></div>
