@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Penyelenggara;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
+
+        // Log Viewer: hanya bisa diakses oleh super_admin dan admin
+        Gate::define('viewLogViewer', function ($user) {
+            return $user->hasAnyRole(['super_admin', 'admin']);
+        });
 
         View::composer('layouts.navbar', function ($view) {
             $penyelenggara = Penyelenggara::query()

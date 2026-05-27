@@ -31,6 +31,41 @@ php artisan view:clear
 php artisan optimize:clear
 php artisan optimize
 
+```bash
+cd /home/u380354370/domains/sumselweddingexpo.com/public_html
+git pull
+/opt/alt/php84/usr/bin/php artisan cache:clear
+/opt/alt/php84/usr/bin/php artisan config:clear
+/opt/alt/php84/usr/bin/php artisan route:clear
+/opt/alt/php84/usr/bin/php artisan view:clear
+/opt/alt/php84/usr/bin/php artisan optimize:clear
+/opt/alt/php84/usr/bin/php artisan optimize
+/opt/alt/php84/usr/bin/php artisan filament:optimize
+
+/opt/alt/php84/usr/bin/php artisan migrate:status
+
+php artisan db:seed --class=BlogSeeder
+
+/opt/alt/php84/usr/bin/php /usr/local/bin/composer update
+
+php artisan shield:generate --all
+
+npm run build
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan optimize:clear
+php artisan optimize
+php artisan filament:optimize
+git add .
+git commit -m "Update"
+git push origin main
+
+# Hapus isi Laravel Log (Log Viewer)
+
+truncate -s 0 storage/logs/laravel.log
+
 [PERBAIKAN] Masalah Error 405 & Layar Hitam Hostinger CDN
 Tanggal: 04-01-2026
 
@@ -50,3 +85,4 @@ Perubahan yang Dilakukan:
 2. Memaksa HTTPS di Production pada `app/Providers/AppServiceProvider.php`:
     - Menambahkan pengecekan: `if (app()->environment('production')) { URL::forceScheme('https'); }`
     - Ini memastikan semua tautan yang dibuat (termasuk tautan aset) menggunakan `https://` saat aplikasi dalam mode production, mencegah error mixed content.
+```
