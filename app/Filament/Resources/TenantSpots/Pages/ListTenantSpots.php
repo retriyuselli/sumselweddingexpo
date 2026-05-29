@@ -7,11 +7,11 @@ use App\Models\Expo;
 use App\Models\TenantSpot;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Section;
 
 class ListTenantSpots extends ListRecords
 {
@@ -25,7 +25,7 @@ class ListTenantSpots extends ListRecords
                 ->label('Generate Layout')
                 ->icon('heroicon-o-squares-2x2')
                 ->color('warning')
-                ->form([
+                ->schema([
                     Select::make('expo_id')
                         ->relationship('expo', 'nama_expo')
                         ->getOptionLabelFromRecordUsing(fn (Expo $record) => $record->nama_expo . ' (' . $record->periode . ')')
@@ -33,28 +33,28 @@ class ListTenantSpots extends ListRecords
                         ->required()
                         ->label('Expo'),
 
-                    Fieldset::make('Blok A')
+                    Section::make('Blok A')
                         ->columns(2)
                         ->schema([
                             TextInput::make('a_from')->label('Dari Nomor')->integer()->default(1)->minValue(1),
                             TextInput::make('a_to')->label('Sampai Nomor')->integer()->default(10)->minValue(1),
                         ]),
 
-                    Fieldset::make('Blok B Kiri')
+                    Section::make('Blok B Kiri')
                         ->columns(2)
                         ->schema([
                             TextInput::make('b_kiri_from')->label('Dari Nomor')->integer()->default(1)->minValue(1),
                             TextInput::make('b_kiri_to')->label('Sampai Nomor')->integer()->default(10)->minValue(1),
                         ]),
 
-                    Fieldset::make('Blok B Kanan')
+                    Section::make('Blok B Kanan')
                         ->columns(2)
                         ->schema([
                             TextInput::make('b_kanan_from')->label('Dari Nomor')->integer()->default(11)->minValue(1),
                             TextInput::make('b_kanan_to')->label('Sampai Nomor')->integer()->default(20)->minValue(1),
                         ]),
 
-                    Fieldset::make('Blok C')
+                    Section::make('Blok C')
                         ->columns(2)
                         ->schema([
                             TextInput::make('c_from')->label('Dari Nomor')->integer()->default(1)->minValue(1),

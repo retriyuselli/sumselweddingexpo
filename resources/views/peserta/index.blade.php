@@ -121,18 +121,20 @@
 
                                 {{-- ── BLOK A ── --}}
                                 <div class="flex flex-col items-center">
-                                    <div class="grid grid-flow-col gap-1" style="grid-template-rows:repeat({{ $blokkARows }},2.75rem)">
+                                    <div class="flex flex-col gap-0.5">
                                         @foreach($blokkABooths as $boothId)
                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
                                             <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
-                                               class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                               class="w-24 h-16 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
-                                                <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                <span class="text-base font-black leading-none">{{ $label($boothId) }}</span>
                                                 @if($ps)
-                                                    <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
-                                                    <span class="text-[6px] font-bold block">BOOKED</span>
+                                                    <div class="text-center">
+                                                        <span class="text-[9px] font-bold block truncate">{{ Str::limit($ps->vendor->nama_vendor ?? '', 12) }}</span>
+                                                        <span class="text-[8px] font-black tracking-wider block">BOOKED</span>
+                                                    </div>
                                                 @else
-                                                    <span class="text-[7px] opacity-60 block">avail</span>
+                                                    <span class="text-[9px] opacity-60 text-center block">tersedia</span>
                                                 @endif
                                             </a>
                                         @endforeach
