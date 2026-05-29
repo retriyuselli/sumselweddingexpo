@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TenantSpot extends Model
@@ -32,6 +33,11 @@ class TenantSpot extends Model
     public function expo(): BelongsTo
     {
         return $this->belongsTo(Expo::class);
+    }
+
+    public function partisipasi(): HasOne
+    {
+        return $this->hasOne(Partisipasi::class);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────

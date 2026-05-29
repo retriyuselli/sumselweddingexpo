@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -27,6 +28,7 @@ class Partisipasi extends Model
         'tanggal_booking',
         'status_pembayaran',
         'category_tenant_id',
+        'tenant_spot_id',
         'blok_tenant',
         'harga_jual',
         'diskon',
@@ -89,19 +91,24 @@ class Partisipasi extends Model
     }
 
 
-    public function expo()
+    public function expo(): BelongsTo
     {
         return $this->belongsTo(Expo::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function categoryTenant()
+    public function categoryTenant(): BelongsTo
     {
         return $this->belongsTo(CategoryTenant::class);
+    }
+
+    public function tenantSpot(): BelongsTo
+    {
+        return $this->belongsTo(TenantSpot::class);
     }
 
     public function dataPembayarans()

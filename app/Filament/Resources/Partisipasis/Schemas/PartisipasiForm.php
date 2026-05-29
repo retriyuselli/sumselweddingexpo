@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Partisipasis\Schemas;
 
 use App\Models\CategoryTenant;
 use App\Models\Expo;
+use App\Models\TenantSpot;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
@@ -102,11 +103,24 @@ class PartisipasiForm
                                 }
                             }),
 
-                        TextInput::make('blok_tenant')
-                            ->maxLength(255)
+                        Select::make('tenant_spot_id')
                             ->label('Blok/Nomor Tenant')
-                            ->placeholder('Contoh: A-01, B-12')
+                            ->options(function (callable $get) {
+                                $expoId = $get('expo_id');
+                                if (! $expoId) {
+                                    return [];
+                                }
+
+                                return TenantSpot::where('expo_id', $expoId)
+                                    ->whereDoesntHave('partisipasi', fn ($q) => $q->whereNull('deleted_at'))
+                                    ->orderBy('kode_booth')
+                                    ->pluck('kode_booth', 'id');
+                            })
+                            ->live()
+                            ->searchable()
                             ->nullable()
+                            ->placeholder('Pilih booth (opsional)')
+                            ->helperText('Hanya menampilkan booth yang belum dipakai')
                             ->columnSpan(1),
 
                         TextInput::make('harga_jual')
