@@ -38,7 +38,7 @@
                     if ($tenantSpots->isNotEmpty()) {
                         // ── Data-driven layout from TenantSpot model ──
                         $byBlok      = $tenantSpots->groupBy('blok');
-                        $blokkASpots = $byBlok->get('A', collect())->sortBy([['baris','asc'],['kolom','asc']]);
+                        $blokkASpots = $byBlok->get('A', collect())->sortByDesc('nomor');
                         $blokkABooths = $blokkASpots->pluck('kode_booth')->all();
                         $blokkARows   = max(1, $blokkASpots->max('baris') ?: 5);
 
@@ -50,7 +50,7 @@
                         $blokkCBooths = $byBlok->get('C', collect())->sortBy([['baris','asc'],['kolom','asc']])->pluck('kode_booth')->all();
                     } else {
                         // ── Fallback hardcoded layout (A=3 default, B=20, C=10) ──
-                        $blokkABooths = array_map(fn($n) => 'A-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 3));
+                        $blokkABooths = array_map(fn($n) => 'A-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(3, 1, -1));
                         $blokkBLeft   = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
                         $blokkBRight  = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(11, 20));
                         $blokkCBooths = array_map(fn($n) => 'C-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
