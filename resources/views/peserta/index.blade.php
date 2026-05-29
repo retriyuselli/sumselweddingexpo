@@ -49,8 +49,8 @@
 
                         $blokkCBooths = $byBlok->get('C', collect())->sortBy([['baris','asc'],['kolom','asc']])->pluck('kode_booth')->all();
                     } else {
-                        // ── Fallback hardcoded layout (A=10, B=20, C=10) ──
-                        $blokkABooths = array_map(fn($n) => 'A-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
+                        // ── Fallback hardcoded layout (A=3 default, B=20, C=10) ──
+                        $blokkABooths = array_map(fn($n) => 'A-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 3));
                         $blokkBLeft   = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
                         $blokkBRight  = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(11, 20));
                         $blokkCBooths = array_map(fn($n) => 'C-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
@@ -77,7 +77,7 @@
                     <div class="p-4 md:p-5">
 
                         {{-- Header --}}
-                        <div class="flex flex-wrap gap-3 justify-between items-start mb-4">
+                        <div class="flex flex-wrap gap-3 justify-center items-center mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm shrink-0">
                                     <img src="/storage/logo/logoswe.png" alt="SWE" class="h-9 w-auto">
@@ -91,28 +91,6 @@
                                 </div>
                             </div>
 
-                            <div class="bg-white/70 backdrop-blur rounded-xl px-3 py-2 text-right">
-                                <p class="text-[10px] font-black text-gray-800 tracking-widest mb-1">HARGA TENANT</p>
-                                @foreach($categoryTenants as $cat)
-                                    @php
-                                        $dotColor = match($cat->category->value) {
-                                            'gold'     => 'bg-yellow-400',
-                                            'platinum' => 'bg-violet-500',
-                                            'silver'   => 'bg-emerald-400',
-                                            default    => 'bg-gray-400',
-                                        };
-                                    @endphp
-                                    <div class="flex items-center justify-end gap-1.5 text-[11px] mb-0.5">
-                                        <span class="w-5 h-3 rounded {{ $dotColor }} shrink-0"></span>
-                                        <span class="font-semibold">{{ $cat->category->label() }}</span>
-                                        <span class="text-gray-600">Rp&nbsp;{{ number_format($cat->harga_jual, 0, ',', '.') }},-</span>
-                                    </div>
-                                @endforeach
-                                <div class="flex items-center justify-end gap-1.5 text-[11px]">
-                                    <span class="w-5 h-3 rounded bg-green-200 border border-green-400 shrink-0"></span>
-                                    <span class="text-gray-500">Tersedia</span>
-                                </div>
-                            </div>
                         </div>
 
                         {{-- Floor plan (scrollable) --}}
@@ -121,119 +99,121 @@
 
                                 {{-- ── BLOK A ── --}}
                                 <div class="flex flex-col items-center">
-                                    <div class="flex flex-col gap-0.5">
-                                        @foreach($blokkABooths as $boothId)
-                                            @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
-                                               class="w-24 h-16 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
-                                                <span class="text-base font-black leading-none">{{ $label($boothId) }}</span>
-                                                @if($ps)
-                                                    <div class="text-center">
-                                                        <span class="text-[9px] font-bold block truncate">{{ Str::limit($ps->vendor->nama_vendor ?? '', 12) }}</span>
-                                                        <span class="text-[8px] font-black tracking-wider block">BOOKED</span>
-                                                    </div>
-                                                @else
-                                                    <span class="text-[9px] opacity-60 text-center block">tersedia</span>
-                                                @endif
-                                            </a>
-                                        @endforeach
+                                    <div class="bg-white p-3 shadow-md">
+                                        <div class="flex flex-col gap-1">
+                                            @foreach($blokkABooths as $boothId)
+                                                @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                   class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                    <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
+                                                    @if($ps)
+                                                        <div class="text-center">
+                                                            <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                            <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-[9px] opacity-60 text-center block">tersedia</span>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
                                     </div>
-                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mt-1.5">BLOK A</p>
-                                </div>
-
-                                {{-- Pilar A/B --}}
-                                <div class="self-center">
-                                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
-                                        <span class="text-[6px] font-black leading-none text-center">PILAR</span>
-                                    </div>
+                                    <p class="text-[12px] font-black tracking-widest text-gray-800 mt-1.5">BLOK A</p>
                                 </div>
 
                                 {{-- ── BLOK B ── --}}
-                                <div class="flex flex-col items-center">
-                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mb-1.5">BLOK B</p>
-                                    <div class="flex gap-2 items-stretch">
+                                @php
+                                    $bLeftRows  = array_chunk($blokkBLeft,  5);
+                                    $bRightRows = array_chunk($blokkBRight, 5);
+                                @endphp
+                                <div class="flex flex-col items-center" style="margin-top:100px">
+                                    <p class="text-[12px] font-black tracking-widest text-gray-800 mb-1.5">BLOK B</p>
+                                    <div class="bg-gray-400 p-3 flex gap-3">
 
-                                        {{-- Stage + seating --}}
-                                        <div class="flex flex-col items-center gap-1">
-                                            <div class="bg-gray-500 text-white rounded-lg flex items-center justify-center font-black text-xs shrink-0"
-                                                 style="width:44px;height:92px;writing-mode:vertical-rl;transform:rotate(180deg)">
-                                                STAGE
-                                            </div>
-                                            <div class="grid grid-cols-4 gap-0.5 mt-0.5">
-                                                @for($i = 0; $i < 16; $i++)
-                                                    <div class="w-2 h-2 rounded-full bg-white/50 border border-white/60"></div>
-                                                @endfor
-                                            </div>
+                                        {{-- Stage hijau (tinggi penuh) --}}
+                                        <div class="bg-green-400 text-white rounded-xl self-stretch flex items-center justify-center font-black shrink-0"
+                                             style="width:72px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:16px">
+                                            STAGE
                                         </div>
 
-                                        {{-- B-01 to B-10 --}}
-                                        <div class="grid gap-1" style="grid-template-columns:repeat({{ $blokkBCols }},2.75rem)">
-                                            @foreach($blokkBLeft as $boothId)
-                                                @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
-                                                   class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
-                                                    <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
-                                                    @if($ps)
-                                                        <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
-                                                        <span class="text-[6px] font-bold block">BOOKED</span>
-                                                    @else
-                                                        <span class="text-[7px] opacity-60 block">avail</span>
-                                                    @endif
-                                                </a>
+                                        {{-- B-01..B-10: seating + booth per baris --}}
+                                        <div class="flex flex-col gap-3">
+                                            @foreach($bLeftRows as $row)
+                                                <div class="flex gap-2 items-center">
+                                                    {{-- Kursi penonton --}}
+                                                    <div class="grid grid-cols-10 gap-0.5 shrink-0">
+                                                        @for($i = 0; $i < 50; $i++)
+                                                            <div class="w-2.5 h-2.5 bg-white/60 rounded-sm"></div>
+                                                        @endfor
+                                                    </div>
+                                                    {{-- Booth row --}}
+                                                    <div class="flex gap-1">
+                                                        @foreach($row as $boothId)
+                                                            @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                               class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                                <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
+                                                                @if($ps)
+                                                                    <div class="text-center">
+                                                                        <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                                    </div>
+                                                                @else
+                                                                    <span class="text-[9px] opacity-60 text-center block">avail</span>
+                                                                @endif
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
                                             @endforeach
                                         </div>
 
-                                        {{-- Pilar mid-B --}}
-                                        <div class="self-center">
-                                            <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
-                                                <span class="text-[6px] font-black leading-none text-center">PILAR</span>
-                                            </div>
-                                        </div>
-
-                                        {{-- B-11 to B-20 --}}
-                                        <div class="grid gap-1" style="grid-template-columns:repeat({{ $blokkBCols }},2.75rem)">
-                                            @foreach($blokkBRight as $boothId)
-                                                @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
-                                                   class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
-                                                    <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
-                                                    @if($ps)
-                                                        <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
-                                                        <span class="text-[6px] font-bold block">BOOKED</span>
-                                                    @else
-                                                        <span class="text-[7px] opacity-60 block">avail</span>
-                                                    @endif
-                                                </a>
+                                        {{-- B-11..B-20: booth saja, 2 baris --}}
+                                        <div class="flex flex-col gap-3 justify-center">
+                                            @foreach($bRightRows as $row)
+                                                <div class="flex gap-1">
+                                                    @foreach($row as $boothId)
+                                                        @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                                        <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                           class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                                           title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                            <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
+                                                            @if($ps)
+                                                                <div class="text-center">
+                                                                    <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                                    <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                                </div>
+                                                            @else
+                                                                <span class="text-[9px] opacity-60 text-center block">avail</span>
+                                                            @endif
+                                                        </a>
+                                                    @endforeach
+                                                </div>
                                             @endforeach
                                         </div>
-                                    </div>
-                                </div>
 
-                                {{-- Pilar B/C --}}
-                                <div class="self-center">
-                                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
-                                        <span class="text-[6px] font-black leading-none text-center">PILAR</span>
                                     </div>
                                 </div>
 
                                 {{-- ── BLOK C ── --}}
-                                <div class="flex flex-col items-center">
-                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mb-1.5">BLOK C</p>
-                                    <div class="flex gap-1">
+                                <div class="self-start flex flex-col items-center" style="margin-top:158px">
+                                    <p class="text-[12px] font-black tracking-widest text-gray-800 mb-1.5">BLOK C</p>
+                                    <div class="bg-gray-400 p-3 flex gap-1">
                                         @foreach($blokkCBooths as $boothId)
                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
                                             <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
-                                               class="w-11 h-20 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                               class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
-                                                <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
                                                 @if($ps)
-                                                    <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
-                                                    <span class="text-[6px] font-bold block">BOOKED</span>
+                                                    <div class="text-center">
+                                                        <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                    </div>
                                                 @else
-                                                    <span class="text-[7px] opacity-60 block">avail</span>
+                                                    <span class="text-[9px] opacity-60 text-center block">avail</span>
                                                 @endif
                                             </a>
                                         @endforeach
