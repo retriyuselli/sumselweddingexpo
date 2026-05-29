@@ -5,12 +5,9 @@ namespace App\Filament\Resources\Expos\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class ExposTable
@@ -22,31 +19,27 @@ class ExposTable
                 TextColumn::make('nama_expo')
                     ->searchable()
                     ->sortable()
-                    ->label('Nama Expo'),
+                    ->label('Nama Expo')
+                    ->description(fn ($record) => $record->periode),
 
                 TextColumn::make('tanggal_mulai')
                     ->date('d M Y')
                     ->sortable()
-                    ->label('Mulai'),
-
-                TextColumn::make('tanggal_selesai')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->label('Selesai'),
+                    ->label('Tanggal')
+                    ->description(fn ($record) => 's/d ' . $record->tanggal_selesai->format('d M Y')),
 
                 TextColumn::make('lokasi')
+                    ->label('Venue')
                     ->searchable()
-                    ->limit(30),
+                    ->limit(35)
+                    ->description(fn ($record) => $record->alamat ? \Str::limit($record->alamat, 40) : null),
 
                 IconColumn::make('status')
                     ->boolean()
                     ->label('Aktif'),
-
-                TextColumn::make('periode')
-                    ->sortable(),
             ])
+            ->defaultSort('tanggal_mulai', 'desc')
             ->filters([
-                TrashedFilter::make(),
                 TernaryFilter::make('status')
                     ->label('Status')
                     ->placeholder('Semua')
@@ -59,8 +52,6 @@ class ExposTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
             ]);
     }
