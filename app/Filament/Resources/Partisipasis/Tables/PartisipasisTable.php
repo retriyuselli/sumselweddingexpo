@@ -22,16 +22,14 @@ class PartisipasisTable
             ->columns([
                 TextColumn::make('expo.nama_expo')
                     ->label('Expo')
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn ($record) => $record->expo?->periode),
 
                 TextColumn::make('vendor.nama_vendor')
                     ->label('Vendor')
                     ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('categoryTenant.category')
-                    ->label('Kategori Tenant')
-                    ->toggleable(),
+                    ->searchable()
+                    ->description(fn ($record) => $record->categoryTenant?->category?->label()),
 
                 TextColumn::make('tanggal_booking')
                     ->date('d M Y')

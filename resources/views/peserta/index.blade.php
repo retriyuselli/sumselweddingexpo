@@ -31,6 +31,222 @@
 
         <section class="py-8 sm:py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+                {{-- ===== FLOOR PLAN ===== --}}
+                @if($expo)
+                @php
+                    if ($tenantSpots->isNotEmpty()) {
+                        // ── Data-driven layout from TenantSpot model ──
+                        $byBlok      = $tenantSpots->groupBy('blok');
+                        $blokkASpots = $byBlok->get('A', collect())->sortBy([['baris','asc'],['kolom','asc']]);
+                        $blokkABooths = $blokkASpots->pluck('kode_booth')->all();
+                        $blokkARows   = max(1, $blokkASpots->max('baris') ?: 5);
+
+                        $bBySection  = $byBlok->get('B', collect())->groupBy('section');
+                        $blokkBLeft  = $bBySection->get('kiri',  collect())->sortBy([['baris','asc'],['kolom','asc']])->pluck('kode_booth')->all();
+                        $blokkBRight = $bBySection->get('kanan', collect())->sortBy([['baris','asc'],['kolom','asc']])->pluck('kode_booth')->all();
+                        $blokkBCols  = max(1, $bBySection->get('kiri', collect())->max('kolom') ?: 5);
+
+                        $blokkCBooths = $byBlok->get('C', collect())->sortBy([['baris','asc'],['kolom','asc']])->pluck('kode_booth')->all();
+                    } else {
+                        // ── Fallback hardcoded layout (A=10, B=20, C=10) ──
+                        $blokkABooths = array_map(fn($n) => 'A-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
+                        $blokkBLeft   = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
+                        $blokkBRight  = array_map(fn($n) => 'B-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(11, 20));
+                        $blokkCBooths = array_map(fn($n) => 'C-' . str_pad($n, 2, '0', STR_PAD_LEFT), range(1, 10));
+                        $blokkARows   = 5;
+                        $blokkBCols   = 5;
+                    }
+
+                    // Display label: 'A-01' → 'A1', 'B-11' → 'B11'
+                    $label = fn($id) => preg_replace('/^([A-Z])-0?(\d+)$/', '$1$2', $id);
+
+                    // Tailwind colour classes for a booth cell
+                    $boothColor = function($ps) {
+                        if (!$ps) return 'bg-green-100 border-green-300 text-green-700';
+                        return match($ps->categoryTenant?->category?->value ?? '') {
+                            'gold'     => 'bg-yellow-300 border-yellow-500 text-yellow-900',
+                            'platinum' => 'bg-violet-400 border-violet-600 text-white',
+                            'silver'   => 'bg-emerald-300 border-emerald-500 text-emerald-900',
+                            default    => 'bg-gray-200 border-gray-400 text-gray-700',
+                        };
+                    };
+                @endphp
+
+                <div class="rounded-2xl overflow-hidden shadow-lg mb-6" style="background:linear-gradient(135deg,#9ee8e8 0%,#6dd3d3 100%)">
+                    <div class="p-4 md:p-5">
+
+                        {{-- Header --}}
+                        <div class="flex flex-wrap gap-3 justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm shrink-0">
+                                    <img src="/storage/logo/logoswe.png" alt="SWE" class="h-9 w-auto">
+                                </div>
+                                <div>
+                                    <h2 class="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-tight">LAYOUT SWE</h2>
+                                    <p class="text-[11px] text-gray-700 leading-tight">
+                                        {{ $expo->tanggal_mulai->format('d M Y') }} – {{ $expo->tanggal_selesai->format('d M Y') }}
+                                        @if($expo->lokasi) &nbsp;|&nbsp; {{ Str::words($expo->lokasi, 4, '…') }} @endif
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/70 backdrop-blur rounded-xl px-3 py-2 text-right">
+                                <p class="text-[10px] font-black text-gray-800 tracking-widest mb-1">HARGA TENANT</p>
+                                @foreach($categoryTenants as $cat)
+                                    @php
+                                        $dotColor = match($cat->category->value) {
+                                            'gold'     => 'bg-yellow-400',
+                                            'platinum' => 'bg-violet-500',
+                                            'silver'   => 'bg-emerald-400',
+                                            default    => 'bg-gray-400',
+                                        };
+                                    @endphp
+                                    <div class="flex items-center justify-end gap-1.5 text-[11px] mb-0.5">
+                                        <span class="w-5 h-3 rounded {{ $dotColor }} shrink-0"></span>
+                                        <span class="font-semibold">{{ $cat->category->label() }}</span>
+                                        <span class="text-gray-600">Rp&nbsp;{{ number_format($cat->harga_jual, 0, ',', '.') }},-</span>
+                                    </div>
+                                @endforeach
+                                <div class="flex items-center justify-end gap-1.5 text-[11px]">
+                                    <span class="w-5 h-3 rounded bg-green-200 border border-green-400 shrink-0"></span>
+                                    <span class="text-gray-500">Tersedia</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Floor plan (scrollable) --}}
+                        <div class="overflow-x-auto pb-1">
+                            <div class="inline-flex gap-3 items-start" style="min-width:max-content">
+
+                                {{-- ── BLOK A ── --}}
+                                <div class="flex flex-col items-center">
+                                    <div class="grid grid-flow-col gap-1" style="grid-template-rows:repeat({{ $blokkARows }},2.75rem)">
+                                        @foreach($blokkABooths as $boothId)
+                                            @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                               class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                @if($ps)
+                                                    <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
+                                                    <span class="text-[6px] font-bold block">BOOKED</span>
+                                                @else
+                                                    <span class="text-[7px] opacity-60 block">avail</span>
+                                                @endif
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mt-1.5">BLOK A</p>
+                                </div>
+
+                                {{-- Pilar A/B --}}
+                                <div class="self-center">
+                                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                                        <span class="text-[6px] font-black leading-none text-center">PILAR</span>
+                                    </div>
+                                </div>
+
+                                {{-- ── BLOK B ── --}}
+                                <div class="flex flex-col items-center">
+                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mb-1.5">BLOK B</p>
+                                    <div class="flex gap-2 items-stretch">
+
+                                        {{-- Stage + seating --}}
+                                        <div class="flex flex-col items-center gap-1">
+                                            <div class="bg-gray-500 text-white rounded-lg flex items-center justify-center font-black text-xs shrink-0"
+                                                 style="width:44px;height:92px;writing-mode:vertical-rl;transform:rotate(180deg)">
+                                                STAGE
+                                            </div>
+                                            <div class="grid grid-cols-4 gap-0.5 mt-0.5">
+                                                @for($i = 0; $i < 16; $i++)
+                                                    <div class="w-2 h-2 rounded-full bg-white/50 border border-white/60"></div>
+                                                @endfor
+                                            </div>
+                                        </div>
+
+                                        {{-- B-01 to B-10 --}}
+                                        <div class="grid gap-1" style="grid-template-columns:repeat({{ $blokkBCols }},2.75rem)">
+                                            @foreach($blokkBLeft as $boothId)
+                                                @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                   class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                    <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                    @if($ps)
+                                                        <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
+                                                        <span class="text-[6px] font-bold block">BOOKED</span>
+                                                    @else
+                                                        <span class="text-[7px] opacity-60 block">avail</span>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
+
+                                        {{-- Pilar mid-B --}}
+                                        <div class="self-center">
+                                            <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                                                <span class="text-[6px] font-black leading-none text-center">PILAR</span>
+                                            </div>
+                                        </div>
+
+                                        {{-- B-11 to B-20 --}}
+                                        <div class="grid gap-1" style="grid-template-columns:repeat({{ $blokkBCols }},2.75rem)">
+                                            @foreach($blokkBRight as $boothId)
+                                                @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                   class="w-11 h-11 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                    <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                    @if($ps)
+                                                        <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
+                                                        <span class="text-[6px] font-bold block">BOOKED</span>
+                                                    @else
+                                                        <span class="text-[7px] opacity-60 block">avail</span>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Pilar B/C --}}
+                                <div class="self-center">
+                                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                                        <span class="text-[6px] font-black leading-none text-center">PILAR</span>
+                                    </div>
+                                </div>
+
+                                {{-- ── BLOK C ── --}}
+                                <div class="flex flex-col items-center">
+                                    <p class="text-[9px] font-black tracking-widest text-gray-800 mb-1.5">BLOK C</p>
+                                    <div class="flex gap-1">
+                                        @foreach($blokkCBooths as $boothId)
+                                            @php $ps = $boothMap[$boothId] ?? null; @endphp
+                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                               class="w-11 h-20 rounded border-2 flex flex-col items-center justify-center text-center p-0.5 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
+                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                <span class="text-[9px] font-black leading-none">{{ $label($boothId) }}</span>
+                                                @if($ps)
+                                                    <span class="text-[7px] leading-tight mt-0.5 w-full px-0.5 truncate block text-center">{{ Str::limit($ps->vendor->nama_vendor ?? '', 8) }}</span>
+                                                    <span class="text-[6px] font-bold block">BOOKED</span>
+                                                @else
+                                                    <span class="text-[7px] opacity-60 block">avail</span>
+                                                @endif
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                            </div>{{-- end inline-flex --}}
+                        </div>{{-- end overflow-x-auto --}}
+
+                        <p class="text-[9px] text-gray-600 mt-2 italic">* Layout sewaktu-waktu dapat berubah tanpa pemberitahuan lebih lanjut</p>
+                    </div>
+                </div>
+                @endif
+                {{-- ===== END FLOOR PLAN ===== --}}
+
                 <div class="grid sm:grid-cols-3 gap-3 mb-6">
                     <div class="sm:col-span-2 flex gap-3">
                         <form action="{{ route('peserta.index') }}" method="GET" class="w-full">
@@ -58,7 +274,7 @@
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($partisipasis as $partisipasi)
-                            <div
+                            <div id="vendor-{{ $partisipasi->id }}"
                                 class="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
                                 <div class="p-5">
                                     <div class="flex items-start justify-between mb-4">

@@ -6,6 +6,9 @@
 @endpush
 
 @section('content')
+@php
+    $org = optional($penyelenggara);
+@endphp
 
     <!-- Hero Penyelenggara -->
     <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
@@ -24,7 +27,7 @@
                 <h2 class="text-lg sm:text-xl font-bold">Tentang Penyelenggara</h2>
 
                 <div class="mt-3 sm:mt-4 space-y-3 text-xs sm:text-sm text-neutral-700">
-                    <p>{{ optional($penyelenggaras->first())->tentang ?? 'PT. Makna Kreatif Indonesia adalah penyelenggara kegiatan Sumsel Wedding Expo yang diadakan di Palembang Icon Mall dan Palembang Indah Mall. Serta menyelenggarakan acara B2B, B2C dan B2G yang inovative dan terkemuka.' }}
+                    <p>{{ $org->tentang ?? 'PT. Makna Kreatif Indonesia adalah penyelenggara kegiatan Sumsel Wedding Expo yang diadakan di Palembang Icon Mall dan Palembang Indah Mall. Serta menyelenggarakan acara B2B, B2C dan B2G yang inovative dan terkemuka.' }}
                     </p>
 
                     <p>Kami mengutamakan diri dalam menyediakan konektivitas tanpa batas serta wawasan bisnis yang penting
@@ -40,13 +43,13 @@
                     <div>
                         <div class="text-xs sm:text-sm text-neutral-500">Alamat Kantor</div>
                         <div class="mt-1 text-xs sm:text-sm text-neutral-800">
-                            {{ optional($penyelenggaras->first())->alamat ?? 'Jl. Sintraman Jaya I No. 2148, 20 Ilir D II, Kec. Kemuning, Kota Palembang, Sumatera Selatan.' }}
+                            {{ $org->alamat ?? 'Jl. Sintraman Jaya I No. 2148, 20 Ilir D II, Kec. Kemuning, Kota Palembang, Sumatera Selatan.' }}
                         </div>
                     </div>
                     <div>
                         <div class="text-xs sm:text-sm text-neutral-500">Jam Operasional</div>
                         <div class="mt-1 text-xs sm:text-sm text-neutral-800">
-                            {{ optional($penyelenggaras->first())->jam_operasional ?? 'Senin–Sabtu, 09.00–17.00' }}</div>
+                            {{ $org->jam_operasional ?? 'Senin–Sabtu, 09.00–17.00' }}</div>
                     </div>
                 </div>
             </div>
@@ -54,23 +57,30 @@
             <!-- Kontak -->
             <div class="p-6 rounded-xl border border-neutral-200 bg-white">
                 <h3 class="text-base sm:text-lg font-semibold">Kontak</h3>
+                @php
+                    $email   = $org->email   ?? 'info@sumselweddingexpo.id';
+                    $noTlp   = $org->no_tlp  ?? '+62 813-7318-3794';
+                    $waNumber = preg_replace('/\D/', '', $noTlp);
+                @endphp
                 <div class="mt-2 sm:mt-3 space-y-2 text-sm text-neutral-700">
-                    <div>Email: <a
-                            href="mailto:{{ optional($penyelenggaras->first())->email ?? 'info@sumselweddingexpo.id' }}"
-                            class="text-rose-600 hover:text-rose-700">{{ optional($penyelenggaras->first())->email ?? 'info@sumselweddingexpo.id' }}</a>
+                    <div>Email: <a href="mailto:{{ $email }}"
+                            class="text-rose-600 hover:text-rose-700">{{ $email }}</a>
                     </div>
 
-                    <div>WhatsApp: <a
-                            href="https://wa.me/{{ optional($penyelenggaras->first())->no_tlp ?? '+62 813-7318-3794' }}"
+                    <div>WhatsApp: <a href="https://wa.me/{{ $waNumber }}"
                             target="_blank"
-                            class="text-rose-600 hover:text-rose-700">{{ optional($penyelenggaras->first())->no_tlp ?? '+62 813-7318-3794' }}</a>
+                            class="text-rose-600 hover:text-rose-700">{{ $noTlp }}</a>
                     </div>
                 </div>
+                @php
+                    $igUrl = $org->instagram ?? 'https://www.instagram.com/makna.wedding/';
+                    $ttUrl = $org->tiktok    ?? 'https://www.tiktok.com/@makna.wedding';
+                @endphp
                 <div class="mt-4 sm:mt-6">
                     <h4 class="text-xs sm:text-sm font-semibold text-neutral-600">Media Sosial</h4>
                     <div class="mt-2 flex items-center gap-3">
                         <!-- Instagram -->
-                        <a href="https://www.instagram.com/makna.wedding/" target="_blank" rel="noopener noreferrer"
+                        <a href="{{ $igUrl }}" target="_blank" rel="noopener noreferrer"
                             class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-neutral-200 hover:bg-rose-50 hover:border-rose-300 transition"
                             aria-label="Instagram">
                             <svg class="w-5 h-5 text-neutral-700" fill="currentColor" viewBox="0 0 24 24">
@@ -79,7 +89,7 @@
                             </svg>
                         </a>
                         <!-- TikTok -->
-                        <a href="https://www.tiktok.com/@makna.wedding" target="_blank" rel="noopener noreferrer"
+                        <a href="{{ $ttUrl }}" target="_blank" rel="noopener noreferrer"
                             class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-neutral-200 hover:bg-rose-50 hover:border-rose-300 transition"
                             aria-label="TikTok">
                             <svg class="w-5 h-5 text-neutral-700" fill="currentColor" viewBox="0 0 24 24">
@@ -199,7 +209,7 @@
                     </div>
                 @empty
                     <div class="bg-white rounded-xl border border-neutral-200 p-6 sm:col-span-2 lg:col-span-4">
-                        <p class="text-sm text-neutral-600">Belum ada anggota tim dengan role swe.</p>
+                        <p class="text-sm text-neutral-600">Informasi tim sedang dalam persiapan.</p>
                     </div>
                 @endforelse
             </div>
@@ -217,15 +227,10 @@
 
         function sliderUpdateView() {
             var track = document.getElementById('sliderTrack');
-            if (!track) {
-                console.error('Slider track not found!');
-                return;
-            }
+            if (!track) return;
 
             track.style.transform = 'translateX(-' + (sliderCurrentSlide * 100) + '%)';
-            console.log('Moved to slide:', sliderCurrentSlide);
 
-            // Update dots
             var dots = document.querySelectorAll('.slider-dot');
             for (var i = 0; i < dots.length; i++) {
                 if (i === sliderCurrentSlide) {
@@ -239,42 +244,29 @@
         }
 
         function sliderNext() {
-            console.log('Next button clicked!');
             sliderCurrentSlide = (sliderCurrentSlide + 1) % sliderTotalSlides;
             sliderUpdateView();
         }
 
         function sliderPrev() {
-            console.log('Prev button clicked!');
             sliderCurrentSlide = (sliderCurrentSlide - 1 + sliderTotalSlides) % sliderTotalSlides;
             sliderUpdateView();
         }
 
         function sliderGoTo(index) {
-            console.log('Go to slide:', index);
             sliderCurrentSlide = index;
             sliderUpdateView();
         }
 
-        // Wait for DOM to be ready
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Ready, initializing slider...');
-
             var nextBtn = document.getElementById('nextBtn');
             var prevBtn = document.getElementById('prevBtn');
 
             if (nextBtn && prevBtn) {
-                console.log('Buttons found, attaching listeners...');
                 nextBtn.onclick = sliderNext;
                 prevBtn.onclick = sliderPrev;
-            } else {
-                console.error('Buttons not found!', {
-                    nextBtn: nextBtn,
-                    prevBtn: prevBtn
-                });
             }
 
-            // Auto slide
             setInterval(sliderNext, 5000);
         });
     </script>

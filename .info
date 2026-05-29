@@ -42,6 +42,14 @@ git pull
 /opt/alt/php84/usr/bin/php artisan optimize
 /opt/alt/php84/usr/bin/php artisan filament:optimize
 
+cd /home/u380354370/domains/sumselweddingexpo.com/public_html
+git pull
+/opt/alt/php84/usr/bin/php artisan cache:clear
+/opt/alt/php84/usr/bin/php artisan config:clear
+/opt/alt/php84/usr/bin/php artisan view:clear
+/opt/alt/php84/usr/bin/php artisan optimize
+
+
 /opt/alt/php84/usr/bin/php artisan migrate:status
 
 php artisan db:seed --class=BlogSeeder

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Expo;
 use App\Models\Partisipasi;
+use App\Models\TenantSpot;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,9 @@ class PesertaController extends Controller
         }
 
         $partisipasis = collect();
+        $boothMap = collect();
+        $categoryTenants = collect();
+        $tenantSpots = collect();
         $search = $request->input('search');
 
         if ($expo) {
@@ -44,9 +48,27 @@ class PesertaController extends Controller
                 ->sortBy(function ($partisipasi) {
                     return $partisipasi->vendor->nama_vendor;
                 });
+
+            // Unfiltered booth map for floor plan (always shows full layout)
+            $allPartisipasis = Partisipasi::with(['vendor', 'categoryTenant'])
+                ->where('expo_id', $expo->id)
+                ->get();
+            $boothMap = $allPartisipasis->keyBy('blok_tenant');
+
+            $categoryTenants = $expo->categoryTenants()->get();
+
+            // Venue spot definitions (from DB if configured, else empty = use hardcoded fallback)
+            $tenantSpots = TenantSpot::where('expo_id', $expo->id)
+                ->orderBy('blok')
+                ->orderBy('section')
+                ->orderBy('baris')
+                ->orderBy('kolom')
+                ->get();
         }
 
-        return view('peserta.index', compact('expo', 'partisipasis', 'search'));
+        return view('peserta.index', compact(
+            'expo', 'partisipasis', 'search', 'boothMap', 'categoryTenants', 'tenantSpots'
+        ));
     }
 
     /**

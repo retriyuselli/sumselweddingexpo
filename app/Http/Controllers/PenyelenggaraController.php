@@ -13,28 +13,21 @@ class PenyelenggaraController extends Controller
      */
     public function index()
     {
-        // Ambil satu-satunya penyelenggara beserta galerinya (yang published dan terurut)
-        $single = Penyelenggara::with([
-            'galleries' => function ($q) {
-                $q->published()->ordered();
-            },
+        $penyelenggara = Penyelenggara::with([
+            'galleries' => fn($q) => $q->published()->ordered(),
         ])->orderBy('name')->first();
 
-        // Bungkus sebagai koleksi untuk kompatibilitas view yang sudah ada
-        $penyelenggaras = $single ? collect([$single]) : collect();
-
-        // Ambil galeri unggulan hanya milik penyelenggara utama
-        $featuredGalleries = $single
+        $featuredGalleries = $penyelenggara
             ? PenyelenggaraGallery::published()
                 ->featured()
                 ->ordered()
-                ->where('penyelenggara_id', $single->id)
+                ->where('penyelenggara_id', $penyelenggara->id)
                 ->take(12)
                 ->get()
             : collect();
 
         $teamMembers = User::withRole('swe')->orderBy('name')->get();
 
-        return view('penyelenggara', compact('penyelenggaras', 'featuredGalleries', 'teamMembers'));
+        return view('penyelenggara', compact('penyelenggara', 'featuredGalleries', 'teamMembers'));
     }
 }

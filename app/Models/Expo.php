@@ -65,4 +65,9 @@ class Expo extends Model
     {
         return $this->hasMany(Rundown::class);
     }
+
+    public function tenantSpots()
+    {
+        return $this->hasMany(TenantSpot::class);
+    }
 }
