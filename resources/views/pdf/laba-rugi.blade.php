@@ -265,7 +265,7 @@
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
                             <td>{{ $partisipasi->vendor->nama_vendor ?? '-' }}</td>
-                            <td>{{ $partisipasi->blok_tenant }}</td>
+                            <td>{{ $partisipasi->tenantSpot?->kode_booth ?? '-' }}</td>
                             <td>{{ $partisipasi->status_pembayaran }}</td>
                             <td>
                                 @if ($partisipasi->dataPembayarans->isNotEmpty())
@@ -415,7 +415,7 @@
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ $piutang->vendor->nama_vendor ?? '-' }}</td>
-                                <td>{{ $piutang->blok_tenant }}</td>
+                                <td>{{ $piutang->tenantSpot?->kode_booth ?? '-' }}</td>
                                 <td class="text-right">{{ number_format($piutang->harga_bersih, 0, ',', '.') }}</td>
                                 <td class="text-right warning font-bold">
                                     {{ number_format($piutang->sisa_pembayaran, 0, ',', '.') }}</td>

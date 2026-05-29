@@ -35,7 +35,7 @@ class PesertaController extends Controller
         $search = $request->input('search');
 
         if ($expo) {
-            $query = Partisipasi::with(['vendor.jenisUsaha', 'categoryTenant'])
+            $query = Partisipasi::with(['vendor.jenisUsaha', 'categoryTenant', 'tenantSpot'])
                 ->where('expo_id', $expo->id)
                 ->whereHas('vendor', function ($q) use ($search) {
                     if ($search) {
@@ -50,10 +50,12 @@ class PesertaController extends Controller
                 });
 
             // Unfiltered booth map for floor plan (always shows full layout)
-            $allPartisipasis = Partisipasi::with(['vendor', 'categoryTenant'])
+            $allPartisipasis = Partisipasi::with(['vendor', 'categoryTenant', 'tenantSpot'])
                 ->where('expo_id', $expo->id)
                 ->get();
-            $boothMap = $allPartisipasis->keyBy('blok_tenant');
+            $boothMap = $allPartisipasis
+                ->filter(fn ($p) => $p->tenantSpot)
+                ->keyBy(fn ($p) => $p->tenantSpot->kode_booth);
 
             $categoryTenants = $expo->categoryTenants()->get();
 

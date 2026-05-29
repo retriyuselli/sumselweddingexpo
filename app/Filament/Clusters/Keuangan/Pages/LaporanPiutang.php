@@ -58,9 +58,10 @@ class LaporanPiutang extends Page implements HasTable
                     ->sortable()
                     ->description(fn (Partisipasi $record) => $record->categoryTenant->nama_kategori ?? '-'),
 
-                TextColumn::make('blok_tenant')
+                TextColumn::make('tenantSpot.kode_booth')
                     ->label('Blok')
-                    ->searchable(),
+                    ->searchable()
+                    ->default('-'),
                 
                 TextColumn::make('harga_bersih')
                     ->label('Total Tagihan')
