@@ -7,6 +7,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -70,6 +71,12 @@ class CategoryTenantsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                ReplicateAction::make()
+                    ->excludeAttributes(['created_at', 'updated_at', 'deleted_at'])
+                    ->beforeReplicaSaved(function ($replica) {
+                        $replica->status = 'Tidak Aktif';
+                    })
+                    ->successNotificationTitle('Data berhasil diduplikasi'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
