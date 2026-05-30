@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\PengeluaranLains;
 
-use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\PengeluaranLains\Pages\CreatePengeluaranLain;
 use App\Filament\Resources\PengeluaranLains\Pages\EditPengeluaranLain;
 use App\Filament\Resources\PengeluaranLains\Pages\ListPengeluaranLains;
@@ -10,6 +9,7 @@ use App\Filament\Resources\PengeluaranLains\Schemas\PengeluaranLainForm;
 use App\Filament\Resources\PengeluaranLains\Tables\PengeluaranLainsTable;
 use App\Models\PengeluaranLain;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,7 +23,7 @@ class PengeluaranLainResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
-    protected static ?string $cluster = KeuanganCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
 
     public static function form(Schema $schema): Schema
     {

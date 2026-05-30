@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Expos;
 
-use App\Filament\Clusters\Expo as ExpoCluster;
+use UnitEnum;
 use App\Filament\Resources\Expos\Pages\CreateExpo;
 use App\Filament\Resources\Expos\Pages\EditExpo;
 use App\Filament\Resources\Expos\Pages\ListExpos;
@@ -22,7 +22,7 @@ class ExpoResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
-    protected static ?string $cluster = ExpoCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Expo';
 
     public static function form(Schema $schema): Schema
     {

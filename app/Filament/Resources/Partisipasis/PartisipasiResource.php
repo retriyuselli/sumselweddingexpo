@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Partisipasis;
 
-use App\Filament\Clusters\Expo as ExpoCluster;
+use UnitEnum;
 use App\Filament\Resources\Partisipasis\Pages\CreatePartisipasi;
 use App\Filament\Resources\Partisipasis\Pages\EditPartisipasi;
 use App\Filament\Resources\Partisipasis\Pages\ListPartisipasis;
@@ -23,7 +23,7 @@ class PartisipasiResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static ?string $cluster = ExpoCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Expo';
 
     public static function form(Schema $schema): Schema
     {

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Penyelenggaras;
 
-use App\Filament\Clusters\Penyelenggara as PenyelenggaraCluster;
+use UnitEnum;
 use App\Filament\Resources\Penyelenggaras\Pages\CreatePenyelenggara;
 use App\Filament\Resources\Penyelenggaras\Pages\EditPenyelenggara;
 use App\Filament\Resources\Penyelenggaras\Pages\ListPenyelenggaras;
@@ -23,7 +23,7 @@ class PenyelenggaraResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $cluster = PenyelenggaraCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Penyelenggara';
 
     public static function form(Schema $schema): Schema
     {

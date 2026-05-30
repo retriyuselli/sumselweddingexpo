@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\RekeningTujuans;
 
-use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\RekeningTujuans\Pages\CreateRekeningTujuan;
 use App\Filament\Resources\RekeningTujuans\Pages\EditRekeningTujuan;
 use App\Filament\Resources\RekeningTujuans\Pages\ListRekeningTujuans;
@@ -10,6 +9,7 @@ use App\Filament\Resources\RekeningTujuans\Schemas\RekeningTujuanForm;
 use App\Filament\Resources\RekeningTujuans\Tables\RekeningTujuansTable;
 use App\Models\RekeningTujuan;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,7 +23,7 @@ class RekeningTujuanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
 
-    protected static ?string $cluster = KeuanganCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
 
     public static function form(Schema $schema): Schema
     {

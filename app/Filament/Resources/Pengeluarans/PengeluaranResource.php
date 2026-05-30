@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Pengeluarans;
 
-use App\Filament\Clusters\Keuangan as KeuanganCluster;
 use App\Filament\Resources\Pengeluarans\Pages\CreatePengeluaran;
 use App\Filament\Resources\Pengeluarans\Pages\EditPengeluaran;
 use App\Filament\Resources\Pengeluarans\Pages\ListPengeluarans;
@@ -10,6 +9,7 @@ use App\Filament\Resources\Pengeluarans\Schemas\PengeluaranForm;
 use App\Filament\Resources\Pengeluarans\Tables\PengeluaransTable;
 use App\Models\Pengeluaran;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,7 +23,7 @@ class PengeluaranResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static ?string $cluster = KeuanganCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
 
     public static function form(Schema $schema): Schema
     {

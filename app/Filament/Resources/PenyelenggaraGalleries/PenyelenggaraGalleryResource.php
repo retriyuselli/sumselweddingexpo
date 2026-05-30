@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\PenyelenggaraGalleries;
 
-use App\Filament\Clusters\Penyelenggara as PenyelenggaraCluster;
+use UnitEnum;
 use App\Filament\Resources\PenyelenggaraGalleries\Pages\CreatePenyelenggaraGallery;
 use App\Filament\Resources\PenyelenggaraGalleries\Pages\EditPenyelenggaraGallery;
 use App\Filament\Resources\PenyelenggaraGalleries\Pages\ListPenyelenggaraGalleries;
@@ -22,7 +22,7 @@ class PenyelenggaraGalleryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
-    protected static ?string $cluster = PenyelenggaraCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Penyelenggara';
 
     public static function form(Schema $schema): Schema
     {

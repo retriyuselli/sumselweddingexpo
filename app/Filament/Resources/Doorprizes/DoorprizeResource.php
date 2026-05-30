@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Doorprizes;
 
-use App\Filament\Clusters\Expo as ExpoCluster;
+use UnitEnum;
 use App\Filament\Resources\Doorprizes\Pages\CreateDoorprize;
 use App\Filament\Resources\Doorprizes\Pages\EditDoorprize;
 use App\Filament\Resources\Doorprizes\Pages\ListDoorprizes;
@@ -21,7 +21,7 @@ class DoorprizeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
-    protected static ?string $cluster = ExpoCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Expo';
 
     public static function form(Schema $schema): Schema
     {

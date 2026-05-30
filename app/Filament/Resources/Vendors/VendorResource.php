@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Vendors;
 
-use App\Filament\Clusters\Vendor as VendorCluster;
+use UnitEnum;
 use App\Filament\Resources\Vendors\Pages\CreateVendor;
 use App\Filament\Resources\Vendors\Pages\EditVendor;
 use App\Filament\Resources\Vendors\Pages\ListVendors;
@@ -23,7 +23,7 @@ class VendorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    protected static ?string $cluster = VendorCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Vendor';
 
     public static function form(Schema $schema): Schema
     {

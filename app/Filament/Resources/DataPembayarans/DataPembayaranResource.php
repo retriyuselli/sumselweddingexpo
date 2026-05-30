@@ -9,19 +9,19 @@ use App\Filament\Resources\DataPembayarans\Schemas\DataPembayaranForm;
 use App\Filament\Resources\DataPembayarans\Tables\DataPembayaransTable;
 use App\Models\DataPembayaran;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Clusters\Keuangan as KeuanganCluster;
 
 class DataPembayaranResource extends Resource
 {
     protected static ?string $model = DataPembayaran::class;
 
-    protected static ?string $cluster = KeuanganCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\CategoryTenants;
 
-use App\Filament\Clusters\Expo as ExpoCluster;
+use UnitEnum;
 use App\Filament\Resources\CategoryTenants\Pages\CreateCategoryTenant;
 use App\Filament\Resources\CategoryTenants\Pages\EditCategoryTenant;
 use App\Filament\Resources\CategoryTenants\Pages\ListCategoryTenants;
@@ -23,7 +23,7 @@ class CategoryTenantResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $cluster = ExpoCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Expo';
 
     public static function form(Schema $schema): Schema
     {

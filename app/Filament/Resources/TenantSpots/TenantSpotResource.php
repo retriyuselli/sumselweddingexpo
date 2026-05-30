@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\TenantSpots;
 
-use App\Filament\Clusters\Expo as ExpoCluster;
+use UnitEnum;
 use App\Filament\Resources\TenantSpots\Pages\CreateTenantSpot;
 use App\Filament\Resources\TenantSpots\Pages\EditTenantSpot;
 use App\Filament\Resources\TenantSpots\Pages\ListTenantSpots;
@@ -29,7 +29,7 @@ class TenantSpotResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Spot Tenant';
 
-    protected static ?string $cluster = ExpoCluster::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Expo';
 
     public static function form(Schema $schema): Schema
     {

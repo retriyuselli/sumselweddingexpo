@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Homes;
 
-use App\Filament\Clusters\Content;
+use UnitEnum;
 use App\Filament\Resources\Homes\Pages\CreateHome;
 use App\Filament\Resources\Homes\Pages\EditHome;
 use App\Filament\Resources\Homes\Pages\ListHomes;
@@ -21,7 +21,7 @@ class HomeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
-    protected static ?string $cluster = Content::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Content';
 
     public static function form(Schema $schema): Schema
     {

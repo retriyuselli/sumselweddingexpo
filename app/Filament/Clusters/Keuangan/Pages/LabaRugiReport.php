@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Keuangan\Pages;
 
-use App\Filament\Clusters\Keuangan;
 use App\Filament\Widgets\LabaRugiStatsOverview;
 use App\Models\Expo;
 use App\Models\DataPembayaran;
@@ -11,6 +10,7 @@ use App\Models\Partisipasi;
 use App\Models\Penyelenggara;
 use App\Models\Pengeluaran;
 use BackedEnum;
+use UnitEnum;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
@@ -26,8 +26,8 @@ class LabaRugiReport extends Page implements HasTable
 
     protected string $view = 'filament.clusters.keuangan.pages.laba-rugi-report';
 
-    protected static ?string $cluster = Keuangan::class;
-    
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
     
     protected static ?string $title = 'Laporan Laba Rugi per Expo';

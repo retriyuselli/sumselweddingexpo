@@ -2,10 +2,10 @@
 
 namespace App\Filament\Clusters\Keuangan\Pages;
 
-use App\Filament\Clusters\Keuangan;
 use App\Filament\Widgets\LaporanPiutangStatsOverview;
 use App\Models\Partisipasi;
 use BackedEnum;
+use UnitEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -21,8 +21,8 @@ class LaporanPiutang extends Page implements HasTable
 
     protected string $view = 'filament.clusters.keuangan.pages.laporan-piutang';
 
-    protected static ?string $cluster = Keuangan::class;
-    
+    protected static string|UnitEnum|null $navigationGroup = 'Keuangan';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
     
     protected static ?string $title = 'Laporan Piutang Tenant';

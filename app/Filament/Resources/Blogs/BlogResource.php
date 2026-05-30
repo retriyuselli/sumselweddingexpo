@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Blogs;
 
-use App\Filament\Clusters\Content;
+use UnitEnum;
 use App\Filament\Resources\Blogs\Pages\CreateBlog;
 use App\Filament\Resources\Blogs\Pages\EditBlog;
 use App\Filament\Resources\Blogs\Pages\ListBlogs;
@@ -20,7 +20,7 @@ class BlogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $cluster = Content::class;
+    protected static string|UnitEnum|null $navigationGroup = 'Content';
 
     public static function form(Schema $schema): Schema
     {
