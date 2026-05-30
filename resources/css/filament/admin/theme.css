@@ -2,3 +2,13 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+/* Kurangi jarak antar navigation group di sidebar */
+.fi-sidebar-nav-groups {
+    gap: 0 !important;
+}
+
+.fi-sidebar-group {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
