@@ -256,6 +256,7 @@
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($partisipasis as $partisipasi)
+                            @continue(! $partisipasi->is_active || ! $partisipasi->vendor)
                             <div id="vendor-{{ $partisipasi->id }}"
                                 class="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
                                 <div class="p-5">

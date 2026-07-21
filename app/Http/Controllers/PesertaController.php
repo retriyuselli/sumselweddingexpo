@@ -24,9 +24,11 @@ class PesertaController extends Controller
         $search = $request->input('search');
 
         if ($expo) {
-            $query = Partisipasi::with(['vendor.jenisUsaha', 'categoryTenant', 'tenantSpot'])
+            // Publik: hanya partisipasi aktif
+            $query = Partisipasi::query()
                 ->active()
                 ->where('expo_id', $expo->id)
+                ->with(['vendor.jenisUsaha', 'categoryTenant', 'tenantSpot'])
                 ->whereHas('vendor', function ($q) use ($search) {
                     if ($search) {
                         $q->where('nama_vendor', 'like', "%{$search}%")
@@ -35,11 +37,11 @@ class PesertaController extends Controller
                 });
 
             $partisipasis = $query->get()
-                ->sortBy(function ($partisipasi) {
-                    return $partisipasi->vendor->nama_vendor;
-                });
+                ->filter(fn (Partisipasi $p) => (bool) $p->is_active && $p->vendor)
+                ->sortBy(fn (Partisipasi $p) => $p->vendor->nama_vendor)
+                ->values();
 
-            // Lean booth map: only fields needed for floor plan
+            // Floor plan: booth hanya diisi partisipasi aktif
             $boothMap = Partisipasi::query()
                 ->active()
                 ->where('expo_id', $expo->id)
@@ -50,7 +52,7 @@ class PesertaController extends Controller
                     'tenantSpot:id,kode_booth',
                 ])
                 ->get()
-                ->filter(fn ($p) => $p->tenantSpot)
+                ->filter(fn ($p) => (bool) $p->is_active && $p->tenantSpot)
                 ->keyBy(fn ($p) => $p->tenantSpot->kode_booth);
 
             $categoryTenants = $expo->categoryTenants()->get();
@@ -83,11 +85,17 @@ class PesertaController extends Controller
 
         $partisipasi = null;
         if ($expo) {
-            $partisipasi = Partisipasi::where('vendor_id', $vendor->id)
-                ->where('expo_id', $expo->id)
+            $partisipasi = Partisipasi::query()
                 ->active()
+                ->where('vendor_id', $vendor->id)
+                ->where('expo_id', $expo->id)
                 ->with(['categoryTenant', 'tenantSpot'])
                 ->first();
+        }
+
+        // Vendor tanpa partisipasi aktif di expo berjalan tidak ditampilkan sebagai peserta
+        if (! $partisipasi) {
+            abort(404);
         }
 
         return view('peserta.show', compact('vendor', 'expo', 'partisipasi'));
