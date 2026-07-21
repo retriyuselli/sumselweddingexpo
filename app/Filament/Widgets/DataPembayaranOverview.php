@@ -14,6 +14,9 @@ class DataPembayaranOverview extends BaseWidget
 
     protected ?string $heading = 'Data Pemasukan';
 
+    /** Registered explicitly on Dashboard — avoid duplicate discovery */
+    protected static bool $isDiscovered = false;
+
     protected function getStats(): array
     {
         $startDate = $this->filters['startDate'] ?? null;

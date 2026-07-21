@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -46,13 +47,13 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()],
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
         ]);
 
         $user->assignRole('customer');
@@ -63,7 +64,8 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/')->with('success', 'Akun berhasil dibuat. Silakan cek email untuk verifikasi.');
+        return redirect()->route('verification.notice')
+            ->with('success', 'Akun berhasil dibuat. Silakan cek email untuk verifikasi.');
     }
 
     public function logout(Request $request)
@@ -92,7 +94,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'avatar_url' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'current_password' => ['nullable', 'required_with:new_password'],
-            'new_password' => ['nullable', 'min:8', 'confirmed'],
+            'new_password' => ['nullable', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()],
         ]);
 
         // Handle avatar upload
@@ -125,9 +127,15 @@ class AuthController extends Controller
             ]);
         }
 
+        $emailChanged = strcasecmp((string) $user->email, (string) $validated['email']) !== 0;
+
         // Update name and email
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+        }
 
         // Update password if provided
         if ($request->filled('current_password')) {
@@ -135,13 +143,22 @@ class AuthController extends Controller
                 return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
             }
 
-            $user->password = Hash::make($request->new_password);
+            $user->password = $request->new_password;
         }
 
         $user->save();
 
+        if ($emailChanged) {
+            $user->sendEmailVerificationNotification();
+        }
+
         // Force session regeneration to clear any cached data
         $request->session()->regenerate();
+
+        if ($emailChanged) {
+            return redirect()->route('verification.notice')
+                ->with('success', 'Email diubah. Silakan verifikasi alamat email baru Anda.');
+        }
 
         return redirect()->route('profile')->with('success', 'Profile berhasil diperbarui!');
     }

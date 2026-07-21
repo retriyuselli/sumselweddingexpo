@@ -99,7 +99,7 @@
                                 @error('password')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                <p class="mt-1 text-xs text-neutral-500">Minimal 8 karakter</p>
+                                <p class="mt-1 text-xs text-neutral-500">Min. 8 karakter, huruf besar &amp; kecil, serta angka.</p>
                             </div>
 
                             <div>

@@ -3,15 +3,11 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard as PagesDashboard;
-use App\Filament\Widgets\DataPembayaranOverview;
-use App\Filament\Widgets\LabaRugiStatsOverview;
-use App\Filament\Widgets\PengeluaranOverview;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -25,6 +21,7 @@ use Jeffgreco13\FilamentBreezy\BreezyCore;
 use App\Models\Penyelenggara;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\AccountWidget;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,7 +34,9 @@ class AdminPanelProvider extends PanelProvider
 
         try {
             if (Schema::hasTable('penyelenggaras')) {
-                $penyelenggara = Penyelenggara::first();
+                $penyelenggara = Cache::remember('penyelenggara.brand', 600, fn () => Penyelenggara::query()
+                    ->select(['logo', 'favicon'])
+                    ->first());
                 if ($penyelenggara && $penyelenggara->favicon) {
                     $favicon = Storage::disk('public')->url($penyelenggara->favicon);
                 }
@@ -71,9 +70,6 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                LabaRugiStatsOverview::class,
-                DataPembayaranOverview::class,
-                PengeluaranOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

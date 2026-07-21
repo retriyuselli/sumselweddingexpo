@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\DataPembayaranOverview;
+use App\Filament\Widgets\PengeluaranOverview;
 use App\Models\Expo;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -9,10 +11,20 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Widgets\AccountWidget;
 
 class Dashboard extends BaseDashboard
 {
     use BaseDashboard\Concerns\HasFiltersForm;
+
+    public function getWidgets(): array
+    {
+        return [
+            AccountWidget::class,
+            DataPembayaranOverview::class,
+            PengeluaranOverview::class,
+        ];
+    }
 
     public function filtersForm(Schema $schema): Schema
     {

@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessMidtransWebhook;
+use App\Models\Home;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\ProductVendor;
 use App\Models\WebhookEvent;
 use App\Services\MidtransService;
+use App\Services\PaymentStatusSync;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PaymentController extends Controller
 {
@@ -183,10 +188,13 @@ class PaymentController extends Controller
         $svc = new MidtransService();
         $res = $svc->createSnap($payload);
         if (!isset($res['token'])) {
+            Log::warning('Midtrans createSnap failed', [
+                'order_code' => $orderCode,
+                'response' => $res,
+            ]);
+
             return response()->json([
-                'message' => 'Gagal membuat transaksi',
-                'midtrans' => $res,
-                'payload' => $payload,
+                'message' => 'Gagal membuat transaksi. Silakan coba lagi.',
             ], 400);
         }
 
@@ -218,49 +226,84 @@ class PaymentController extends Controller
             'payload' => $payload,
         ]);
 
-        if (!$valid) {
+        if (! $valid) {
             return response()->json(['ok' => false], 400);
         }
 
-        $orderCode = (string) ($payload['order_id'] ?? '');
-        $payment = Payment::where('provider', 'midtrans')->where('external_id', $orderCode)->first();
-        if (!$payment) {
-            return response()->json(['ok' => false], 404);
-        }
-
-        $status = (string) ($payload['transaction_status'] ?? '');
-        $amount = (float) ($payload['gross_amount'] ?? 0);
-        $method = (string) ($payload['payment_type'] ?? '');
-        $va = null;
-        if (!empty($payload['va_numbers']) && is_array($payload['va_numbers'])) {
-            $first = $payload['va_numbers'][0] ?? [];
-            $va = $first['va_number'] ?? null;
-        }
-
-        $payment->update([
-            'transaction_id' => (string) ($payload['transaction_id'] ?? ''),
-            'status' => $status,
-            'amount' => $amount,
-            'method' => $method,
-            'va_number' => $va,
-            'paid_at' => in_array($status, ['capture','settlement']) ? now() : null,
-            'raw_response' => $payload,
-        ]);
-
-        $order = $payment->order;
-        if (in_array($status, ['capture','settlement'])) {
-            $paidAmount = (float) $amount;
-            $totalAmount = (float) ($order->amount_total ?? 0);
-            $isDpPaid = $paidAmount > 0 && $paidAmount < $totalAmount;
-            $order->update(['status' => $isDpPaid ? 'dp_paid' : 'paid']);
-        } elseif ($status === 'pending') {
-            $order->update(['status' => 'pending']);
-        } elseif (in_array($status, ['expire','cancel','failure'])) {
-            $order->update(['status' => 'failed']);
-        }
-
-        $event->update(['processed' => true, 'processed_at' => now()]);
+        // Process after HTTP response so Midtrans gets a fast 200 without needing a queue worker.
+        ProcessMidtransWebhook::dispatchAfterResponse($event->id, $payload);
 
         return response()->json(['ok' => true]);
+    }
+
+    public function success(Request $request, PaymentStatusSync $sync)
+    {
+        $code = (string) $request->query('code', '');
+        $payment = null;
+        if ($code !== '') {
+            try {
+                $payment = $sync->findOwnedOrFail($code, Auth::user());
+            } catch (HttpException $e) {
+                abort($e->getStatusCode());
+            }
+        }
+
+        return view('payments.success', compact('payment', 'code'));
+    }
+
+    public function status(Request $request, PaymentStatusSync $sync)
+    {
+        $code = (string) $request->query('code', '');
+        try {
+            $payment = $sync->findOwnedOrFail($code, Auth::user());
+        } catch (HttpException $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getStatusCode() === 404 ? 'Payment not found' : 'Forbidden',
+            ], $e->getStatusCode());
+        }
+
+        return response()->json($sync->toStatusPayload($payment));
+    }
+
+    public function refresh(Request $request, PaymentStatusSync $sync, MidtransService $midtrans)
+    {
+        $code = (string) $request->input('code', '');
+        try {
+            $payment = $sync->findOwnedOrFail($code, Auth::user());
+        } catch (HttpException $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => $e->getStatusCode() === 404 ? 'Payment not found' : 'Forbidden',
+            ], $e->getStatusCode());
+        }
+
+        $res = $midtrans->getStatus($code);
+        if (isset($res['error']) && $res['error']) {
+            return response()->json(['ok' => false, 'message' => 'Gagal memuat status pembayaran'], 400);
+        }
+
+        $sync->applyFromMidtransPayload($payment, $res, considerDp: false);
+        $payment->refresh();
+
+        return response()->json($sync->toStatusPayload($payment));
+    }
+
+    public function receipt(Request $request, PaymentStatusSync $sync)
+    {
+        $code = (string) $request->query('code', '');
+        try {
+            $payment = $sync->findOwnedOrFail($code, Auth::user(), withItems: true);
+        } catch (HttpException $e) {
+            abort($e->getStatusCode());
+        }
+
+        $org = optional(Home::active()->with('penyelenggara')->first())->penyelenggara;
+
+        return view('payments.receipt', [
+            'payment' => $payment,
+            'code' => $code,
+            'penyelenggara' => $org,
+        ]);
     }
 }

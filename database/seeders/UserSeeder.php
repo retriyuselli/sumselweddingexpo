@@ -14,67 +14,69 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create roles if not exist (updated roles)
+        if (! app()->environment(['local', 'testing'])) {
+            $this->command?->warn('UserSeeder skipped outside local/testing. Set privileged users manually.');
+
+            return;
+        }
+
+        $password = env('SEED_PASSWORD');
+        if (! is_string($password) || $password === '') {
+            $this->command?->error('Set SEED_PASSWORD in .env before seeding users.');
+
+            return;
+        }
+
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $sweRole = Role::firstOrCreate(['name' => 'swe']);
         $customerRole = Role::firstOrCreate(['name' => 'customer']);
 
-        // Super Admin
-        $superAdmin = User::firstOrCreate(
-            ['email' => 'superadmin@weddingexpo.com'],
+        $accounts = [
             [
+                'email' => 'superadmin@weddingexpo.com',
                 'name' => 'Super Admin',
-                'password' => Hash::make('password123'),
-                'email_verified_at' => now(),
+                'role' => $superAdminRole,
                 'bio' => 'Super Administrator untuk sistem WeddingExpo',
                 'author_color' => '#ef4444',
-            ]
-        );
-        $superAdmin->assignRole($superAdminRole);
-
-        // Admin
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@weddingexpo.com'],
+            ],
             [
+                'email' => 'admin@weddingexpo.com',
                 'name' => 'Admin WeddingExpo',
-                'password' => Hash::make('password123'),
-                'email_verified_at' => now(),
+                'role' => $adminRole,
                 'bio' => 'Admin yang mengelola konten dan data WeddingExpo',
                 'author_color' => '#3b82f6',
-            ]
-        );
-        $admin->assignRole($adminRole);
-
-        // SWE (Event Organizer)
-        $swe = User::firstOrCreate(
-            ['email' => 'swe@weddingexpo.com'],
+            ],
             [
+                'email' => 'swe@weddingexpo.com',
                 'name' => 'Sumsel Wedding Expo',
-                'password' => Hash::make('password123'),
-                'email_verified_at' => now(),
+                'role' => $sweRole,
                 'bio' => 'Akun penyelenggara Sumsel Wedding Expo.',
                 'author_color' => '#f59e0b',
-            ]
-        );
-        $swe->assignRole($sweRole);
-
-        // Customer sample
-        $customer = User::firstOrCreate(
-            ['email' => 'customer@weddingexpo.com'],
+            ],
             [
+                'email' => 'customer@weddingexpo.com',
                 'name' => 'Customer Demo',
-                'password' => Hash::make('password123'),
-                'email_verified_at' => now(),
-            ]
-        );
-        $customer->assignRole($customerRole);
+                'role' => $customerRole,
+                'bio' => null,
+                'author_color' => null,
+            ],
+        ];
 
-        $this->command->info('Users created with Spatie roles:');
-        $this->command->info('- Super Admin: superadmin@weddingexpo.com');
-        $this->command->info('- Admin: admin@weddingexpo.com');
-        $this->command->info('- SWE: swe@weddingexpo.com');
-        $this->command->info('- Customer: customer@weddingexpo.com');
-        $this->command->info('Password for all: password123');
+        foreach ($accounts as $account) {
+            $user = User::updateOrCreate(
+                ['email' => $account['email']],
+                array_filter([
+                    'name' => $account['name'],
+                    'password' => Hash::make($password),
+                    'email_verified_at' => now(),
+                    'bio' => $account['bio'],
+                    'author_color' => $account['author_color'],
+                ], fn ($v) => $v !== null)
+            );
+            $user->assignRole($account['role']);
+        }
+
+        $this->command?->info('Users created/updated with Spatie roles (password from SEED_PASSWORD).');
     }
 }

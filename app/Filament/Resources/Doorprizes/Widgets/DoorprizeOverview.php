@@ -16,21 +16,15 @@ class DoorprizeOverview extends StatsOverviewWidget
 
         $belumDownload = $total - $sudahDownload;
 
-        $totalTransaksi = Doorprize::query()
-            ->select('transactions')
-            ->get()
-            ->flatMap(fn (Doorprize $record) => $record->transactions ?? [])
-            ->sum(fn ($item) => (int) str_replace(',', '', $item['nom_trx'] ?? 0));
+        $txRows = Doorprize::query()->select('transactions')->get();
+        $flat = $txRows->flatMap(fn (Doorprize $record) => $record->transactions ?? []);
 
-        $totalRevenue = Doorprize::query()
-            ->select('transactions')
-            ->get()
-            ->flatMap(fn (Doorprize $record) => $record->transactions ?? [])
-            ->sum(fn ($item) => (int) str_replace(',', '', $item['no_rev'] ?? 0));
+        $totalTransaksi = $flat->sum(fn ($item) => (int) str_replace(',', '', $item['nom_trx'] ?? 0));
+        $totalRevenue = $flat->sum(fn ($item) => (int) str_replace(',', '', $item['no_rev'] ?? 0));
 
-        $belumFotoKtp = Doorprize::whereNull('foto_ktp')
-            ->orWhere('foto_ktp', '')
-            ->count();
+        $belumFotoKtp = Doorprize::where(function ($q) {
+            $q->whereNull('foto_ktp')->orWhere('foto_ktp', '');
+        })->count();
 
         return [
             Stat::make('Total Pemenang', (string) $total)
@@ -53,12 +47,12 @@ class DoorprizeOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('danger'),
 
-            Stat::make('Total Transaksi', '' . number_format($totalTransaksi, 0, ',', '.'))
+            Stat::make('Total Transaksi', ''.number_format($totalTransaksi, 0, ',', '.'))
                 ->description('Akumulasi nominal transaksi')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('warning'),
 
-            Stat::make('Total Revenue', '' . number_format($totalRevenue, 0, ',', '.'))
+            Stat::make('Total Revenue', ''.number_format($totalRevenue, 0, ',', '.'))
                 ->description('Akumulasi nominal revenue')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('info'),

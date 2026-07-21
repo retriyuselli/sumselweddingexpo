@@ -30,6 +30,8 @@ class DoorprizesTable
                     ->description(fn ($record) => $record->nik),
                 ImageColumn::make('foto_ktp')
                     ->label('Foto KTP')
+                    ->disk('local')
+                    ->visibility('private')
                     ->circular(),
                 TextColumn::make('partisipasi.expo.nama_expo')
                     ->label('Expo')

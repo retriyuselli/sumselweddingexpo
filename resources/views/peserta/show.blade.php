@@ -39,8 +39,8 @@
                             <p class="text-sm text-neutral-600 mt-0.5">
                                 Booth: <span
                                     class="font-bold text-neutral-900">{{ $partisipasi->categoryTenant->category->label() ?? 'Standard' }}</span>
-                                @if ($vendor->lokasi_booth)
-                                    • Lokasi: <span class="font-bold text-neutral-900">{{ $vendor->lokasi_booth }}</span>
+                                @if ($partisipasi?->tenantSpot?->kode_booth || $partisipasi?->blok_tenant)
+                                    • Lokasi: <span class="font-bold text-neutral-900">{{ $partisipasi->tenantSpot?->kode_booth ?? $partisipasi->blok_tenant }}</span>
                                 @endif
                             </p>
                         </div>

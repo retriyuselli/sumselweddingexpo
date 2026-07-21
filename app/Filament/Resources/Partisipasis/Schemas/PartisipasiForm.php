@@ -81,7 +81,7 @@ class PartisipasiForm
                                 }
 
                                 return CategoryTenant::where('expo_id', $expoId)
-                                    ->where('status', true)
+                                    ->where('status', 'Aktif')
                                     ->get()
                                     ->mapWithKeys(fn ($item) => [$item->id => $item->category->label()]);
                             })
@@ -121,6 +121,13 @@ class PartisipasiForm
                             ->nullable()
                             ->placeholder('Pilih booth (opsional)')
                             ->helperText('Hanya menampilkan booth yang belum dipakai')
+                            ->columnSpan(1),
+
+                        TextInput::make('blok_tenant')
+                            ->label('Preferensi / Blok (teks)')
+                            ->maxLength(100)
+                            ->nullable()
+                            ->helperText('Preferensi booth dari form exhibitor, atau catatan blok manual')
                             ->columnSpan(1),
 
                         TextInput::make('harga_jual')

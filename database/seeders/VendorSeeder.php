@@ -253,10 +253,6 @@ class VendorSeeder extends Seeder
                         'nama_pic' => $vendor['nama_pic'],
                         'no_wa_pic' => $vendor['no_wa_pic'],
                         'nama_pendaftar' => $vendor['nama_pic'] ?? null,
-                        'pendamping_tenant' => null,
-                        'paket' => null,
-                        'lokasi_booth' => null,
-                        'harga_jual' => null,
                         'user_id' => null,
                     ]
                 );

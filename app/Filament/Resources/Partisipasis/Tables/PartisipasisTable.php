@@ -69,10 +69,10 @@ class PartisipasisTable
                     ->label('Vendor'),
                 SelectFilter::make('status_pembayaran')
                     ->options([
-                        'lunas' => 'Lunas',
-                        'belum_lunas' => 'Belum Lunas',
-                        'dp' => 'DP (Down Payment)',
-                        'cicilan' => 'Cicilan',
+                        'Lunas' => 'Lunas',
+                        'Belum Lunas' => 'Belum Lunas',
+                        'DP' => 'DP (Down Payment)',
+                        'Cicilan' => 'Cicilan',
                     ]),
             ])
             ->defaultSort('created_at', 'desc')

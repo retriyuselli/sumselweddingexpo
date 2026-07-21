@@ -32,7 +32,7 @@ class CategoryTenantSeeder extends Seeder
                 'jumlah_unit' => 10,
                 'ukuran' => '4x4 m',
                 'deskripsi' => 'Booth premium dengan lokasi strategis, ukuran besar, dan fasilitas lengkap. Termasuk backdrop, meja, kursi, lighting, dan spot promosi prioritas.',
-                'status' => true,
+                'status' => 'Aktif',
             ],
             [
                 'expo_id' => $expo->id,
@@ -42,7 +42,7 @@ class CategoryTenantSeeder extends Seeder
                 'jumlah_unit' => 20,
                 'ukuran' => '3x3 m',
                 'deskripsi' => 'Booth standar dengan lokasi baik dan fasilitas memadai. Termasuk backdrop, meja, kursi, dan basic lighting.',
-                'status' => true,
+                'status' => 'Aktif',
             ],
         ];
 

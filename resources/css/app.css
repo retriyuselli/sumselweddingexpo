@@ -10,6 +10,10 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
 /* Mobile-specific styling for cart badge */
 @media (max-width: 640px) {
     #cart-badge {

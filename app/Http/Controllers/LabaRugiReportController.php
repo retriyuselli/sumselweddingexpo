@@ -9,13 +9,21 @@ use Illuminate\Support\Str;
 
 class LabaRugiReportController extends Controller
 {
+    private function authorizeFinanceAccess(): void
+    {
+        $user = auth()->user();
+        if (! $user || ! $user->hasAnyRole(['super_admin', 'admin', 'swe'])) {
+            abort(403, 'Anda tidak memiliki akses ke laporan keuangan.');
+        }
+    }
+
     private function getPdf($record, $isPreview = false)
     {
         $record->load([
             'partisipasis.vendor',
             'partisipasis.dataPembayarans',
             'sponsors',
-            'pengeluarans'
+            'pengeluarans',
         ]);
 
         return Pdf::loadView('pdf.laba-rugi', [
@@ -27,24 +35,20 @@ class LabaRugiReportController extends Controller
 
     public function stream(Expo $record)
     {
-        if (! auth()->check()) {
-            abort(403);
-        }
+        $this->authorizeFinanceAccess();
 
         $pdf = $this->getPdf($record, true);
-        $filename = 'Laporan-Laba-Rugi-' . Str::slug($record->nama_expo) . '.pdf';
+        $filename = 'Laporan-Laba-Rugi-'.Str::slug($record->nama_expo).'.pdf';
 
         return $pdf->stream($filename);
     }
 
     public function download(Expo $record)
     {
-        if (! auth()->check()) {
-            abort(403);
-        }
+        $this->authorizeFinanceAccess();
 
         $pdf = $this->getPdf($record, false);
-        $filename = 'Laporan-Laba-Rugi-' . Str::slug($record->nama_expo) . '.pdf';
+        $filename = 'Laporan-Laba-Rugi-'.Str::slug($record->nama_expo).'.pdf';
 
         return $pdf->download($filename);
     }

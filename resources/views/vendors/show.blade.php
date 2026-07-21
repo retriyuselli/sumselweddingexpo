@@ -182,11 +182,19 @@
                             </div>
                             <div>
                                 <p class="text-neutral-600">Lokasi Booth</p>
-                                <p class="font-semibold text-neutral-900">{{ $vendor->lokasi_booth ?? '—' }}</p>
+                                <p class="font-semibold text-neutral-900">
+                                    {{ $partisipasi?->tenantSpot?->kode_booth ?? $partisipasi?->blok_tenant ?? '—' }}
+                                </p>
                             </div>
                             <div>
                                 <p class="text-neutral-600">Paket</p>
-                                <p class="font-semibold text-neutral-900">{{ $vendor->paket ?? '—' }}</p>
+                                <p class="font-semibold text-neutral-900">
+                                    @php
+                                        $cat = $partisipasi?->categoryTenant?->category;
+                                        $catValue = $cat instanceof \BackedEnum ? $cat->value : $cat;
+                                    @endphp
+                                    {{ \App\Enums\CategoryTier::tryFrom((string) ($catValue ?? ''))?->label() ?? ($catValue ?? '—') }}
+                                </p>
                             </div>
                             <div>
                                 <p class="text-neutral-600">Kontak PIC</p>

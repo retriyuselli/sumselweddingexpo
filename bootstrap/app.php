@@ -11,7 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        $trusted = env('TRUSTED_PROXIES', '*');
+        $middleware->trustProxies(
+            at: $trusted === '*'
+                ? '*'
+                : array_values(array_filter(array_map('trim', explode(',', (string) $trusted))))
+        );
+
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/midtrans',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

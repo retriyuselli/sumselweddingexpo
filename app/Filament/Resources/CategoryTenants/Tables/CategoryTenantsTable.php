@@ -50,10 +50,9 @@ class CategoryTenantsTable
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'success' => fn ($state) => (bool) $state,
-                        'danger' => fn ($state) => ! (bool) $state,
-                    ])
-                    ->formatStateUsing(fn ($state) => $state ? 'Aktif' : 'Tidak Aktif'),
+                        'success' => 'Aktif',
+                        'danger' => 'Tidak Aktif',
+                    ]),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -65,8 +64,8 @@ class CategoryTenantsTable
                     ->label('Kategori'),
                 SelectFilter::make('status')
                     ->options([
-                        1 => 'Aktif',
-                        0 => 'Tidak Aktif',
+                        'Aktif' => 'Aktif',
+                        'Tidak Aktif' => 'Tidak Aktif',
                     ]),
             ])
             ->recordActions([

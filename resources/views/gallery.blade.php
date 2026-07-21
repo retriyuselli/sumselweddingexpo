@@ -25,6 +25,11 @@
                         @endforeach
                     @endforeach
                 </div>
+                @if(method_exists($galleries, 'links'))
+                    <div class="mt-8 flex justify-center">
+                        {{ $galleries->links() }}
+                    </div>
+                @endif
             @else
                 <div class="rounded-xl border border-neutral-200 bg-white p-6 text-center">
                     <h2 class="text-lg font-semibold">Belum ada foto</h2>

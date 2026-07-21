@@ -95,6 +95,8 @@
                                         class="w-4 h-4 border-neutral-300 rounded">
                                     <label for="remember" class="ml-2 text-sm text-neutral-700">Ingat saya</label>
                                 </div>
+                                <a href="{{ route('password.request') }}"
+                                    class="text-sm text-rose-600 hover:text-rose-700 font-medium">Lupa password?</a>
                             </div>
 
                             <button type="submit"

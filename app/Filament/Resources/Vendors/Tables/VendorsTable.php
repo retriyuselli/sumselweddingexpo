@@ -53,14 +53,6 @@ class VendorsTable
                 ->label('WA PIC')
                 ->toggleable(),
 
-            TextColumn::make('paket')
-                ->label('Paket')
-                ->toggleable(),
-
-            TextColumn::make('lokasi_booth')
-                ->label('Lokasi Booth')
-                ->toggleable(),
-
             ])
             ->filters([
                 TrashedFilter::make(),

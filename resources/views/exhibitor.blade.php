@@ -87,10 +87,10 @@
                         </div>
                     </div>
                 @else
-                    @if (isset($registeredAsExhibitor) && $registeredAsExhibitor)
+                    @if (!empty($registeredForCurrentExpo))
                         <div class="mt-4 p-6 bg-green-50 rounded-lg border border-green-200">
-                            <p class="text-neutral-700 text-sm mb-4">Anda sudah terdaftar sebagai exhibitor dengan akun ini.
-                                Satu akun hanya bisa mendaftarkan satu vendor.</p>
+                            <p class="text-neutral-700 text-sm mb-4">Anda sudah terdaftar pada expo aktif dengan akun ini.
+                                Satu akun memiliki satu identitas vendor; keikutsertaan per expo dikelola terpisah.</p>
                             @if (isset($currentVendor) && $currentVendor)
                                 <div class="mb-4 rounded-lg ring-1 ring-neutral-200 bg-white p-4">
                                     <h3 class="font-semibold">Detail Vendor</h3>
@@ -107,17 +107,27 @@
                                         <div>
                                             <dt class="text-neutral-500">Paket</dt>
                                             <dd class="font-medium">
-                                                {{ \App\Enums\CategoryTier::tryFrom($currentVendor->paket)?->label() ?? ($currentVendor->paket ?? '-') }}
+                                                @php
+                                                    $cat = $currentPartisipasi?->categoryTenant?->category;
+                                                    $catValue = $cat instanceof \BackedEnum ? $cat->value : $cat;
+                                                @endphp
+                                                {{ \App\Enums\CategoryTier::tryFrom((string) $catValue)?->label() ?? ($catValue ?? '-') }}
                                             </dd>
                                         </div>
                                         <div>
                                             <dt class="text-neutral-500">Lokasi Booth</dt>
-                                            <dd class="font-medium">{{ $currentVendor->lokasi_booth ?? '-' }}</dd>
+                                            <dd class="font-medium">
+                                                {{ $currentPartisipasi?->tenantSpot?->kode_booth
+                                                    ?? $currentPartisipasi?->blok_tenant
+                                                    ?? '-' }}
+                                            </dd>
                                         </div>
                                         <div>
                                             <dt class="text-neutral-500">Harga Paket</dt>
                                             <dd class="font-medium">
-                                                {{ isset($currentVendor->harga_jual) ? 'Rp ' . number_format($currentVendor->harga_jual, 0, ',', '.') : '-' }}
+                                                {{ $currentPartisipasi?->harga_jual !== null
+                                                    ? 'Rp ' . number_format((int) $currentPartisipasi->harga_jual, 0, ',', '.')
+                                                    : '-' }}
                                             </dd>
                                         </div>
                                         <div>
@@ -138,6 +148,12 @@
                     @else
                         <form method="POST" action="{{ route('exhibitor.store') }}" class="mt-4 grid sm:grid-cols-2 gap-4">
                             @csrf
+                            @if (!empty($hasVendorIdentity) && $currentVendor)
+                                <div class="sm:col-span-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                                    Identitas vendor <strong>{{ $currentVendor->nama_vendor }}</strong> akan dipakai ulang.
+                                    Lengkapi preferensi paket untuk expo aktif{{ isset($nearestExpo) && $nearestExpo ? ': '.$nearestExpo->nama_expo : '' }}.
+                                </div>
+                            @else
                             <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                             <div>
                                 <label for="nama_pendaftar" class="block text-sm text-neutral-600">Nama Pendaftar</label>
@@ -197,8 +213,17 @@
                                 <label for="email" class="block text-sm text-neutral-600">Email</label>
                                 <input id="email" name="email" type="email"
                                     class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                                    value="{{ old('email') }}" required>
+                                    value="{{ old('email', auth()->user()->email) }}" required>
                                 @error('email')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="kota" class="block text-sm text-neutral-600">Kota</label>
+                                <input id="kota" name="kota" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                                    value="{{ old('kota') }}" required>
+                                @error('kota')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -212,20 +237,11 @@
                                 @enderror
                             </div>
                             <div>
-                                <label for="no_wa_pic" class="block text-sm text-neutral-600">No. WhatsApp PIC</label>
+                                <label for="no_wa_pic" class="block text-sm text-neutral-600">No. WA PIC</label>
                                 <input id="no_wa_pic" name="no_wa_pic" type="text"
                                     class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                                     value="{{ old('no_wa_pic') }}" required>
                                 @error('no_wa_pic')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <label for="kota" class="block text-sm text-neutral-600">Kota</label>
-                                <input id="kota" name="kota" type="text"
-                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                                    value="{{ old('kota') }}" required>
-                                @error('kota')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -238,10 +254,25 @@
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+                            @endif
+
+                            @if (!empty($hasVendorIdentity))
+                            <div class="sm:col-span-2">
+                                <label for="pendamping_tenant" class="block text-sm text-neutral-600">Pendamping Tenant
+                                    (Opsional)</label>
+                                <input id="pendamping_tenant" name="pendamping_tenant" type="text"
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm placeholder:text-sm"
+                                    placeholder="Nama pendamping (jika ada)" value="{{ old('pendamping_tenant') }}">
+                                @error('pendamping_tenant')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
+
                             <div class="sm:col-span-2">
                                 <label for="paket" class="block text-sm text-neutral-600">Paket yang diminati</label>
                                 <select id="paket" name="paket"
-                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm">
+                                    class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm" required>
                                     <option value="" disabled {{ old('paket') ? '' : 'selected' }}>Pilih paket</option>
                                     @if (!empty($paketOptions))
                                         @foreach ($paketOptions as $value => $label)
@@ -264,14 +295,10 @@
                                     class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                                     value="{{ old('paket') && isset($paketPrices[old('paket')]) ? 'Rp ' . number_format($paketPrices[old('paket')], 0, ',', '.') : '' }}"
                                     readonly>
-                                <input id="harga_jual" name="harga_jual" type="hidden"
-                                    value="{{ old('paket') && isset($paketPrices[old('paket')]) ? $paketPrices[old('paket')] : '' }}">
-                                @error('harga_jual')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
+                                <p class="mt-1 text-xs text-neutral-500">Harga mengikuti katalog paket expo (tidak dapat diubah).</p>
                             </div>
                             <div class="sm:col-span-2">
-                                <label for="lokasi_booth" class="block text-sm text-neutral-600">Lokasi Booth</label>
+                                <label for="lokasi_booth" class="block text-sm text-neutral-600">Preferensi Lokasi Booth</label>
                                 <input id="lokasi_booth" name="lokasi_booth" type="text"
                                     class="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm placeholder:text-sm"
                                     placeholder="Contoh: Hall A, Blok B12" value="{{ old('lokasi_booth') }}">
@@ -291,7 +318,6 @@
                             (function() {
                                 const paketSelect = document.getElementById('paket');
                                 const displayHarga = document.getElementById('display_harga_jual');
-                                const hargaInput = document.getElementById('harga_jual');
                                 const prices = @json($paketPrices ?? []);
 
                                 function formatRupiah(n) {
@@ -303,12 +329,10 @@
                                     const val = paketSelect.value;
                                     const price = prices[val] ?? '';
                                     displayHarga.value = formatRupiah(price);
-                                    hargaInput.value = price || '';
                                 }
 
                                 if (paketSelect) {
                                     paketSelect.addEventListener('change', updateHarga);
-                                    // Set initial on load
                                     updateHarga();
                                 }
                             })();

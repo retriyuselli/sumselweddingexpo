@@ -78,10 +78,11 @@ class PartisipasiSeeder extends Seeder
             $daysBeforeExpo = rand(1, 30);
             $bookingDate = $expo->tanggal_mulai->copy()->subDays($daysBeforeExpo);
 
-            // Some vendors have vendor_pendamping (30% chance)
+            // Optional companion vendor IDs (JSON array) — 30% chance pick another vendor
             $vendorPendamping = null;
-            if (rand(1, 100) <= 30) {
-                $vendorPendamping = 'Staff '.$vendor->nama_vendor;
+            if (rand(1, 100) <= 30 && $vendors->count() > 1) {
+                $other = $vendors->where('id', '!=', $vendor->id)->random();
+                $vendorPendamping = [$other->id];
             }
 
             $partisipasi[] = [

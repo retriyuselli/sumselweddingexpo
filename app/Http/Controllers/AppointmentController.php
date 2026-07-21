@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Vendor;
+use App\Services\ExpoResolver;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -19,7 +19,7 @@ class AppointmentController extends Controller
             return redirect()->route('dashboard')->with('error', 'Janji temu hanya tersedia untuk customer tanpa vendor terdaftar.');
         }
 
-        $appointments = Appointment::with(['vendor:id,nama_vendor,lokasi_booth,paket', 'expo:id,nama_expo,periode'])
+        $appointments = Appointment::with(['vendor:id,nama_vendor', 'expo:id,nama_expo,periode'])
             ->where('customer_id', $user->id)
             ->orderByDesc('starts_at')
             ->paginate(10);
@@ -27,26 +27,54 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
-    public function create()
+    public function create(ExpoResolver $expoResolver)
     {
         $user = Auth::user();
         if (! $user->hasRole('customer') || Vendor::where('user_id', $user->id)->exists()) {
             return redirect()->route('dashboard')->with('error', 'Janji temu hanya bisa dibuat oleh customer yang tidak memiliki vendor.');
         }
 
-        $vendors = Vendor::select('id', 'nama_vendor')->orderBy('nama_vendor')->get();
-        return view('appointments.create', compact('vendors'));
+        $expo = $expoResolver->nearestActive();
+        $vendors = Vendor::query()
+            ->select('id', 'nama_vendor')
+            ->when($expo, function ($q) use ($expo) {
+                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+            }, function ($q) {
+                $q->whereRaw('0 = 1');
+            })
+            ->orderBy('nama_vendor')
+            ->get();
+
+        return view('appointments.create', compact('vendors', 'expo'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ExpoResolver $expoResolver)
     {
         $user = Auth::user();
         if (! $user->hasRole('customer') || Vendor::where('user_id', $user->id)->exists()) {
             return redirect()->route('dashboard')->with('error', 'Janji temu hanya bisa dibuat oleh customer yang tidak memiliki vendor.');
         }
 
+        $expo = $expoResolver->nearestActive();
+
         $validated = $request->validate([
-            'vendor_id' => ['required', 'exists:vendors,id'],
+            'vendor_id' => [
+                'required',
+                'exists:vendors,id',
+                function ($attribute, $value, $fail) use ($expo) {
+                    if (! $expo) {
+                        $fail('Tidak ada expo aktif untuk janji temu.');
+
+                        return;
+                    }
+                    $ok = Vendor::whereKey($value)
+                        ->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id))
+                        ->exists();
+                    if (! $ok) {
+                        $fail('Vendor tidak terdaftar pada expo aktif.');
+                    }
+                },
+            ],
             'starts_at' => ['required', 'date'],
             'ends_at' => ['required', 'date', 'after:starts_at'],
             'location_type' => ['required', 'in:in_person,online'],
@@ -65,7 +93,7 @@ class AppointmentController extends Controller
             ->where('vendor_id', $validated['vendor_id'])
             ->where(function ($q) use ($start, $end) {
                 $q->where('starts_at', '<', $end)
-                  ->where('ends_at', '>', $start);
+                    ->where('ends_at', '>', $start);
             })
             ->exists();
 
@@ -76,9 +104,10 @@ class AppointmentController extends Controller
             ]);
         }
 
-        $appointment = Appointment::create([
+        Appointment::create([
             'customer_id' => Auth::id(),
             'vendor_id' => $validated['vendor_id'],
+            'expo_id' => $expo?->id,
             'starts_at' => $validated['starts_at'],
             'ends_at' => $validated['ends_at'],
             'location_type' => $validated['location_type'],

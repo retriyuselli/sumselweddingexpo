@@ -100,10 +100,14 @@ class DoorprizeForm
                                         FileUpload::make('foto_ktp')
                                             ->label('Foto KTP')
                                             ->image()
+                                            ->disk('local')
+                                            ->visibility('private')
                                             ->directory('doorprizes/ktp')
                                             ->columnSpanFull(),
                                         FileUpload::make('surat_penyataan')
                                             ->label('Surat Pernyataan')
+                                            ->disk('local')
+                                            ->visibility('private')
                                             ->directory('doorprizes/surat-penyataan')
                                             ->openable()
                                             ->columnSpanFull(),
@@ -166,6 +170,8 @@ class DoorprizeForm
                                         FileUpload::make('bukti_trx')
                                             ->label('Bukti Transaksi')
                                             ->image()
+                                            ->disk('local')
+                                            ->visibility('private')
                                             ->directory('doorprizes/transactions')
                                             ->required()
                                             ->columnSpanFull(),

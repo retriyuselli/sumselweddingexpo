@@ -61,7 +61,10 @@
                                 </div>
                                 <div>
                                     <p class="text-neutral-600">Lokasi Booth</p>
-                                    <p class="font-medium text-neutral-900">{{ $v->lokasi_booth ?? '—' }}</p>
+                                    <p class="font-medium text-neutral-900">
+                                        @php $p = $v->partisipasis->first(); @endphp
+                                        {{ $p?->tenantSpot?->kode_booth ?? $p?->blok_tenant ?? '—' }}
+                                    </p>
                                 </div>
                                 <div>
                                     <p class="text-neutral-600">Total Product</p>

@@ -2,18 +2,14 @@
 
 namespace App\Filament\Resources\Vendors\Schemas;
 
-use App\Enums\CategoryTier;
-use App\Models\Expo;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-
-use Filament\Forms\Components\FileUpload;
 
 class VendorForm
 {
@@ -23,7 +19,7 @@ class VendorForm
             ->columns(2)
             ->components([
                 Section::make('Informasi Vendor')
-                    ->description('Data identitas dan kategori vendor')
+                    ->description('Data identitas dan kategori vendor (bukan data keikutsertaan expo)')
                     ->schema([
                         FileUpload::make('logo')
                             ->label('Logo Vendor')
@@ -50,6 +46,12 @@ class VendorForm
                             ->placeholder('nama-vendor')
                             ->columnSpan(1),
 
+                        TextInput::make('nama_pendaftar')
+                            ->maxLength(255)
+                            ->label('Nama Pendaftar')
+                            ->placeholder('Nama orang yang mendaftarkan vendor')
+                            ->nullable()
+                            ->columnSpan(1),
 
                         Select::make('jenis_usaha_id')
                             ->relationship('jenisUsaha', 'nama_jenis_usaha')
@@ -61,14 +63,21 @@ class VendorForm
                             ->columnSpan(1),
 
                         Select::make('user_id')
-                            ->relationship('user', 'name', modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'customer')))
+                            ->relationship(
+                                'user',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->whereHas(
+                                    'roles',
+                                    fn ($q) => $q->where('name', 'customer')
+                                )
+                            )
                             ->searchable()
                             ->preload()
                             ->native(false)
                             ->label('Pemilik Akun (Customer)')
-                            ->helperText('Hubungkan vendor dengan akun customer yang mendaftar')
+                            ->helperText('Hubungkan vendor dengan akun customer. Data booth/paket dikelola di Partisipasi Expo.')
                             ->nullable()
-                            ->columnSpan(1),
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -128,102 +137,6 @@ class VendorForm
                             ->placeholder('Contoh: 081234567890')
                             ->prefix('📱')
                             ->helperText('Format: 08xxxxxxxxxx (tanpa +62)')
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-
-                Section::make('Preferensi Booth')
-                    ->description('Informasi paket dan lokasi booth yang diminati')
-                    ->schema([
-                        Select::make('paket')
-                            ->label('Paket/Kategori berdasarkan Expo terdekat')
-                            ->options(function () {
-                                $nearestExpo = Expo::where('status', true)
-                                    ->whereDate('tanggal_mulai', '>=', now())
-                                    ->orderBy('tanggal_mulai')
-                                    ->first();
-
-                                if (! $nearestExpo) {
-                                    $nearestExpo = Expo::where('status', true)
-                                        ->orderBy('tanggal_mulai', 'desc')
-                                        ->first();
-                                }
-
-                                if (! $nearestExpo) {
-                                    return [];
-                                }
-
-                                // Ambil nilai kategori sebagai string mentah dari DB agar tidak terkena casting enum
-                                $categories = DB::table('category_tenants')
-                                    ->where('expo_id', $nearestExpo->id)
-                                    ->where('status', true)
-                                    ->distinct()
-                                    ->pluck('category')
-                                    ->toArray();
-
-                                return collect($categories)
-                                    ->mapWithKeys(function ($value) {
-                                        $tier = CategoryTier::tryFrom($value);
-
-                                        return [$value => $tier ? $tier->label() : $value];
-                                    })
-                                    ->toArray();
-                            })
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $nearestExpo = Expo::where('status', true)
-                                    ->whereDate('tanggal_mulai', '>=', now())
-                                    ->orderBy('tanggal_mulai')
-                                    ->first()
-                                    ?? Expo::where('status', true)->orderBy('tanggal_mulai', 'desc')->first();
-
-                                if (! $nearestExpo || ! $state) {
-                                    $set('harga_jual', null);
-
-                                    return;
-                                }
-
-                                $price = DB::table('category_tenants')
-                                    ->where('expo_id', $nearestExpo->id)
-                                    ->where('status', true)
-                                    ->where('category', $state)
-                                    ->value('harga_jual');
-
-                                $set('harga_jual', is_numeric($price) ? (int) $price : null);
-                            })
-                            ->required()
-                            ->native(false)
-                            ->searchable()
-                            ->preload()
-                            ->placeholder('Pilih kategori dari Expo terdekat')
-                            ->helperText(function () {
-                                $expo = Expo::where('status', true)
-                                    ->whereDate('tanggal_mulai', '>=', now())
-                                    ->orderBy('tanggal_mulai')
-                                    ->first()
-                                    ?? Expo::where('status', true)->orderBy('tanggal_mulai', 'desc')->first();
-
-                                return $expo
-                                    ? ('Opsi diambil dari: '.$expo->nama_expo.' ('.($expo->periode ?? '-').')')
-                                    : 'Belum ada expo aktif';
-                            })
-                            ->columnSpan(1),
-
-                        TextInput::make('harga_jual')
-                            ->label('Harga Paket')
-                            ->disabled()
-                            ->dehydrated(true)
-                            ->dehydrateStateUsing(fn ($state) => is_numeric($state) ? (int) $state : (int) preg_replace('/[^0-9]/', '', (string) $state))
-                            ->formatStateUsing(fn ($state) => is_null($state) ? '-' : 'Rp '.number_format((int) $state, 0, ',', '.'))
-                            ->helperText('Otomatis mengikuti kategori pada expo terdekat.')
-                            ->columnSpan(1),
-
-                        TextInput::make('lokasi_booth')
-                            ->maxLength(100)
-                            ->label('Lokasi Booth')
-                            ->placeholder('Contoh: Hall A, Blok B12')
-                            ->nullable()
                             ->columnSpan(1),
                     ])
                     ->columns(2)

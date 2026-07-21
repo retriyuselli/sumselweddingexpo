@@ -3,26 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CategoryTier;
-use App\Models\CategoryTenant;
-use App\Models\Expo;
-use App\Models\JenisUsaha;
-use App\Models\Vendor;
+use App\Http\Requests\StoreProductVendorRequest;
+use App\Http\Requests\StoreVendorRequest;
+use App\Http\Requests\UpdateProductVendorRequest;
+use App\Http\Requests\UpdateVendorRequest;
+use App\Http\Resources\VendorResource;
 use App\Models\Appointment;
+use App\Models\JenisUsaha;
+use App\Models\ProductVendor;
+use App\Models\Vendor;
+use App\Services\ExhibitorRegistrationService;
+use App\Services\ExpoResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
-    /**
-     * Display the partners page (public).
-     */
-    public function partners()
+    public function partners(ExpoResolver $expoResolver)
     {
-        $vendors = Vendor::with('jenisUsaha')
+        $expo = $expoResolver->nearestActive();
+
+        $vendors = Vendor::query()
+            ->when($expo, function ($q) use ($expo) {
+                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+            }, function ($q) {
+                $q->whereRaw('0 = 1');
+            })
+            ->with([
+                'jenisUsaha',
+                'partisipasis' => function ($q) use ($expo) {
+                    $q->with(['categoryTenant', 'tenantSpot'])
+                        ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id))
+                        ->latest('id');
+                },
+            ])
             ->withCount([
                 'products as products_active_count' => function ($q) {
                     $q->where('is_active', true);
@@ -30,44 +47,40 @@ class VendorController extends Controller
             ])
             ->latest()
             ->get();
-        $jenisUsahas = JenisUsaha::withCount('vendors')->orderBy('nama_jenis_usaha')->get();
 
-        return view('partners', compact('vendors', 'jenisUsahas'));
+        $jenisUsahas = Cache::remember('jenis_usahas.with_vendor_counts', 600, function () {
+            return JenisUsaha::withCount('vendors')->orderBy('nama_jenis_usaha')->get();
+        });
+
+        return view('partners', compact('vendors', 'jenisUsahas', 'expo'));
     }
 
-    /**
-     * Display a listing of the vendors.
-     */
     public function index()
     {
-        $vendors = Vendor::with('jenisUsaha')->latest()->paginate(10);
+        $this->authorize('viewAny', Vendor::class);
+
+        $query = Vendor::with('jenisUsaha')->latest();
+
+        if (! Auth::user()->can('ViewAny:Vendor') && ! Auth::user()->hasAnyRole(['super_admin', 'admin', 'swe'])) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $vendors = $query->paginate(10);
 
         return view('vendors.index', compact('vendors'));
     }
 
-    /**
-     * Show the form for creating a new vendor.
-     */
     public function create()
     {
-        $jenisUsahas = JenisUsaha::all();
+        $this->authorize('create', Vendor::class);
 
-        return view('vendors.create', compact('jenisUsahas'));
+        return redirect()->route('exhibitor')
+            ->with('info', 'Pendaftaran vendor publik dilakukan lewat halaman Exhibitor.');
     }
 
-    /**
-     * Store a newly created vendor in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreVendorRequest $request, ExhibitorRegistrationService $registration)
     {
-        // Batasi satu user hanya untuk satu vendor
-        if ($request->routeIs('exhibitor.store') && Auth::check()) {
-            $alreadyRegistered = Vendor::where('user_id', Auth::id())->exists();
-            if ($alreadyRegistered) {
-                return redirect()->route('exhibitor')
-                    ->with('error', 'Anda sudah terdaftar sebagai exhibitor. Satu akun hanya bisa mendaftarkan satu vendor.');
-            }
-        } elseif ($request->routeIs('vendors.store') && $request->filled('user_id')) {
+        if ($request->routeIs('vendors.store') && $request->filled('user_id')) {
             $targetUserId = (int) $request->input('user_id');
             $alreadyRegistered = Vendor::where('user_id', $targetUserId)->exists();
             if ($alreadyRegistered) {
@@ -77,79 +90,51 @@ class VendorController extends Controller
             }
         }
 
-        $validator = Validator::make($request->all(), [
-            'nama_pendaftar' => 'required|string|max:255',
-            'nama_vendor' => 'required|string|max:255',
-            'jenis_usaha_id' => 'required|exists:jenis_usahas,id',
-            'alamat' => 'required|string',
-            'kota' => 'required|string|max:255',
-            'no_telepon' => 'required|string|max:20',
-            'pendamping_tenant' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255|unique:vendors,email',
-            'nama_pic' => 'required|string|max:255',
-            'no_wa_pic' => 'required|string|max:20',
-            'paket' => ['required', Rule::enum(CategoryTier::class)],
-            'lokasi_booth' => 'nullable|string|max:100',
-            'harga_jual' => 'nullable|integer|min:0',
-            'user_id' => 'nullable|integer|exists:users,id|unique:vendors,user_id',
-        ]);
+        if ($request->routeIs('exhibitor.store')) {
+            $existingVendor = $request->existingVendorForUser();
+            $participation = $request->participationAttributes();
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+            if ($existingVendor) {
+                $registration->joinExpo($existingVendor, $participation);
 
-        $data = $request->only([
-            'nama_pendaftar',
-            'nama_vendor',
-            'jenis_usaha_id',
-            'alamat',
-            'kota',
-            'no_telepon',
-            'pendamping_tenant',
-            'email',
-            'nama_pic',
-            'no_wa_pic',
-            'paket',
-            'lokasi_booth',
-            'harga_jual',
-        ]);
-
-        $data['slug'] = Str::slug($data['nama_vendor'] ?? '');
-
-        if ($request->routeIs('exhibitor.store') && Auth::check()) {
-            if ($request->filled('user_id') && (int) $request->input('user_id') !== Auth::id()) {
-                return redirect()->back()
-                    ->withErrors(['user_id' => 'User ID tidak sesuai dengan akun yang login.'])
-                    ->withInput();
+                return redirect()->route('exhibitor')
+                    ->with('success', 'Pendaftaran keikutsertaan expo berhasil dikirim! Kami akan segera menghubungi Anda.');
             }
 
-            $data['user_id'] = Auth::id();
-        }
+            $data = $request->vendorAttributes();
+            $data['slug'] = Str::slug($data['nama_vendor'] ?? '');
+            $registration->register($data, $participation, Auth::id());
 
-        Vendor::create($data);
-
-        if ($request->routeIs('exhibitor.store')) {
             return redirect()->route('exhibitor')
                 ->with('success', 'Pendaftaran exhibitor berhasil dikirim! Kami akan segera menghubungi Anda.');
         }
+
+        $data = $request->vendorAttributes();
+        $data['slug'] = Str::slug($data['nama_vendor'] ?? '');
+        if ($request->filled('user_id')) {
+            $data['user_id'] = (int) $request->input('user_id');
+        }
+        Vendor::create($data);
 
         return redirect()->route('vendors.index')
             ->with('success', 'Vendor berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified vendor.
-     */
-    public function show(Vendor $vendor)
+    public function show(Vendor $vendor, ExpoResolver $expoResolver)
     {
-        $vendor->load('jenisUsaha', 'partisipasis');
-        $firstProduct = \App\Models\ProductVendor::where('vendor_id', $vendor->id)
+        $expo = $expoResolver->nearestActive();
+        $vendor->load(['jenisUsaha', 'partisipasis' => function ($q) use ($expo) {
+            $q->with(['categoryTenant', 'tenantSpot'])
+                ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id))
+                ->latest('id');
+        }]);
+        $partisipasi = $vendor->partisipasis->first();
+
+        $firstProduct = ProductVendor::where('vendor_id', $vendor->id)
             ->where('is_active', true)
             ->latest()
             ->first();
-        $products = \App\Models\ProductVendor::where('vendor_id', $vendor->id)
+        $products = ProductVendor::where('vendor_id', $vendor->id)
             ->where('is_active', true)
             ->latest()
             ->take(24)
@@ -160,44 +145,20 @@ class VendorController extends Controller
             ->orderBy('starts_at', 'asc')
             ->paginate(10);
 
-        return view('vendors.show', compact('vendor', 'upcomingAppointments', 'firstProduct', 'products'));
+        return view('vendors.show', compact('vendor', 'upcomingAppointments', 'firstProduct', 'products', 'partisipasi', 'expo'));
     }
 
-    /**
-     * Show the form for editing the specified vendor.
-     */
     public function edit(Vendor $vendor)
     {
-        $jenisUsahas = JenisUsaha::all();
+        $this->authorize('update', $vendor);
 
-        return view('vendors.edit', compact('vendor', 'jenisUsahas'));
+        return redirect()->route('vendors.show', $vendor->slug)
+            ->with('info', 'Edit data vendor tersedia di panel admin (Partisipasi Expo untuk booth/paket).');
     }
 
-    /**
-     * Update the specified vendor in storage.
-     */
-    public function update(Request $request, Vendor $vendor)
+    public function update(UpdateVendorRequest $request, Vendor $vendor)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_pendaftar' => 'required|string|max:255',
-            'nama_vendor' => 'required|string|max:255',
-            'jenis_usaha_id' => 'required|exists:jenis_usahas,id',
-            'alamat' => 'required|string',
-            'kota' => 'required|string|max:255',
-            'no_telepon' => 'required|string|max:20',
-            'pendamping_tenant' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255',
-            'nama_pic' => 'required|string|max:255',
-            'no_wa_pic' => 'required|string|max:20',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $payload = $request->all();
+        $payload = $request->validated();
         $payload['slug'] = Str::slug($payload['nama_vendor'] ?? $vendor->nama_vendor);
         $vendor->update($payload);
 
@@ -205,38 +166,19 @@ class VendorController extends Controller
             ->with('success', 'Vendor berhasil diupdate!');
     }
 
-    /**
-     * Remove the specified vendor from storage.
-     */
     public function destroy(Vendor $vendor)
     {
+        $this->authorize('delete', $vendor);
+
         $vendor->delete();
 
         return redirect()->route('vendors.index')
             ->with('success', 'Vendor berhasil dihapus!');
     }
 
-    public function storeProduct(Request $request, Vendor $vendor)
+    public function storeProduct(StoreProductVendorRequest $request, Vendor $vendor)
     {
-        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
-            abort(403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'nama_produk' => 'required|string|max:255',
-            'harga' => 'required|integer|min:0',
-            'dp_fixed' => 'nullable|integer|min:0',
-            'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|image|max:1024',
-            'stok' => 'nullable|integer|min:0',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $data = $validator->validated();
+        $data = $request->validated();
         $fotoPath = null;
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('product_photos', 'public');
@@ -244,50 +186,29 @@ class VendorController extends Controller
         $slugBase = Str::slug($data['nama_produk']);
         $slug = $slugBase;
         $i = 1;
-        while (\App\Models\ProductVendor::where('slug', $slug)->exists()) {
+        while (ProductVendor::where('slug', $slug)->exists()) {
             $slug = $slugBase.'-'.$i;
             $i++;
         }
 
-            \App\Models\ProductVendor::create([
-                'vendor_id' => $vendor->id,
-                'nama_produk' => $data['nama_produk'],
-                'slug' => $slug,
-                'harga' => (int) ($data['harga'] ?? 0),
-                'dp_fixed' => (int) ($data['dp_fixed'] ?? 0),
-                'deskripsi' => $data['deskripsi'] ?? null,
-                'foto_url' => $fotoPath ?? null,
-                'stok' => (int) ($data['stok'] ?? 0),
-                'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : true,
-            ]);
+        ProductVendor::create([
+            'vendor_id' => $vendor->id,
+            'nama_produk' => $data['nama_produk'],
+            'slug' => $slug,
+            'harga' => (int) ($data['harga'] ?? 0),
+            'dp_fixed' => (int) ($data['dp_fixed'] ?? 0),
+            'deskripsi' => $data['deskripsi'] ?? null,
+            'foto_url' => $fotoPath ?? null,
+            'stok' => (int) ($data['stok'] ?? 0),
+            'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : true,
+        ]);
 
         return redirect()->route('vendors.show', $vendor->slug)->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    public function updateProduct(Request $request, Vendor $vendor, \App\Models\ProductVendor $productVendor)
+    public function updateProduct(UpdateProductVendorRequest $request, Vendor $vendor, ProductVendor $productVendor)
     {
-        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
-            abort(403);
-        }
-        if ((int) $productVendor->vendor_id !== (int) $vendor->id) {
-            abort(404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'nama_produk' => 'required|string|max:255',
-            'harga' => 'required|integer|min:0',
-            'dp_fixed' => 'nullable|integer|min:0',
-            'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|image|max:1024',
-            'stok' => 'nullable|integer|min:0',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $data = $validator->validated();
+        $data = $request->validated();
         $update = [
             'nama_produk' => $data['nama_produk'],
             'harga' => (int) ($data['harga'] ?? 0),
@@ -298,8 +219,7 @@ class VendorController extends Controller
         ];
 
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('product_photos', 'public');
-            $update['foto_url'] = $fotoPath;
+            $update['foto_url'] = $request->file('foto')->store('product_photos', 'public');
         }
 
         $productVendor->update($update);
@@ -307,9 +227,9 @@ class VendorController extends Controller
         return redirect()->route('vendors.show', $vendor->slug)->with('success', 'Produk berhasil diupdate!');
     }
 
-    public function editProduct(Vendor $vendor, \App\Models\ProductVendor $productVendor)
+    public function editProduct(Vendor $vendor, ProductVendor $productVendor)
     {
-        if (!Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
+        if (! Auth::check() || (int) $vendor->user_id !== (int) Auth::id()) {
             abort(403);
         }
         if ((int) $productVendor->vendor_id !== (int) $vendor->id) {
@@ -322,104 +242,114 @@ class VendorController extends Controller
         ]);
     }
 
-    /**
-     * Get all vendors (for API or AJAX requests)
-     */
     public function getAllVendors()
     {
-        $vendors = Vendor::with('jenisUsaha')->get();
+        $this->authorize('viewAny', Vendor::class);
 
-        return response()->json($vendors);
+        $vendors = Vendor::query()
+            ->with('jenisUsaha:id,nama_jenis_usaha')
+            ->select(['id', 'nama_vendor', 'slug', 'jenis_usaha_id', 'kota', 'logo'])
+            ->latest()
+            ->paginate(50);
+
+        return VendorResource::collection($vendors);
     }
 
-    /**
-     * Search vendors by name or business type
-     */
     public function search(Request $request)
     {
+        $this->authorize('viewAny', Vendor::class);
+
         $query = $request->get('query');
 
         $vendors = Vendor::with('jenisUsaha')
-            ->where('nama_vendor', 'like', "%{$query}%")
-            ->orWhere('nama_pendaftar', 'like', "%{$query}%")
-            ->orWhereHas('jenisUsaha', function ($q) use ($query) {
-                $q->where('nama_jenis_usaha', 'like', "%{$query}%");
+            ->where(function ($q) use ($query) {
+                $q->where('nama_vendor', 'like', "%{$query}%")
+                    ->orWhere('nama_pendaftar', 'like', "%{$query}%")
+                    ->orWhereHas('jenisUsaha', function ($sub) use ($query) {
+                        $sub->where('nama_jenis_usaha', 'like', "%{$query}%");
+                    });
             })
             ->paginate(10);
 
         return view('vendors.index', compact('vendors', 'query'));
     }
 
-    /**
-     * Get vendors by business type (for filtering)
-     */
     public function getByJenisUsaha($jenisUsahaId)
     {
-        $vendors = Vendor::where('jenis_usaha_id', $jenisUsahaId)
-            ->with('jenisUsaha')
-            ->get();
+        $this->authorize('viewAny', Vendor::class);
 
-        return response()->json($vendors);
+        $vendors = Vendor::where('jenis_usaha_id', $jenisUsahaId)
+            ->with('jenisUsaha:id,nama_jenis_usaha')
+            ->select(['id', 'nama_vendor', 'slug', 'jenis_usaha_id', 'kota', 'logo'])
+            ->paginate(50);
+
+        return VendorResource::collection($vendors);
     }
 
-    /**
-     * Display exhibitor page with list of vendors
-     */
-    public function exhibitorPage()
+    public function exhibitorPage(ExpoResolver $expoResolver)
     {
         $vendors = Vendor::with('jenisUsaha')->latest()->get();
-        $jenisUsahas = JenisUsaha::withCount('vendors')->get();
-        $registeredAsExhibitor = Auth::check() ? Vendor::where('user_id', Auth::id())->exists() : false;
+        $jenisUsahas = Cache::remember('jenis_usahas.with_vendor_counts', 600, function () {
+            return JenisUsaha::withCount('vendors')->get();
+        });
+        $nearestExpo = $expoResolver->nearestActive();
         $currentVendor = null;
-        if ($registeredAsExhibitor) {
+        $currentPartisipasi = null;
+
+        if (Auth::check()) {
             $currentVendor = Vendor::with('jenisUsaha')
                 ->where('user_id', Auth::id())
                 ->latest()
                 ->first();
+            if ($currentVendor) {
+                $currentPartisipasi = $currentVendor->partisipasiForExpo($nearestExpo?->id);
+            }
         }
 
-        // Tentukan Expo terdekat yang aktif
-        $nearestExpo = Expo::where('status', true)
-            ->whereDate('tanggal_mulai', '>=', now()->toDateString())
-            ->orderBy('tanggal_mulai', 'asc')
-            ->first();
-        if (! $nearestExpo) {
-            $nearestExpo = Expo::where('status', true)
-                ->orderBy('tanggal_mulai', 'desc')
-                ->first();
-        }
+        $registeredForCurrentExpo = $currentPartisipasi !== null;
+        $hasVendorIdentity = $currentVendor !== null;
+        // Back-compat for views/dashboard that still expect this name = has vendor identity
+        $registeredAsExhibitor = $hasVendorIdentity;
 
-        // Ambil opsi paket (kategori) dan harga dari CategoryTenant untuk expo terdekat
         $paketOptions = [];
         $paketPrices = [];
         if ($nearestExpo) {
-            $rows = DB::table('category_tenants')
-                ->where('expo_id', $nearestExpo->id)
-                ->select('category', 'harga_jual')
-                ->get();
+            $rows = Cache::remember("category_tenants.paket.{$nearestExpo->id}", 300, function () use ($nearestExpo) {
+                return DB::table('category_tenants')
+                    ->where('expo_id', $nearestExpo->id)
+                    ->where('status', 'Aktif')
+                    ->select('category', 'harga_jual')
+                    ->get();
+            });
 
             foreach ($rows as $row) {
-                $value = (string) $row->category; // nilai mentah string
+                $value = (string) $row->category;
                 $label = CategoryTier::tryFrom($value)?->label() ?? $value;
                 if (! array_key_exists($value, $paketOptions)) {
                     $paketOptions[$value] = $label;
                 }
-                // Gunakan harga pertama yang ditemukan untuk kategori tsb
                 if (! array_key_exists($value, $paketPrices)) {
                     $paketPrices[$value] = (int) ($row->harga_jual ?? 0);
                 }
             }
         }
 
-        return view('exhibitor', compact('vendors', 'jenisUsahas', 'registeredAsExhibitor', 'paketOptions', 'paketPrices', 'nearestExpo', 'currentVendor'));
+        return view('exhibitor', compact(
+            'vendors',
+            'jenisUsahas',
+            'registeredAsExhibitor',
+            'registeredForCurrentExpo',
+            'hasVendorIdentity',
+            'paketOptions',
+            'paketPrices',
+            'nearestExpo',
+            'currentVendor',
+            'currentPartisipasi'
+        ));
     }
 
-    /**
-     * Show vendor registration form
-     */
     public function showRegistrationForm()
     {
-        // Alihkan ke halaman exhibitor utama yang memiliki form terintegrasi
         return redirect()->route('exhibitor');
     }
 }

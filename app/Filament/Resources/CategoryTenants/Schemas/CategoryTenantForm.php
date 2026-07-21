@@ -7,7 +7,6 @@ use App\Models\Expo;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
@@ -136,10 +135,13 @@ class CategoryTenantForm
                 Section::make('Status')
                     ->columns(1)
                     ->schema([
-                        Toggle::make('status')
-                            ->label('Aktif')
-                            ->default(true)
-                            ->inline(false)
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Aktif' => 'Aktif',
+                                'Tidak Aktif' => 'Tidak Aktif',
+                            ])
+                            ->default('Aktif')
                             ->required(),
                     ]),
             ]);

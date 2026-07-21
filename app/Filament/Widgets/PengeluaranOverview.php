@@ -13,6 +13,9 @@ class PengeluaranOverview extends BaseWidget
 
     public ?string $heading = 'Data Pengeluaran';
 
+    /** Registered explicitly on Dashboard — avoid duplicate discovery */
+    protected static bool $isDiscovered = false;
+
     protected function getStats(): array
     {
         $startDate = $this->filters['startDate'] ?? null;
