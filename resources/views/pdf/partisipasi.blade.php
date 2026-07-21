@@ -74,15 +74,25 @@
                 @foreach ($partisipasis as $i => $p)
                     @php
                         $pendampingIds = is_array($p->vendor_pendamping) ? $p->vendor_pendamping : [];
-                        $pendampingLabel = collect($pendampingIds)
+                        $pendampingList = collect($pendampingIds)
                             ->map(fn ($id) => $pendampingNames[(int) $id] ?? null)
                             ->filter()
-                            ->implode(', ');
+                            ->values();
                     @endphp
                     <tr>
                         <td class="text-center">{{ $i + 1 }}</td>
                         <td>{{ $p->vendor?->nama_vendor ?? '-' }}</td>
-                        <td>{{ $pendampingLabel !== '' ? $pendampingLabel : '-' }}</td>
+                        <td>
+                            @if ($pendampingList->isEmpty())
+                                -
+                            @else
+                                <ol style="margin:0; padding-left:14px;">
+                                    @foreach ($pendampingList as $nama)
+                                        <li>{{ $nama }}</li>
+                                    @endforeach
+                                </ol>
+                            @endif
+                        </td>
                         <td>{{ $p->vendor?->jenisUsaha?->nama_jenis_usaha ?? '-' }}</td>
                         <td>
                             @php $cat = $p->categoryTenant?->category; @endphp
