@@ -7,9 +7,6 @@ use Illuminate\Database\Seeder;
 
 class RekeningTujuanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $rekening = [
@@ -31,9 +28,12 @@ class RekeningTujuanSeeder extends Seeder
         ];
 
         foreach ($rekening as $data) {
-            RekeningTujuan::create($data);
+            RekeningTujuan::firstOrCreate(
+                ['nomor_rekening' => $data['nomor_rekening']],
+                $data
+            );
         }
 
-        $this->command->info('RekeningTujuan seeder completed: 3 bank accounts created');
+        $this->command?->info('RekeningTujuanSeeder: '.count($rekening).' accounts ensured.');
     }
 }

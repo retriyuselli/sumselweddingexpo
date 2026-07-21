@@ -6,86 +6,73 @@ use App\Models\CategoryTenant;
 use App\Models\Expo;
 use App\Models\Partisipasi;
 use App\Models\Vendor;
+use App\Services\ExpoResolver;
 use Illuminate\Database\Seeder;
 
 class PartisipasiSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Get active expo
-        $expo = Expo::where('status', 1)->first();
+        $expo = app(ExpoResolver::class)->nearestActive()
+            ?? Expo::where('status', true)->orderByDesc('tanggal_mulai')->first();
 
         if (! $expo) {
-            $this->command->warn('No active expo found. Please run ExpoSeeder first.');
+            $this->command?->warn('No active expo found. Please run ExpoSeeder first.');
 
             return;
         }
 
-        // Get vendors
         $vendors = Vendor::all();
-
         if ($vendors->isEmpty()) {
-            $this->command->warn('No vendors found. Please run VendorSeeder first.');
+            $this->command?->warn('No vendors found. Please run VendorSeeder first.');
 
             return;
         }
 
-        // Get category tenants for this expo
-        $categories = CategoryTenant::where('expo_id', $expo->id)->get();
-
+        $categories = CategoryTenant::where('expo_id', $expo->id)->where('status', 'Aktif')->get();
         if ($categories->isEmpty()) {
-            $this->command->warn('No category tenants found for expo: '.$expo->nama_expo);
-            $this->command->info('Please create category tenants first in the admin panel.');
+            $this->command?->warn('No category tenants found for expo: '.$expo->nama_expo);
 
             return;
         }
 
-        // Status pembayaran options
-        $statusPembayaran = ['Lunas', 'Belum Lunas', 'DP', 'Cicilan'];
-
-        // Create participations
-        $partisipasi = [];
+        $created = 0;
         $blokCounter = 1;
-
-        // Use first 15 vendors or all if less than 15
         $selectedVendors = $vendors->take(15);
 
-        foreach ($selectedVendors as $vendor) {
-            // Random category tenant
-            $category = $categories->random();
-
-            // Random status pembayaran with higher probability for "Lunas"
-            $rand = rand(1, 100);
-            if ($rand <= 50) {
-                $status = 'Lunas';
-            } elseif ($rand <= 70) {
-                $status = 'DP';
-            } elseif ($rand <= 85) {
-                $status = 'Cicilan';
-            } else {
-                $status = 'Belum Lunas';
+        foreach ($selectedVendors as $index => $vendor) {
+            $exists = Partisipasi::where('vendor_id', $vendor->id)
+                ->where('expo_id', $expo->id)
+                ->exists();
+            if ($exists) {
+                continue;
             }
 
-            // Generate blok tenant (A-01, A-02, ..., B-01, B-02, etc.)
-            $row = chr(65 + floor(($blokCounter - 1) / 10)); // A, B, C, ...
-            $number = str_pad((($blokCounter - 1) % 10) + 1, 2, '0', STR_PAD_LEFT);
+            $category = $categories[$index % $categories->count()];
+
+            $statusRoll = ($index % 10) + 1;
+            $status = match (true) {
+                $statusRoll <= 5 => 'Lunas',
+                $statusRoll <= 7 => 'DP',
+                $statusRoll <= 8 => 'Cicilan',
+                default => 'Belum Lunas',
+            };
+
+            $row = chr(65 + (int) floor(($blokCounter - 1) / 10));
+            $number = str_pad(((($blokCounter - 1) % 10) + 1), 2, '0', STR_PAD_LEFT);
             $blok = $row.'-'.$number;
 
-            // Random booking date (within 30 days before expo start)
-            $daysBeforeExpo = rand(1, 30);
-            $bookingDate = $expo->tanggal_mulai->copy()->subDays($daysBeforeExpo);
+            $bookingDate = $expo->tanggal_mulai->copy()->subDays(5 + ($index % 20));
 
-            // Optional companion vendor IDs (JSON array) — 30% chance pick another vendor
             $vendorPendamping = null;
-            if (rand(1, 100) <= 30 && $vendors->count() > 1) {
-                $other = $vendors->where('id', '!=', $vendor->id)->random();
-                $vendorPendamping = [$other->id];
+            if ($index % 3 === 0 && $vendors->count() > 1) {
+                $other = $vendors->firstWhere('id', '!=', $vendor->id) ?? $vendors->last();
+                if ($other && $other->id !== $vendor->id) {
+                    $vendorPendamping = [$other->id];
+                }
             }
 
-            $partisipasi[] = [
+            Partisipasi::create([
                 'expo_id' => $expo->id,
                 'vendor_id' => $vendor->id,
                 'vendor_pendamping' => $vendorPendamping,
@@ -94,26 +81,13 @@ class PartisipasiSeeder extends Seeder
                 'category_tenant_id' => $category->id,
                 'blok_tenant' => $blok,
                 'harga_jual' => $category->harga_jual,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+                'diskon' => 0,
+            ]);
 
+            $created++;
             $blokCounter++;
         }
 
-        // Insert all participations
-        foreach ($partisipasi as $data) {
-            Partisipasi::create($data);
-        }
-
-        $this->command->info('Partisipasi seeder completed: '.count($partisipasi).' participations created for '.$expo->nama_expo);
-
-        // Show statistics
-        $lunas = collect($partisipasi)->where('status_pembayaran', 'Lunas')->count();
-        $dp = collect($partisipasi)->where('status_pembayaran', 'DP')->count();
-        $cicilan = collect($partisipasi)->where('status_pembayaran', 'Cicilan')->count();
-        $belumLunas = collect($partisipasi)->where('status_pembayaran', 'Belum Lunas')->count();
-
-        $this->command->info('Status: Lunas: '.$lunas.', DP: '.$dp.', Cicilan: '.$cicilan.', Belum Lunas: '.$belumLunas);
+        $this->command?->info("PartisipasiSeeder: {$created} participations created for {$expo->nama_expo}.");
     }
 }

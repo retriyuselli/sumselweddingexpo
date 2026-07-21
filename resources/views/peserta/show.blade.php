@@ -37,10 +37,15 @@
                                 <span class="text-indigo-600">{{ $expo->nama_expo }}</span>
                             </p>
                             <p class="text-sm text-neutral-600 mt-0.5">
-                                Booth: <span
-                                    class="font-bold text-neutral-900">{{ $partisipasi->categoryTenant->category->label() ?? 'Standard' }}</span>
-                                @if ($partisipasi?->tenantSpot?->kode_booth || $partisipasi?->blok_tenant)
-                                    • Lokasi: <span class="font-bold text-neutral-900">{{ $partisipasi->tenantSpot?->kode_booth ?? $partisipasi->blok_tenant }}</span>
+                                Paket:
+                                <span class="font-bold text-neutral-900">
+                                    {{ $partisipasi->categoryTenant?->category?->label() ?? '—' }}
+                                </span>
+                                @if ($partisipasi->tenantSpot?->kode_booth || $partisipasi->blok_tenant)
+                                    • Lokasi:
+                                    <span class="font-bold text-neutral-900">
+                                        {{ $partisipasi->tenantSpot?->kode_booth ?? $partisipasi->blok_tenant }}
+                                    </span>
                                 @endif
                             </p>
                         </div>

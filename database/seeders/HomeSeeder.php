@@ -12,7 +12,9 @@ class HomeSeeder extends Seeder
      */
     public function run(): void
     {
-        Home::create([
+        Home::updateOrCreate(
+            ['is_active' => true],
+            [
             'tentang_kami' => <<<'EOT'
 <p><strong>Sumsel Wedding Expo (SWE)</strong> pada tahun <strong>2024 dan 2025</strong> telah sukses diselenggarakan dengan mengusung tema <em>"Recovery Together."</em></p>
 <p>Ajang ini berhasil menghadirkan lebih dari <strong>80 vendor pernikahan terkemuka di Sumatera Selatan</strong>, yang terdiri dari berbagai kategori seperti <strong>venue gedung, hotel, catering, wedding organizer, make up artist, fotografer, dekorasi, hingga developer perumahan</strong>.</p>
@@ -50,5 +52,7 @@ EOT,
             'meta_description' => 'Sumatra Wedding Expo - Platform terpercaya untuk menemukan vendor pernikahan profesional dengan penawaran eksklusif.',
             'is_active' => true,
         ]);
+
+        $this->command?->info('HomeSeeder: active home content ensured.');
     }
 }

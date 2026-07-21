@@ -45,16 +45,17 @@
                                     <span class="text-red-600 font-bold">({{ $vendorAppointmentsTotalCount ?? 0 }} janji
                                         temu)</span>
                                 </p>
-
+                                @if (!($registeredForCurrentExpo ?? false))
+                                    <p class="text-xs sm:text-sm mt-2 text-amber-800">
+                                        Belum ada keikutsertaan untuk expo aktif.
+                                        <a href="{{ route('exhibitor') }}" class="underline font-medium">Daftar ke expo sekarang</a>.
+                                    </p>
+                                @endif
                             </div>
                             <div class="shrink-0 flex items-center gap-2">
-                                @if (($isCustomer ?? false) && !($registeredAsExhibitor ?? false))
-                                    <a href="{{ route('appointments.index') }}"
-                                        class="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white text-xs hover:bg-blue-700">Lihat
-                                        Janji Temu</a>
-                                    <a href="{{ route('appointments.create') }}"
-                                        class="inline-flex items-center px-3 py-2 rounded-full border border-blue-600 text-blue-700 text-xs hover:bg-blue-100">Buat
-                                        Janji Temu</a>
+                                @if (!empty($currentVendor))
+                                    <a href="{{ route('vendors.show', $currentVendor->slug) }}"
+                                        class="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white text-xs hover:bg-blue-700">Profil Vendor</a>
                                 @endif
                             </div>
                         </div>
@@ -152,10 +153,22 @@
                                 </div>
                                 <div>
                                     <h3 class="text-xs sm:text-sm font-semibold text-neutral-900">
-                                        {{ $registeredAsExhibitor ?? false ? 'Terdaftar' : 'Register as Exhibitor' }}
+                                        @if ($registeredForCurrentExpo ?? false)
+                                            Terdaftar di Expo
+                                        @elseif ($registeredAsExhibitor ?? false)
+                                            Daftar ke Expo Aktif
+                                        @else
+                                            Register as Exhibitor
+                                        @endif
                                     </h3>
                                     <p class="text-xs text-neutral-600">
-                                        {{ $registeredAsExhibitor ?? false ? 'Terima kasih telah mendaftar sebagai vendor' : 'Submit your application' }}
+                                        @if ($registeredForCurrentExpo ?? false)
+                                            Lihat status partisipasi Anda
+                                        @elseif ($registeredAsExhibitor ?? false)
+                                            Lengkapi preferensi paket untuk expo aktif
+                                        @else
+                                            Submit your application
+                                        @endif
                                     </p>
                                 </div>
                             </a>

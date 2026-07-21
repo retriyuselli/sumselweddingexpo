@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Partisipasis\Tables;
 
+use App\Models\Expo;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class PartisipasisTable
 {
@@ -23,7 +25,7 @@ class PartisipasisTable
                 TextColumn::make('expo.nama_expo')
                     ->label('Expo')
                     ->sortable()
-                    ->description(fn ($record) => $record->expo?->periode),
+                    ->description(fn ($record) => self::expoLabelParts($record->expo)),
 
                 TextColumn::make('vendor.nama_vendor')
                     ->label('Vendor')
@@ -63,6 +65,8 @@ class PartisipasisTable
                 TrashedFilter::make(),
                 SelectFilter::make('expo_id')
                     ->relationship('expo', 'nama_expo')
+                    ->getOptionLabelFromRecordUsing(fn (Expo $record) => self::expoFilterLabel($record))
+                    ->searchable()
                     ->label('Expo'),
                 SelectFilter::make('vendor_id')
                     ->relationship('vendor', 'nama_vendor')
@@ -86,5 +90,33 @@ class PartisipasisTable
                     RestoreBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function expoFilterLabel(Expo $expo): string
+    {
+        $parts = array_filter([
+            $expo->periode ? 'Periode '.$expo->periode : null,
+            $expo->tanggal_mulai?->format('d M Y'),
+            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
+        ]);
+
+        return $parts === []
+            ? $expo->nama_expo.' [#'.$expo->id.']'
+            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
+    }
+
+    protected static function expoLabelParts(?Expo $expo): ?string
+    {
+        if (! $expo) {
+            return null;
+        }
+
+        $parts = array_filter([
+            $expo->periode,
+            $expo->tanggal_mulai?->format('d M Y'),
+            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
+        ]);
+
+        return $parts === [] ? null : implode(' · ', $parts);
     }
 }

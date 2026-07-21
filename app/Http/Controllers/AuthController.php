@@ -190,7 +190,12 @@ class AuthController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $registeredAsExhibitor = Vendor::where('user_id', $user->id)->exists();
+        $currentVendor = Vendor::where('user_id', $user->id)->first();
+        $registeredAsExhibitor = $currentVendor !== null;
+        $nearestExpo = app(\App\Services\ExpoResolver::class)->nearestActive();
+        $registeredForCurrentExpo = $currentVendor
+            ? $currentVendor->partisipasiForExpo($nearestExpo?->id) !== null
+            : false;
         $appointmentsCount = \App\Models\Appointment::where('customer_id', $user->id)->count();
         $nextAppointment = \App\Models\Appointment::with('vendor:id,nama_vendor')
             ->where('customer_id', $user->id)
@@ -214,7 +219,6 @@ class AuthController extends Controller
                 ->get();
         }
 
-        $currentVendor = Vendor::where('user_id', $user->id)->first();
         $vendorAppointmentsCount = 0;
         $vendorAppointmentsPreview = collect();
         $eventsAttendedCount = 0;
@@ -242,6 +246,7 @@ class AuthController extends Controller
         return view('dashboard.index', [
             'user' => $user,
             'registeredAsExhibitor' => $registeredAsExhibitor,
+            'registeredForCurrentExpo' => $registeredForCurrentExpo,
             'appointmentsCount' => $appointmentsCount,
             'nextAppointment' => $nextAppointment,
             'appointmentsPreview' => $appointmentsPreview,

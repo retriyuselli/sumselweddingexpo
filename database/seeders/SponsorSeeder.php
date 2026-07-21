@@ -100,7 +100,12 @@ class SponsorSeeder extends Seeder
         ];
 
         foreach ($sponsors as $sponsor) {
-            Sponsor::create($sponsor);
+            Sponsor::firstOrCreate(
+                ['name' => $sponsor['name']],
+                $sponsor
+            );
         }
+
+        $this->command?->info('SponsorSeeder: '.count($sponsors).' sponsors ensured.');
     }
 }

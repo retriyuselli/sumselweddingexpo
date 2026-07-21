@@ -5,54 +5,64 @@ namespace Database\Seeders;
 use App\Enums\CategoryTier;
 use App\Models\CategoryTenant;
 use App\Models\Expo;
+use App\Services\ExpoResolver;
 use Illuminate\Database\Seeder;
 
 class CategoryTenantSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Get active expo
-        $expo = Expo::where('status', 1)->first();
+        $expo = app(ExpoResolver::class)->nearestActive()
+            ?? Expo::where('status', true)->orderByDesc('tanggal_mulai')->first();
 
         if (! $expo) {
-            $this->command->warn('No active expo found. Please run ExpoSeeder first.');
+            $this->command?->warn('No active expo found. Please run ExpoSeeder first.');
 
             return;
         }
 
         $categories = [
             [
-                'expo_id' => $expo->id,
                 'category' => CategoryTier::Platinum,
-                'harga_jual' => 15000000, // 15 juta
-                'harga_modal' => 10000000, // 10 juta
+                'harga_jual' => 15000000,
+                'harga_modal' => 10000000,
                 'jumlah_unit' => 10,
                 'ukuran' => '4x4 m',
                 'deskripsi' => 'Booth premium dengan lokasi strategis, ukuran besar, dan fasilitas lengkap. Termasuk backdrop, meja, kursi, lighting, dan spot promosi prioritas.',
                 'status' => 'Aktif',
             ],
             [
-                'expo_id' => $expo->id,
                 'category' => CategoryTier::Gold,
-                'harga_jual' => 11000000, // 11 juta
-                'harga_modal' => 8000000, // 8 juta
+                'harga_jual' => 11000000,
+                'harga_modal' => 8000000,
                 'jumlah_unit' => 20,
                 'ukuran' => '3x3 m',
                 'deskripsi' => 'Booth standar dengan lokasi baik dan fasilitas memadai. Termasuk backdrop, meja, kursi, dan basic lighting.',
                 'status' => 'Aktif',
             ],
+            [
+                'category' => CategoryTier::Silver,
+                'harga_jual' => 8500000,
+                'harga_modal' => 6000000,
+                'jumlah_unit' => 25,
+                'ukuran' => '2x3 m',
+                'deskripsi' => 'Booth ekonomis dengan fasilitas dasar. Termasuk meja, kursi, dan listrik.',
+                'status' => 'Aktif',
+            ],
         ];
 
         foreach ($categories as $category) {
-            CategoryTenant::create($category);
+            CategoryTenant::updateOrCreate(
+                [
+                    'expo_id' => $expo->id,
+                    'category' => $category['category'],
+                ],
+                array_merge($category, ['expo_id' => $expo->id])
+            );
         }
 
-        $this->command->info('CategoryTenant seeder completed for '.$expo->nama_expo);
-        $this->command->info('- Platinum: 10 units @ Rp 15.000.000');
-        $this->command->info('- Gold: 20 units @ Rp 11.000.000');
-        $this->command->info('Total available booths: 30 units');
+        ExpoResolver::forgetNearest();
+
+        $this->command?->info('CategoryTenantSeeder completed for '.$expo->nama_expo.' ('.count($categories).' paket).');
     }
 }

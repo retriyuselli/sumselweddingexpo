@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Role;
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed 4 privileged users: 2× super_admin, 2× admin.
      */
     public function run(): void
     {
@@ -20,25 +20,34 @@ class UserSeeder extends Seeder
             return;
         }
 
-        $password = env('SEED_PASSWORD');
+        $password = $_ENV['SEED_PASSWORD']
+            ?? $_SERVER['SEED_PASSWORD']
+            ?? env('SEED_PASSWORD');
+
         if (! is_string($password) || $password === '') {
             $this->command?->error('Set SEED_PASSWORD in .env before seeding users.');
 
             return;
         }
 
-        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $sweRole = Role::firstOrCreate(['name' => 'swe']);
-        $customerRole = Role::firstOrCreate(['name' => 'customer']);
+        $guard = config('auth.defaults.guard', 'web');
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => $guard]);
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => $guard]);
 
         $accounts = [
             [
                 'email' => 'superadmin@weddingexpo.com',
                 'name' => 'Super Admin',
                 'role' => $superAdminRole,
-                'bio' => 'Super Administrator untuk sistem WeddingExpo',
+                'bio' => 'Super Administrator WeddingExpo',
                 'author_color' => '#ef4444',
+            ],
+            [
+                'email' => 'superadmin2@weddingexpo.com',
+                'name' => 'Super Admin 2',
+                'role' => $superAdminRole,
+                'bio' => 'Super Administrator cadangan WeddingExpo',
+                'author_color' => '#f97316',
             ],
             [
                 'email' => 'admin@weddingexpo.com',
@@ -48,35 +57,29 @@ class UserSeeder extends Seeder
                 'author_color' => '#3b82f6',
             ],
             [
-                'email' => 'swe@weddingexpo.com',
-                'name' => 'Sumsel Wedding Expo',
-                'role' => $sweRole,
-                'bio' => 'Akun penyelenggara Sumsel Wedding Expo.',
-                'author_color' => '#f59e0b',
-            ],
-            [
-                'email' => 'customer@weddingexpo.com',
-                'name' => 'Customer Demo',
-                'role' => $customerRole,
-                'bio' => null,
-                'author_color' => null,
+                'email' => 'admin2@weddingexpo.com',
+                'name' => 'Admin WeddingExpo 2',
+                'role' => $adminRole,
+                'bio' => 'Admin cadangan WeddingExpo',
+                'author_color' => '#0ea5e9',
             ],
         ];
 
         foreach ($accounts as $account) {
             $user = User::updateOrCreate(
                 ['email' => $account['email']],
-                array_filter([
+                [
                     'name' => $account['name'],
                     'password' => Hash::make($password),
                     'email_verified_at' => now(),
                     'bio' => $account['bio'],
                     'author_color' => $account['author_color'],
-                ], fn ($v) => $v !== null)
+                ]
             );
-            $user->assignRole($account['role']);
+
+            $user->syncRoles([$account['role']]);
         }
 
-        $this->command?->info('Users created/updated with Spatie roles (password from SEED_PASSWORD).');
+        $this->command?->info('4 users seeded (2 super_admin, 2 admin). Password from SEED_PASSWORD.');
     }
 }

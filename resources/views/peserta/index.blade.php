@@ -281,10 +281,10 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        @if ($partisipasi->tenantSpot)
+                                        @if ($partisipasi->tenantSpot || $partisipasi->blok_tenant)
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                                Blok {{ $partisipasi->tenantSpot->kode_booth }}
+                                                {{ $partisipasi->tenantSpot?->kode_booth ?? $partisipasi->blok_tenant }}
                                             </span>
                                         @endif
                                     </div>
@@ -315,7 +315,12 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                 </svg>
-                                                <span>{{ $partisipasi->categoryTenant->category }}</span>
+                                                <span>
+                                                    @php
+                                                        $cat = $partisipasi->categoryTenant->category;
+                                                    @endphp
+                                                    {{ $cat instanceof \BackedEnum ? ($cat->label() ?? $cat->value) : ($cat ?? '—') }}
+                                                </span>
                                             </div>
                                         @endif
                                     </div>

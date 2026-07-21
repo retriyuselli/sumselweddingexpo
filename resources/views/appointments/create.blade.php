@@ -5,7 +5,12 @@
 @section('content')
     <section class="pt-24 md:pt-28 pb-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6">Buat Janji Temu</h1>
+            <h1 class="text-2xl font-bold mb-2">Buat Janji Temu</h1>
+            @if (!empty($expo))
+                <p class="text-sm text-neutral-600 mb-6">Pilih vendor peserta expo <span class="font-medium text-neutral-800">{{ $expo->nama_expo }}</span>.</p>
+            @else
+                <p class="text-sm text-amber-700 mb-6">Belum ada expo aktif — janji temu belum dapat dibuat.</p>
+            @endif
 
             <div class="bg-white rounded-2xl shadow-lg p-8">
                 @if ($errors->any())
@@ -14,6 +19,11 @@
                     </div>
                 @endif
 
+                @if ($vendors->isEmpty())
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                        Belum ada vendor peserta expo yang dapat dijanji-temui saat ini.
+                    </div>
+                @else
                 <form method="POST" action="{{ route('appointments.store') }}" class="space-y-6">
                     @csrf
 
@@ -84,6 +94,7 @@
 
                     <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-rose-600 text-white hover:bg-rose-700">Kirim Permintaan</button>
                 </form>
+                @endif
             </div>
         </div>
     </section>

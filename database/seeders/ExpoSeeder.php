@@ -8,28 +8,39 @@ use Illuminate\Database\Seeder;
 
 class ExpoSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Expo::create([
-            'nama_expo' => 'Wedding Expo Palembang 2026',
-            'tanggal_mulai' => Carbon::parse('2026-01-16'),
-            'tanggal_selesai' => Carbon::parse('2026-01-18'),
-            'lokasi' => 'Palembang Icon Mall, Jl. Basuki Rahmat No.817, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30111',
-            'status' => true, // 1 = aktif
-            'periode' => '16-18 Januari 2026',
-        ]);
+        $expos = [
+            [
+                'nama_expo' => 'Sumsel Wedding Expo Tahun 2026',
+                'periode' => 'Season I · 15-17 Agu 2026',
+                'tanggal_mulai' => Carbon::parse('2026-08-15'),
+                'tanggal_selesai' => Carbon::parse('2026-08-17'),
+                'lokasi' => 'Palembang Icon Mall, Jl. Basuki Rahmat No.817, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30111',
+                'alamat' => 'Palembang Icon Mall',
+                'status' => true,
+            ],
+            [
+                'nama_expo' => 'Sumsel Wedding Expo Tahun 2025',
+                'periode' => 'Season II · 15-17 Nov 2025',
+                'tanggal_mulai' => Carbon::parse('2025-11-15'),
+                'tanggal_selesai' => Carbon::parse('2025-11-17'),
+                'lokasi' => 'Palembang Indah Mall, Kota Palembang, Sumatera Selatan',
+                'alamat' => 'Palembang Indah Mall',
+                'status' => false,
+            ],
+        ];
 
-        // Data expo lain (non-aktif) sebagai contoh
-        Expo::create([
-            'nama_expo' => 'Wedding Expo Palembang 2025',
-            'tanggal_mulai' => Carbon::parse('2025-11-15'),
-            'tanggal_selesai' => Carbon::parse('2025-11-17'),
-            'lokasi' => 'Grand City Surabaya Convention Hall',
-            'status' => false, // 0 = tidak aktif
-            'periode' => '15-17 November 2025',
-        ]);
+        foreach ($expos as $data) {
+            Expo::updateOrCreate(
+                [
+                    'nama_expo' => $data['nama_expo'],
+                    'periode' => $data['periode'],
+                ],
+                $data
+            );
+        }
+
+        $this->command?->info('ExpoSeeder: '.count($expos).' expos ensured.');
     }
 }

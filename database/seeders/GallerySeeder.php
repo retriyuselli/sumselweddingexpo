@@ -14,7 +14,8 @@ class GallerySeeder extends Seeder
     public function run(): void
     {
         // Get active expo
-        $expo = Expo::where('status', 1)->first();
+        $expo = app(\App\Services\ExpoResolver::class)->nearestActive()
+            ?? Expo::where('status', 1)->orderByDesc('tanggal_mulai')->first();
 
         if (! $expo) {
             $this->command->warn('No active expo found. Please run ExpoSeeder first.');
@@ -74,11 +75,15 @@ class GallerySeeder extends Seeder
         ];
 
         foreach ($galleries as $gallery) {
-            Gallery::create([
-                'expo_id' => $expo->id,
-                'title' => $gallery['title'],
-                'image_path' => $gallery['image_path'],
-            ]);
+            Gallery::firstOrCreate(
+                [
+                    'expo_id' => $expo->id,
+                    'title' => $gallery['title'],
+                ],
+                [
+                    'image_path' => $gallery['image_path'],
+                ]
+            );
         }
 
         $this->command->info('Gallery seeder completed for '.$expo->nama_expo);

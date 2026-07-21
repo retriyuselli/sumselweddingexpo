@@ -166,6 +166,15 @@
 
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                         <h2 class="text-base sm:text-lg font-bold mb-4">Informasi Vendor</h2>
+                        @if (empty($partisipasi))
+                            <p class="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                                Vendor ini belum terdaftar pada expo aktif — paket & booth akan tampil setelah partisipasi dibuat.
+                            </p>
+                        @elseif (!empty($expo))
+                            <p class="mb-4 text-xs text-neutral-500">
+                                Data booth/paket untuk expo: <span class="font-medium text-neutral-700">{{ $expo->nama_expo }}</span>
+                            </p>
+                        @endif
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
                             <div>
                                 <p class="text-neutral-600">Nama Vendor</p>

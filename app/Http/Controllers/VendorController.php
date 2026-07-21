@@ -48,9 +48,16 @@ class VendorController extends Controller
             ->latest()
             ->get();
 
-        $jenisUsahas = Cache::remember('jenis_usahas.with_vendor_counts', 600, function () {
-            return JenisUsaha::withCount('vendors')->orderBy('nama_jenis_usaha')->get();
-        });
+        $jenisUsahas = JenisUsaha::query()
+            ->withCount(['vendors as vendors_count' => function ($q) use ($expo) {
+                if ($expo) {
+                    $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+                } else {
+                    $q->whereRaw('0 = 1');
+                }
+            }])
+            ->orderBy('nama_jenis_usaha')
+            ->get();
 
         return view('partners', compact('vendors', 'jenisUsahas', 'expo'));
     }

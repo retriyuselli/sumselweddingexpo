@@ -9,8 +9,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Vendors</h1>
-                        <p class="text-xs sm:text-sm text-neutral-600 mt-1">Temukan vendor pilihan untuk acara Anda di Event
-                            Sumsel Wedding Expo </p>
+                        <p class="text-xs sm:text-sm text-neutral-600 mt-1">
+                            @if (!empty($expo))
+                                Peserta expo <span class="font-medium text-neutral-800">{{ $expo->nama_expo }}</span>
+                                @if ($expo->periode) ({{ $expo->periode }}) @endif
+                            @else
+                                Belum ada expo aktif — daftar vendor peserta akan muncul di sini.
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>
@@ -67,11 +73,20 @@
                                     </p>
                                 </div>
                                 <div>
+                                    <p class="text-neutral-600">Paket</p>
+                                    <p class="font-medium text-neutral-900">
+                                        @php
+                                            $cat = $p?->categoryTenant?->category ?? null;
+                                        @endphp
+                                        {{ $cat instanceof \BackedEnum ? ($cat->label() ?? $cat->value) : ($cat ?? '—') }}
+                                    </p>
+                                </div>
+                                <div>
                                     <p class="text-neutral-600">Total Product</p>
                                     <p class="font-medium text-neutral-900">
                                         {{ number_format($v->products_active_count ?? 0) }}</p>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="col-span-2 flex items-center gap-2">
                                     <a href="https://wa.me/{{ $v->whatsapp_number }}" target="_blank"
                                         class="text-green-600 hover:text-green-700">WhatsApp</a>
                                 </div>
@@ -87,7 +102,13 @@
                             </div>
                         </div>
                     @empty
-                        <div class="col-span-3 text-center text-sm text-neutral-600">Belum ada vendor terdaftar.</div>
+                        <div class="col-span-3 text-center text-sm text-neutral-600 py-8">
+                            @if (empty($expo))
+                                Belum ada expo aktif.
+                            @else
+                                Belum ada vendor peserta untuk expo ini.
+                            @endif
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -103,8 +124,11 @@
             const q = (s.value || '').toLowerCase();
             const jenis = f.value || '';
             [...grid.children].forEach(card => {
+                if (!card.dataset.nama) {
+                    return;
+                }
                 const matchNama = card.dataset.nama.includes(q);
-                const matchKota = card.dataset.kota.includes(q);
+                const matchKota = (card.dataset.kota || '').includes(q);
                 const matchJenis = !jenis || card.dataset.jenis === jenis;
                 card.style.display = (q ? (matchNama || matchKota) : true) && matchJenis ? '' : 'none';
             });

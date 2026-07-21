@@ -55,13 +55,18 @@ class BlogSeeder extends Seeder
             ]
         );
 
-        $sweAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'swe'))->first();
         $adminAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'admin'))->first();
         $superAdminAuthor = User::whereHas('roles', fn ($q) => $q->where('name', 'super_admin'))->first();
 
-        $defaultAuthor = $sweAuthor ?? $adminAuthor ?? $superAdminAuthor ?? User::first();
+        $defaultAuthor = $adminAuthor ?? $superAdminAuthor ?? User::first();
 
-        $sarah = $sweAuthor ?? $defaultAuthor;
+        if (! $defaultAuthor) {
+            $this->command?->warn('BlogSeeder skipped: no users found. Run UserSeeder first.');
+
+            return;
+        }
+
+        $sarah = $adminAuthor ?? $defaultAuthor;
         $budi = $adminAuthor ?? $defaultAuthor;
         $linda = $superAdminAuthor ?? $defaultAuthor;
 

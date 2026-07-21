@@ -9,9 +9,15 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::firstOrCreate(['name' => 'super_admin']);
-        Role::firstOrCreate(['name' => 'admin']);
-        Role::firstOrCreate(['name' => 'swe']);
-        Role::firstOrCreate(['name' => 'customer']);
+        $guard = config('auth.defaults.guard', 'web');
+
+        foreach (['super_admin', 'admin'] as $name) {
+            Role::firstOrCreate([
+                'name' => $name,
+                'guard_name' => $guard,
+            ]);
+        }
+
+        $this->command?->info('Roles ensured: super_admin, admin');
     }
 }
