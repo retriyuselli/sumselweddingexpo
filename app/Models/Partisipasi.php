@@ -27,6 +27,7 @@ class Partisipasi extends Model
         'vendor_pendamping',
         'tanggal_booking',
         'status_pembayaran',
+        'is_active',
         'category_tenant_id',
         'tenant_spot_id',
         'blok_tenant',
@@ -44,6 +45,7 @@ class Partisipasi extends Model
     protected $casts = [
         'tanggal_booking' => 'date',
         'vendor_pendamping' => 'array',
+        'is_active' => 'boolean',
         'harga_jual' => 'integer',
         'diskon' => 'integer',
         'harga_bersih' => 'integer',
@@ -119,5 +121,10 @@ class Partisipasi extends Model
     public function doorprizes()
     {
         return $this->hasMany(Doorprize::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

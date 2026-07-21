@@ -11,7 +11,9 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -60,9 +62,18 @@ class PartisipasisTable
 
                 BadgeColumn::make('status_pembayaran')
                     ->label('Status Pembayaran'),
+
+                ToggleColumn::make('is_active')
+                    ->label('Aktif')
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
+                TernaryFilter::make('is_active')
+                    ->label('Status Aktif')
+                    ->trueLabel('Aktif')
+                    ->falseLabel('Tidak Aktif')
+                    ->placeholder('Semua'),
                 SelectFilter::make('expo_id')
                     ->relationship('expo', 'nama_expo')
                     ->getOptionLabelFromRecordUsing(fn (Expo $record) => self::expoFilterLabel($record))

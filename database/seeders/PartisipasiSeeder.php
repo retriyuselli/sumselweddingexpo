@@ -78,6 +78,7 @@ class PartisipasiSeeder extends Seeder
                 'vendor_pendamping' => $vendorPendamping,
                 'tanggal_booking' => $bookingDate,
                 'status_pembayaran' => $status,
+                'is_active' => true,
                 'category_tenant_id' => $category->id,
                 'blok_tenant' => $blok,
                 'harga_jual' => $category->harga_jual,

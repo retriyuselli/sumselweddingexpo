@@ -100,6 +100,7 @@ class ExhibitorRegistrationService
             'vendor_id' => $vendor->id,
             'tanggal_booking' => now()->toDateString(),
             'status_pembayaran' => 'Belum Lunas',
+            'is_active' => true,
             'category_tenant_id' => $categoryTenant->id,
             'blok_tenant' => $lokasi !== '' ? $lokasi : null,
             'harga_jual' => $hargaJual,

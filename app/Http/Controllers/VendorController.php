@@ -28,7 +28,7 @@ class VendorController extends Controller
 
         $vendors = Vendor::query()
             ->when($expo, function ($q) use ($expo) {
-                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id)->where('is_active', true));
             }, function ($q) {
                 $q->whereRaw('0 = 1');
             })
@@ -36,7 +36,7 @@ class VendorController extends Controller
                 'jenisUsaha',
                 'partisipasis' => function ($q) use ($expo) {
                     $q->with(['categoryTenant', 'tenantSpot'])
-                        ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id))
+                        ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id)->where('is_active', true))
                         ->latest('id');
                 },
             ])
@@ -51,7 +51,7 @@ class VendorController extends Controller
         $jenisUsahas = JenisUsaha::query()
             ->withCount(['vendors as vendors_count' => function ($q) use ($expo) {
                 if ($expo) {
-                    $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+                    $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id)->where('is_active', true));
                 } else {
                     $q->whereRaw('0 = 1');
                 }
@@ -132,7 +132,7 @@ class VendorController extends Controller
         $expo = $expoResolver->nearestActive();
         $vendor->load(['jenisUsaha', 'partisipasis' => function ($q) use ($expo) {
             $q->with(['categoryTenant', 'tenantSpot'])
-                ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id))
+                ->when($expo, fn ($qq) => $qq->where('expo_id', $expo->id)->where('is_active', true))
                 ->latest('id');
         }]);
         $partisipasi = $vendor->partisipasis->first();

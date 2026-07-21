@@ -38,7 +38,7 @@ class AppointmentController extends Controller
         $vendors = Vendor::query()
             ->select('id', 'nama_vendor')
             ->when($expo, function ($q) use ($expo) {
-                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id));
+                $q->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id)->where('is_active', true));
             }, function ($q) {
                 $q->whereRaw('0 = 1');
             })
@@ -68,7 +68,7 @@ class AppointmentController extends Controller
                         return;
                     }
                     $ok = Vendor::whereKey($value)
-                        ->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id))
+                        ->whereHas('partisipasis', fn ($p) => $p->where('expo_id', $expo->id)->where('is_active', true))
                         ->exists();
                     if (! $ok) {
                         $fail('Vendor tidak terdaftar pada expo aktif.');

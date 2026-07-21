@@ -65,7 +65,14 @@ class PartisipasiForm
                             ->label('Vendor Pendamping')
                             ->placeholder('Opsional')
                             ->nullable()
-                            ->columnSpan(1),    
+                            ->columnSpan(1),
+
+                        Toggle::make('is_active')
+                            ->label('Aktif (tampil di halaman peserta)')
+                            ->helperText('Nonaktifkan untuk menyembunyikan partisipasi dari halaman publik /peserta')
+                            ->default(true)
+                            ->inline(false)
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -111,10 +118,24 @@ class PartisipasiForm
                                     return [];
                                 }
 
+                                $currentSpotId = $get('tenant_spot_id');
+
                                 return TenantSpot::where('expo_id', $expoId)
-                                    ->whereDoesntHave('partisipasi', fn ($q) => $q->whereNull('deleted_at'))
+                                    ->where(function ($q) use ($currentSpotId) {
+                                        $q->whereDoesntHave('partisipasi', fn ($qq) => $qq->whereNull('deleted_at'));
+                                        if ($currentSpotId) {
+                                            $q->orWhere('id', $currentSpotId);
+                                        }
+                                    })
                                     ->orderBy('kode_booth')
                                     ->pluck('kode_booth', 'id');
+                            })
+                            ->getOptionLabelUsing(function ($value): ?string {
+                                if (! $value) {
+                                    return null;
+                                }
+
+                                return TenantSpot::query()->whereKey($value)->value('kode_booth');
                             })
                             ->live()
                             ->searchable()

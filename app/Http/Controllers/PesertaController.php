@@ -25,6 +25,7 @@ class PesertaController extends Controller
 
         if ($expo) {
             $query = Partisipasi::with(['vendor.jenisUsaha', 'categoryTenant', 'tenantSpot'])
+                ->active()
                 ->where('expo_id', $expo->id)
                 ->whereHas('vendor', function ($q) use ($search) {
                     if ($search) {
@@ -40,6 +41,7 @@ class PesertaController extends Controller
 
             // Lean booth map: only fields needed for floor plan
             $boothMap = Partisipasi::query()
+                ->active()
                 ->where('expo_id', $expo->id)
                 ->whereNotNull('tenant_spot_id')
                 ->with([
@@ -83,6 +85,7 @@ class PesertaController extends Controller
         if ($expo) {
             $partisipasi = Partisipasi::where('vendor_id', $vendor->id)
                 ->where('expo_id', $expo->id)
+                ->active()
                 ->with(['categoryTenant', 'tenantSpot'])
                 ->first();
         }
