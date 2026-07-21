@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\LabaRugiReportController;
+use App\Http\Controllers\PartisipasiPdfController;
 
 Route::get('/form-tring-pegadaian.pdf', function () {
     $penyelenggara = \App\Models\Penyelenggara::first();
@@ -43,6 +44,10 @@ Route::get('/laporan-laba-rugi/{record}', [LabaRugiReportController::class, 'str
 Route::get('/laporan-laba-rugi/{record}/download', [LabaRugiReportController::class, 'download'])
     ->middleware(['auth'])
     ->name('laporan.laba-rugi.download');
+
+Route::get('/partisipasis/{expo}/pdf', [PartisipasiPdfController::class, 'download'])
+    ->middleware(['auth'])
+    ->name('partisipasis.pdf');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
