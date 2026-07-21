@@ -35,6 +35,15 @@ class PartisipasisTable
                     ->searchable()
                     ->description(fn ($record) => $record->categoryTenant?->category?->label()),
 
+                TextColumn::make('tenantSpot.kode_booth')
+                    ->label('No. Tenant')
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('—')
+                    ->description(fn ($record) => $record->tenantSpot
+                        ? null
+                        : ($record->blok_tenant ? 'Preferensi: '.$record->blok_tenant : null)),
+
                 TextColumn::make('tanggal_booking')
                     ->date('d M Y')
                     ->sortable()
