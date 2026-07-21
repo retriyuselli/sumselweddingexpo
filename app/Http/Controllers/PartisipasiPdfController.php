@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Expo;
 use App\Models\Penyelenggara;
+use App\Models\Vendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -25,6 +26,22 @@ class PartisipasiPdfController extends Controller
             ->orderBy('id')
             ->get();
 
+        $pendampingIds = $partisipasis
+            ->flatMap(function ($p) {
+                $raw = $p->vendor_pendamping;
+
+                return is_array($raw) ? $raw : [];
+            })
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $pendampingNames = $pendampingIds === []
+            ? collect()
+            : Vendor::query()->whereIn('id', $pendampingIds)->pluck('nama_vendor', 'id');
+
         $filename = 'Daftar-Partisipasi-'.Str::slug($expo->nama_expo).'-'.Str::slug((string) $expo->periode).'.pdf';
 
         $pdf = Pdf::loadView('pdf.partisipasi', [
@@ -32,6 +49,7 @@ class PartisipasiPdfController extends Controller
             'partisipasis' => $partisipasis,
             'penyelenggara' => Penyelenggara::first(),
             'onlyActive' => $onlyActive,
+            'pendampingNames' => $pendampingNames,
             'generatedAt' => now(),
         ])->setPaper('a4', 'landscape');
 

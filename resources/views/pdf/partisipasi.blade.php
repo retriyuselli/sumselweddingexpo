@@ -60,9 +60,10 @@
                 <tr>
                     <th class="text-center" style="width:28px;">No</th>
                     <th>Vendor</th>
+                    <th>Vendor Pendamping</th>
                     <th>Jenis Usaha</th>
                     <th>Paket</th>
-                    <th>Blok/Nomor Tenant</th>
+                    <th>Blok</th>
                     <th>Preferensi</th>
                     <th class="text-right">Harga</th>
                     <th class="text-center">Status Bayar</th>
@@ -71,9 +72,17 @@
             </thead>
             <tbody>
                 @foreach ($partisipasis as $i => $p)
+                    @php
+                        $pendampingIds = is_array($p->vendor_pendamping) ? $p->vendor_pendamping : [];
+                        $pendampingLabel = collect($pendampingIds)
+                            ->map(fn ($id) => $pendampingNames[(int) $id] ?? null)
+                            ->filter()
+                            ->implode(', ');
+                    @endphp
                     <tr>
                         <td class="text-center">{{ $i + 1 }}</td>
                         <td>{{ $p->vendor?->nama_vendor ?? '-' }}</td>
+                        <td>{{ $pendampingLabel !== '' ? $pendampingLabel : '-' }}</td>
                         <td>{{ $p->vendor?->jenisUsaha?->nama_jenis_usaha ?? '-' }}</td>
                         <td>
                             @php $cat = $p->categoryTenant?->category; @endphp
