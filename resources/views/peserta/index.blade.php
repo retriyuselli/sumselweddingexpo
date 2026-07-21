@@ -103,7 +103,7 @@
                                         <div class="flex flex-col gap-1">
                                             @foreach($blokkABooths as $boothId)
                                                 @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                                <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                    class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                    title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
                                                     <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
@@ -151,7 +151,7 @@
                                                     <div class="flex gap-1">
                                                         @foreach($row as $boothId)
                                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                            <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                                class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                                title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
                                                                 <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
@@ -176,7 +176,7 @@
                                                 <div class="flex gap-1">
                                                     @foreach($row as $boothId)
                                                         @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                                        <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                                        <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                            class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                            title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
                                                             <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
@@ -203,7 +203,7 @@
                                     <div class="bg-gray-400 p-3 flex gap-1">
                                         @foreach($blokkCBooths as $boothId)
                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
-                                            <a href="{{ $ps ? '#vendor-' . $ps->id : 'javascript:void(0)' }}"
+                                            <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
                                                title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
                                                 <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
@@ -239,11 +239,11 @@
                     </div>
                     <div class="flex items-center justify-end">
                         <span class="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
-                            {{ number_format($partisipasis->count()) }} peserta
+                            {{ number_format($pesertas->count()) }} peserta
                         </span>
                     </div>
                 </div>
-                @if ($partisipasis->isEmpty())
+                @if ($pesertas->isEmpty())
                     <div class="text-center py-12 bg-white rounded-xl border border-neutral-200 shadow-sm">
                         <svg class="w-12 h-12 text-neutral-300 mx-auto mb-4" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -255,31 +255,43 @@
                     </div>
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach ($partisipasis as $partisipasi)
-                            @continue(! $partisipasi->is_active || ! $partisipasi->vendor)
-                            <div id="vendor-{{ $partisipasi->id }}"
+                        @foreach ($pesertas as $entry)
+                            @php
+                                $vendor = $entry['vendor'];
+                                $partisipasi = $entry['partisipasi'];
+                                $isPendamping = $entry['is_pendamping'] ?? false;
+                                $hostVendor = $entry['host_vendor'] ?? null;
+                            @endphp
+                            @continue(! $partisipasi->is_active || ! $vendor)
+                            <div id="vendor-{{ $vendor->id }}"
                                 class="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
                                 <div class="p-5">
                                     <div class="flex items-start justify-between mb-4">
                                         <div class="flex items-center gap-3">
-                                            @if ($partisipasi->vendor->logo)
-                                                <img src="{{ asset('storage/' . $partisipasi->vendor->logo) }}"
-                                                    alt="{{ $partisipasi->vendor->nama_vendor }}"
+                                            @if ($vendor->logo)
+                                                <img src="{{ asset('storage/' . $vendor->logo) }}"
+                                                    alt="{{ $vendor->nama_vendor }}"
                                                     class="w-12 h-12 rounded-lg object-contain p-1 bg-white border border-neutral-200 shadow-md group-hover:scale-110 transition-transform">
                                             @else
                                                 <div
                                                     class="w-12 h-12 rounded-lg bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg font-bold shadow-md group-hover:scale-110 transition-transform">
-                                                    {{ strtoupper(substr($partisipasi->vendor->nama_vendor, 0, 1)) }}
+                                                    {{ strtoupper(substr($vendor->nama_vendor, 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
                                                 <h3
                                                     class="font-bold text-neutral-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                                                    {{ $partisipasi->vendor->nama_vendor }}
+                                                    {{ $vendor->nama_vendor }}
                                                 </h3>
                                                 <p class="text-xs text-neutral-500 font-medium">
-                                                    {{ $partisipasi->vendor->jenisUsaha->nama_jenis_usaha ?? 'Umum' }}
+                                                    {{ $vendor->jenisUsaha->nama_jenis_usaha ?? 'Umum' }}
                                                 </p>
+                                                @if ($isPendamping)
+                                                    <span
+                                                        class="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                                        Vendor Pendamping
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
                                         @if ($partisipasi->tenantSpot || $partisipasi->blok_tenant)
@@ -299,7 +311,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
-                                            <span class="truncate">{{ $partisipasi->vendor->kota }}</span>
+                                            <span class="truncate">{{ $vendor->kota }}</span>
                                         </div>
                                         <div class="flex items-center text-neutral-600">
                                             <svg class="w-4 h-4 mr-2 text-neutral-400" fill="none" stroke="currentColor"
@@ -307,7 +319,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
-                                            <span class="truncate">{{ $partisipasi->vendor->no_telepon }}</span>
+                                            <span class="truncate">{{ $vendor->no_telepon }}</span>
                                         </div>
                                         @if ($partisipasi->categoryTenant)
                                             <div class="flex items-center text-neutral-600">
@@ -324,10 +336,15 @@
                                                 </span>
                                             </div>
                                         @endif
+                                        @if ($isPendamping && $hostVendor)
+                                            <div class="flex items-center text-amber-700/80 text-xs">
+                                                Vendor Pendamping dari {{ $hostVendor->nama_vendor }}
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between">
-                                        <a href="{{ route('peserta.show', $partisipasi->vendor->slug) }}"
+                                        <a href="{{ route('peserta.show', $vendor->slug) }}"
                                             class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group-hover:gap-2 transition-all">
                                             Lihat Profil
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,8 +352,8 @@
                                                     d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                             </svg>
                                         </a>
-                                        @if ($partisipasi->vendor->no_wa_pic)
-                                            <a href="https://wa.me/{{ $partisipasi->vendor->whatsapp_number }}"
+                                        @if ($vendor->no_wa_pic)
+                                            <a href="https://wa.me/{{ $vendor->whatsapp_number }}"
                                                 target="_blank"
                                                 class="text-green-600 hover:text-green-700 bg-green-50 p-2 rounded-full hover:bg-green-100 transition-colors"
                                                 title="Chat WhatsApp">

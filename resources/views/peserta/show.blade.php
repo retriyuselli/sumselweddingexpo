@@ -35,6 +35,9 @@
                                 Partisipasi</p>
                             <p class="text-sm font-medium text-neutral-900">
                                 <span class="text-indigo-600">{{ $expo->nama_expo }}</span>
+                                @if (!empty($isPendamping))
+                                    <span class="ml-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">Vendor Pendamping</span>
+                                @endif
                             </p>
                             <p class="text-sm text-neutral-600 mt-0.5">
                                 Paket:
@@ -48,6 +51,11 @@
                                     </span>
                                 @endif
                             </p>
+                            @if (!empty($isPendamping) && $partisipasi->vendor)
+                                <p class="text-xs text-amber-700 mt-1.5">
+                                    Vendor Pendamping dari {{ $partisipasi->vendor->nama_vendor }}
+                                </p>
+                            @endif
                         </div>
                     @endif
                 </div>
