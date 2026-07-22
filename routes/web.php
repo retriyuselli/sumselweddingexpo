@@ -49,6 +49,10 @@ Route::get('/partisipasis/{expo}/pdf', [PartisipasiPdfController::class, 'downlo
     ->middleware(['auth'])
     ->name('partisipasis.pdf');
 
+Route::get('/partisipasis/{partisipasi}/invoice', [PartisipasiPdfController::class, 'invoice'])
+    ->middleware(['auth'])
+    ->name('partisipasis.invoice');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
 Route::view('/lokasi', 'lokasi')->name('lokasi');

@@ -11,13 +11,13 @@ class RoleSeeder extends Seeder
     {
         $guard = config('auth.defaults.guard', 'web');
 
-        foreach (['super_admin', 'admin'] as $name) {
+        foreach (['super_admin', 'admin', 'customer'] as $name) {
             Role::firstOrCreate([
                 'name' => $name,
                 'guard_name' => $guard,
             ]);
         }
 
-        $this->command?->info('Roles ensured: super_admin, admin');
+        $this->command?->info('Roles ensured: super_admin, admin, customer');
     }
 }

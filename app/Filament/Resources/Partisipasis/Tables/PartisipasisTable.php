@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Partisipasis\Tables;
 
 use App\Models\Expo;
+use App\Models\Partisipasi;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -102,6 +104,15 @@ class PartisipasisTable
             ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
+                Action::make('downloadInvoice')
+                    ->label('Unduh Invoice')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->url(fn (Partisipasi $record) => route('partisipasis.invoice', [
+                        'partisipasi' => $record,
+                        'download' => 1,
+                    ]))
+                    ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
