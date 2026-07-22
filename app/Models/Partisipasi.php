@@ -58,34 +58,50 @@ class Partisipasi extends Model
     protected static function booted()
     {
         static::saving(function ($partisipasi) {
-            $hargaJual = (int) str_replace(',', '', $partisipasi->harga_jual);
-            $diskon = (int) str_replace(',', '', $partisipasi->diskon);
-            $partisipasi->harga_bersih = max(0, $hargaJual - $diskon);
+            $partisipasi->harga_bersih = $partisipasi->hitungHargaBersih();
 
             // Jika sedang update (sudah ada ID), hitung ulang status pembayaran
-            // Ini untuk handle kasus edit harga/diskon yang mempengaruhi status lunas
+            // Ini untuk handle kasus edit harga/diskon/barter yang mempengaruhi status lunas
             if ($partisipasi->exists) {
                 $partisipasi->recalculatePaymentStatus();
             }
         });
     }
 
+    /**
+     * Harga bersih = harga jual - diskon - barter (jika ada).
+     * Barter mengurangi kewajiban pembayaran tunai ke perusahaan.
+     */
+    public function hitungHargaBersih(): int
+    {
+        $hargaJual = (int) str_replace(',', '', $this->harga_jual ?? 0);
+        $diskon = (int) str_replace(',', '', $this->diskon ?? 0);
+        $barter = $this->is_barter ? (int) ($this->barter_nominal ?? 0) : 0;
+
+        return max(0, $hargaJual - $diskon - $barter);
+    }
+
+    /**
+     * Tagihan tunai ke perusahaan (sama dengan harga bersih).
+     */
+    public function tagihanTunai(): int
+    {
+        return $this->hitungHargaBersih();
+    }
+
     public function recalculatePaymentStatus()
     {
-        // Pastikan harga_bersih up to date (jika dipanggil manual sebelum saving)
-        $hargaJual = (int) str_replace(',', '', $this->harga_jual);
-        $diskon = (int) str_replace(',', '', $this->diskon);
-        $this->harga_bersih = max(0, $hargaJual - $diskon);
+        $this->harga_bersih = $this->hitungHargaBersih();
 
         // Hitung total pembayaran dari relasi
         $total = $this->dataPembayarans()->sum('nominal');
         $this->total_pembayaran = $total;
-        
-        // Hitung sisa pembayaran
+
+        // Hitung sisa pembayaran terhadap harga bersih (sudah termasuk potongan barter)
         $this->sisa_pembayaran = max(0, $this->harga_bersih - $total);
 
-        // Tentukan status
-        if ($total >= $this->harga_bersih && $this->harga_bersih > 0) {
+        // Tentukan status (lunas jika kewajiban tunai terpenuhi, termasuk full barter)
+        if ($this->harga_bersih === 0 || $total >= $this->harga_bersih) {
             $this->status_pembayaran = 'Lunas';
         } else {
             $this->status_pembayaran = 'Belum Lunas';

@@ -2,10 +2,15 @@
     $accent = '#b45309';
     $hargaJual = (int) ($partisipasi->harga_jual ?? 0);
     $diskon = (int) ($partisipasi->diskon ?? 0);
-    $hargaBersih = (int) ($partisipasi->harga_bersih ?? max(0, $hargaJual - $diskon));
+    $barterNominal = $partisipasi->is_barter ? (int) ($partisipasi->barter_nominal ?? 0) : 0;
+    // Harga bersih sudah = harga jual - diskon - barter
+    $hargaBersih = $partisipasi->hitungHargaBersih();
+    $tagihanAkhir = $hargaBersih;
     $totalBayar = (int) ($partisipasi->total_pembayaran ?? $partisipasi->dataPembayarans->sum('nominal'));
-    $sisaBayar = (int) ($partisipasi->sisa_pembayaran ?? max(0, $hargaBersih - $totalBayar));
-    $status = $partisipasi->status_pembayaran ?? 'Belum Lunas';
+    $sisaBayar = max(0, $tagihanAkhir - $totalBayar);
+    $status = $tagihanAkhir === 0 || $totalBayar >= $tagihanAkhir
+        ? 'Lunas'
+        : ($partisipasi->status_pembayaran ?? 'Belum Lunas');
     $statusBg = match ($status) {
         'Lunas' => '#dcfce7',
         'DP', 'Cicilan' => '#fef9c3',
@@ -281,17 +286,6 @@ table.payments td.r { text-align:right; }
                 <td class="r">Rp {{ number_format($hargaJual, 0, ',', '.') }}</td>
                 <td class="r">Rp {{ number_format($hargaJual, 0, ',', '.') }}</td>
             </tr>
-            @if($partisipasi->is_barter && $partisipasi->barter_nominal)
-            <tr>
-                <td>
-                    Barter
-                    <div class="sub">{{ $partisipasi->barter_description ?: 'Nilai barter' }}</div>
-                </td>
-                <td class="c">1</td>
-                <td class="r">Rp {{ number_format((int) $partisipasi->barter_nominal, 0, ',', '.') }}</td>
-                <td class="r">Rp {{ number_format((int) $partisipasi->barter_nominal, 0, ',', '.') }}</td>
-            </tr>
-            @endif
         </tbody>
     </table>
 </div>
@@ -299,9 +293,21 @@ table.payments td.r { text-align:right; }
 <div class="bottom-wrap">
     <div class="row">
         <div class="col" style="width:50%; padding-top:6px;">
-            @if($partisipasi->keterangan)
+            @if($partisipasi->keterangan || $barterNominal > 0)
                 <div class="pay-method-title">Keterangan</div>
-                <div class="pay-method-val">{{ $partisipasi->keterangan }}</div>
+                <div class="pay-method-val">
+                    @if($partisipasi->keterangan)
+                        {{ $partisipasi->keterangan }}
+                    @endif
+                    @if($barterNominal > 0)
+                        @if($partisipasi->keterangan)<br>@endif
+                        <strong>Barter:</strong> Rp {{ number_format($barterNominal, 0, ',', '.') }}
+                        @if($partisipasi->barter_description)
+                            <br>{{ $partisipasi->barter_description }}
+                        @endif
+                        <br><span style="color:#9ca3af; font-size:8.5px;">Nilai barter tidak termasuk pembayaran tunai ke perusahaan.</span>
+                    @endif
+                </div>
             @endif
         </div>
         <div class="col-r" style="width:50%">
@@ -316,6 +322,12 @@ table.payments td.r { text-align:right; }
                     <td>- Rp {{ number_format($diskon, 0, ',', '.') }}</td>
                 </tr>
                 @endif
+                @if($barterNominal > 0)
+                <tr class="sub-row">
+                    <td>Barter</td>
+                    <td>- Rp {{ number_format($barterNominal, 0, ',', '.') }}</td>
+                </tr>
+                @endif
                 <tr class="sub-row">
                     <td>Sudah Dibayar</td>
                     <td>Rp {{ number_format($totalBayar, 0, ',', '.') }}</td>
@@ -326,8 +338,8 @@ table.payments td.r { text-align:right; }
                 </tr>
                 <tr class="line-row"><td colspan="2" style="padding:0; border-top:1.5px solid #e5e7eb;"></td></tr>
                 <tr class="total-row">
-                    <td>Total</td>
-                    <td>Rp {{ number_format($hargaBersih, 0, ',', '.') }}</td>
+                    <td>Total Tagihan</td>
+                    <td>Rp {{ number_format($tagihanAkhir, 0, ',', '.') }}</td>
                 </tr>
             </table>
         </div>

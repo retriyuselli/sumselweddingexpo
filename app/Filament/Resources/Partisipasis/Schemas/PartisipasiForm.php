@@ -101,11 +101,8 @@ class PartisipasiForm
                                 if ($state) {
                                     $categoryTenant = CategoryTenant::find($state);
                                     if ($categoryTenant) {
-                                        $hargaJual = $categoryTenant->harga_jual;
-                                        $set('harga_jual', $hargaJual);
-
-                                        $diskon = (int) str_replace(',', '', $get('diskon') ?? 0);
-                                        $set('harga_bersih', max(0, $hargaJual - $diskon));
+                                        $set('harga_jual', $categoryTenant->harga_jual);
+                                        self::syncHargaBersih($get, $set);
                                     }
                                 }
                             }),
@@ -173,11 +170,7 @@ class PartisipasiForm
                             ->rule('numeric')
                             ->label('Diskon / Potongan Harga')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                                $hargaJual = (int) str_replace(',', '', $get('harga_jual') ?? 0);
-                                $diskon = (int) str_replace(',', '', $state ?? 0);
-                                $set('harga_bersih', max(0, $hargaJual - $diskon));
-                            })
+                            ->afterStateUpdated(fn (Get $get, Set $set) => self::syncHargaBersih($get, $set))
                             ->columnSpan(1),
 
                         TextInput::make('harga_bersih')
@@ -190,7 +183,7 @@ class PartisipasiForm
                             ->numeric()
                             ->readOnly()
                             ->label('Harga Bersih')
-                            ->helperText('Otomatis: Harga Jual - Diskon')
+                            ->helperText('Otomatis: Harga Jual - Diskon - Barter')
                             ->dehydrated()
                             ->columnSpan(1),
 
@@ -201,6 +194,12 @@ class PartisipasiForm
                         Toggle::make('is_barter')
                             ->label('Apakah ada barter?')
                             ->live()
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                if (! $state) {
+                                    $set('barter_nominal', 0);
+                                }
+                                self::syncHargaBersih($get, $set);
+                            })
                             ->columnSpanFull(),
 
                         Textarea::make('barter_description')
@@ -217,6 +216,8 @@ class PartisipasiForm
                             ->stripCharacters(',')
                             ->visible(fn (Get $get) => $get('is_barter'))
                             ->required(fn (Get $get) => $get('is_barter'))
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Get $get, Set $set) => self::syncHargaBersih($get, $set))
                             ->helperText('Tidak termasuk dalam total pembayaran ke perusahaan')
                             ->columnSpanFull(),
                         
@@ -317,5 +318,16 @@ class PartisipasiForm
                     ->columns(2)
                     ->columnSpanFull(),
             ]);
+    }
+
+    protected static function syncHargaBersih(Get $get, Set $set): void
+    {
+        $hargaJual = (int) str_replace(',', '', (string) ($get('harga_jual') ?? 0));
+        $diskon = (int) str_replace(',', '', (string) ($get('diskon') ?? 0));
+        $barter = $get('is_barter')
+            ? (int) str_replace(',', '', (string) ($get('barter_nominal') ?? 0))
+            : 0;
+
+        $set('harga_bersih', max(0, $hargaJual - $diskon - $barter));
     }
 }
