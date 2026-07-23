@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources\Sponsors\Schemas;
 
+use App\Enums\SponsorType;
+use App\Models\Expo;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Components\Section;
-use Filament\Support\RawJs;
 use Filament\Schemas\Schema;
-use App\Enums\SponsorType;
+use Filament\Support\RawJs;
+use Illuminate\Support\Str;
 
 class SponsorForm
 {
@@ -25,7 +27,11 @@ class SponsorForm
                     ->schema([
                         Select::make('expo_id')
                             ->relationship('expo', 'nama_expo')
+                            ->getOptionLabelFromRecordUsing(fn (Expo $record) => self::expoLabel($record))
                             ->label('Nama Expo')
+                            ->helperText('Ditampilkan: nama expo · periode · tanggal · lokasi')
+                            ->searchable()
+                            ->preload()
                             ->required()
                             ->columnSpanFull(),
 
@@ -103,5 +109,27 @@ class SponsorForm
                             ->default(true),
                     ]),
             ]);
+    }
+
+    protected static function expoLabel(Expo $expo): string
+    {
+        $tanggal = null;
+        if ($expo->tanggal_mulai) {
+            $tanggal = $expo->tanggal_mulai->format('d M Y');
+            if ($expo->tanggal_selesai && ! $expo->tanggal_mulai->equalTo($expo->tanggal_selesai)) {
+                $tanggal .= ' – '.$expo->tanggal_selesai->format('d M Y');
+            }
+        }
+
+        $parts = array_filter([
+            $expo->periode ? 'Periode '.$expo->periode : null,
+            $tanggal,
+            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
+            $expo->status ? 'Aktif' : 'Nonaktif',
+        ]);
+
+        return $parts === []
+            ? $expo->nama_expo.' [#'.$expo->id.']'
+            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
     }
 }
