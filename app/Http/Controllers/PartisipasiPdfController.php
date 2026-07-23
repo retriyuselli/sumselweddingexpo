@@ -54,7 +54,11 @@ class PartisipasiPdfController extends Controller
             'generatedAt' => now('Asia/Jakarta'),
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download($filename);
+        if ($request->boolean('download')) {
+            return $pdf->download($filename);
+        }
+
+        return $pdf->stream($filename);
     }
 
     public function invoice(Request $request, Partisipasi $partisipasi): Response

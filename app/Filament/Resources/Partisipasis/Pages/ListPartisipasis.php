@@ -19,8 +19,8 @@ class ListPartisipasis extends ListRecords
     {
         return [
             Action::make('downloadPdf')
-                ->label('Download PDF')
-                ->icon('heroicon-o-arrow-down-tray')
+                ->label('Preview PDF')
+                ->icon('heroicon-o-eye')
                 ->color('gray')
                 ->form([
                     Select::make('expo_id')
@@ -43,7 +43,7 @@ class ListPartisipasis extends ListRecords
                         })
                         ->searchable()
                         ->required()
-                        ->helperText('Pilih expo yang datanya ingin diunduh.'),
+                        ->helperText('Pilih expo yang datanya ingin dipreview.'),
                     Toggle::make('only_active')
                         ->label('Hanya partisipasi aktif')
                         ->default(false)
