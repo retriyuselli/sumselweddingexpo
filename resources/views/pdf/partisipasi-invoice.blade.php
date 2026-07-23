@@ -8,9 +8,7 @@
     $tagihanAkhir = $hargaBersih;
     $totalBayar = (int) ($partisipasi->total_pembayaran ?? $partisipasi->dataPembayarans->sum('nominal'));
     $sisaBayar = max(0, $tagihanAkhir - $totalBayar);
-    $status = $tagihanAkhir === 0 || $totalBayar >= $tagihanAkhir
-        ? 'Lunas'
-        : ($partisipasi->status_pembayaran ?? 'Belum Lunas');
+    $status = $partisipasi->statusPembayaranEfektif($totalBayar);
     $statusBg = match ($status) {
         'Lunas' => '#dcfce7',
         'DP', 'Cicilan' => '#fef9c3',

@@ -89,6 +89,23 @@ class Partisipasi extends Model
         return $this->hitungHargaBersih();
     }
 
+    /**
+     * Status pembayaran berdasarkan tagihan tunai (harga jual - diskon - barter).
+     */
+    public function statusPembayaranEfektif(?int $totalDibayar = null): string
+    {
+        $tagihan = $this->hitungHargaBersih();
+        $dibayar = $totalDibayar;
+
+        if ($dibayar === null) {
+            $dibayar = $this->relationLoaded('dataPembayarans')
+                ? (int) $this->dataPembayarans->sum('nominal')
+                : (int) ($this->total_pembayaran ?? 0);
+        }
+
+        return ($tagihan === 0 || $dibayar >= $tagihan) ? 'Lunas' : 'Belum Lunas';
+    }
+
     public function recalculatePaymentStatus()
     {
         $this->harga_bersih = $this->hitungHargaBersih();
@@ -101,11 +118,7 @@ class Partisipasi extends Model
         $this->sisa_pembayaran = max(0, $this->harga_bersih - $total);
 
         // Tentukan status (lunas jika kewajiban tunai terpenuhi, termasuk full barter)
-        if ($this->harga_bersih === 0 || $total >= $this->harga_bersih) {
-            $this->status_pembayaran = 'Lunas';
-        } else {
-            $this->status_pembayaran = 'Belum Lunas';
-        }
+        $this->status_pembayaran = $this->statusPembayaranEfektif((int) $total);
     }
 
 

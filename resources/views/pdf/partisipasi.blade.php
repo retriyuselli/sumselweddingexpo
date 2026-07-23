@@ -129,8 +129,11 @@
                         $totalDibayar += $dibayar;
                         $totalSisa += $sisa;
 
-                        $status = $p->status_pembayaran ?? '-';
-                        $isLunas = strcasecmp((string) $status, 'Lunas') === 0;
+                        // Status mengikuti perhitungan barter, bukan hanya kolom DB (bisa stale di production)
+                        $status = method_exists($p, 'statusPembayaranEfektif')
+                            ? $p->statusPembayaranEfektif($dibayar)
+                            : (($hargaBersih === 0 || $dibayar >= $hargaBersih) ? 'Lunas' : 'Belum Lunas');
+                        $isLunas = $status === 'Lunas';
                     @endphp
                     <tr>
                         <td class="text-center">{{ $i + 1 }}</td>
@@ -201,9 +204,19 @@
     </div>
 
     <div class="footer">
+        @php
+            $jumlahLunas = $partisipasis->filter(function ($p) {
+                $dibayar = (int) ($p->total_pembayaran ?? 0);
+
+                return method_exists($p, 'statusPembayaranEfektif')
+                    ? $p->statusPembayaranEfektif($dibayar) === 'Lunas'
+                    : ($p->status_pembayaran === 'Lunas');
+            })->count();
+            $jumlahBelum = $partisipasis->count() - $jumlahLunas;
+        @endphp
         Total: {{ $partisipasis->count() }} partisipasi
-        · Lunas: {{ $partisipasis->where('status_pembayaran', 'Lunas')->count() }}
-        · Belum Lunas: {{ $partisipasis->where('status_pembayaran', '!=', 'Lunas')->count() }}
+        · Lunas: {{ $jumlahLunas }}
+        · Belum Lunas: {{ $jumlahBelum }}
         · Digenerate: {{ $generatedAt->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB
     </div>
 </body>
