@@ -4,17 +4,32 @@
     <meta charset="utf-8">
     <title>Daftar Partisipasi — {{ $expo->nama_expo }}</title>
     <style>
-        @page { margin: 18px 16px; }
+        @page { margin: 130px 16px 28px 16px; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 8px; color: #222; margin: 0; }
-        .header { border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
+
+        .header-fixed {
+            position: fixed;
+            top: -115px;
+            left: 0;
+            right: 0;
+            height: 100px;
+        }
+        .header { border-bottom: 2px solid #333; padding-bottom: 6px; margin-bottom: 8px; }
         .header h1 { margin: 0; font-size: 13px; text-transform: uppercase; }
         .header p { margin: 2px 0 0; color: #555; font-size: 9px; }
-        .meta { margin-bottom: 10px; }
+        .meta { margin-bottom: 0; width: 100%; }
         .meta td { border: none; padding: 1px 6px 1px 0; vertical-align: top; font-size: 8px; }
+
+        .content {
+            margin-top: 12px;
+        }
+
         table.data { width: 100%; border-collapse: collapse; table-layout: fixed; }
         table.data th, table.data td { border: 1px solid #ccc; padding: 3px 4px; word-wrap: break-word; }
         table.data th { background: #f3f4f6; font-size: 7px; text-transform: uppercase; }
         table.data td { font-size: 7.5px; }
+        table.data thead { display: table-header-group; }
+        table.data tfoot { display: table-footer-group; }
         table.data tfoot td { background: #f9fafb; font-weight: bold; font-size: 7.5px; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -37,34 +52,37 @@
         $totalSisa = 0;
     @endphp
 
-    <div class="header">
-        <h1>Daftar Partisipasi Expo</h1>
-        <p>{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</p>
+    <div class="header-fixed">
+        <div class="header">
+            <h1>Daftar Partisipasi Expo</h1>
+            <p>{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</p>
+        </div>
+
+        <table class="meta">
+            <tr>
+                <td><strong>Expo</strong></td>
+                <td>: {{ $expo->nama_expo }}</td>
+                <td><strong>Periode</strong></td>
+                <td>: {{ $expo->periode ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Tanggal</strong></td>
+                <td>:
+                    {{ $expo->tanggal_mulai?->format('d M Y') ?? '-' }}
+                    –
+                    {{ $expo->tanggal_selesai?->format('d M Y') ?? '-' }}
+                </td>
+                <td><strong>Filter</strong></td>
+                <td>: {{ !empty($onlyActive) ? 'Hanya aktif' : 'Semua partisipasi' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Lokasi</strong></td>
+                <td colspan="3">: {{ $expo->lokasi ?? '-' }}</td>
+            </tr>
+        </table>
     </div>
 
-    <table class="meta">
-        <tr>
-            <td><strong>Expo</strong></td>
-            <td>: {{ $expo->nama_expo }}</td>
-            <td><strong>Periode</strong></td>
-            <td>: {{ $expo->periode ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Tanggal</strong></td>
-            <td>:
-                {{ $expo->tanggal_mulai?->format('d M Y') ?? '-' }}
-                –
-                {{ $expo->tanggal_selesai?->format('d M Y') ?? '-' }}
-            </td>
-            <td><strong>Filter</strong></td>
-            <td>: {{ !empty($onlyActive) ? 'Hanya aktif' : 'Semua partisipasi' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Lokasi</strong></td>
-            <td colspan="3">: {{ $expo->lokasi ?? '-' }}</td>
-        </tr>
-    </table>
-
+    <div class="content">
     @if ($partisipasis->isEmpty())
         <div class="empty">Belum ada data partisipasi untuk expo ini.</div>
     @else
@@ -180,6 +198,7 @@
             </tfoot>
         </table>
     @endif
+    </div>
 
     <div class="footer">
         Total: {{ $partisipasis->count() }} partisipasi
