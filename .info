@@ -2,6 +2,10 @@ php artisan shield:generate --all
 php artisan migrate --path=database/migrations/
 cd /home/u380354370/domains/sumselweddingexpo.com/public_html
 
+cd /Applications/MAMP/htdocs/sumselweddingexpo
+
+cd
+
 # Jalankan hanya UserSeeder
 
 php artisan migrate:fresh --seed

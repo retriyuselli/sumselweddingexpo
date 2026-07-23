@@ -1,5 +1,5 @@
 @php
-    $accent = '#b45309';
+    $accent = '#003D79'; // Bank Mandiri Blue (RGB 0, 61, 121)
     $hargaJual = (int) ($partisipasi->harga_jual ?? 0);
     $diskon = (int) ($partisipasi->diskon ?? 0);
     $barterNominal = $partisipasi->is_barter ? (int) ($partisipasi->barter_nominal ?? 0) : 0;
@@ -29,6 +29,13 @@
     if ($ukuran) {
         $itemLabel .= ' ('.$ukuran.')';
     }
+
+    $metodeLabels = [
+        'transfer' => 'Transfer',
+        'cash' => 'Cash',
+        'qris' => 'QRIS',
+        'cek' => 'Cek',
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -122,11 +129,12 @@ table.items tbody td .sub { font-size:8.5px; color:#9ca3af; margin-top:2px; }
 .pay-method-title { font-size:9px; font-weight:bold; text-transform:uppercase; letter-spacing:0.8px; color:#1a1a1a; margin-bottom:6px; }
 .pay-method-val   { font-size:10px; color:#374151; line-height:1.8; }
 
-table.totals { border-collapse:collapse; width:220px; }
-table.totals td { padding:4px 0; font-size:10px; }
+table.totals { border-collapse:collapse; width:280px; }
+table.totals td { padding:4px 0; font-size:10px; white-space:nowrap; }
+table.totals td:first-child { padding-right:16px; }
 table.totals td:last-child { text-align:right; }
 table.totals .sub-row td { color:#6b7280; }
-table.totals .total-row td { font-size:15px; font-weight:bold; color:#1a1a1a; }
+table.totals .total-row td { font-size:14px; font-weight:bold; color:#1a1a1a; white-space:nowrap; }
 table.totals .total-row td:last-child { color: {{ $accent }}; }
 
 .payments-wrap { padding: 18px 52px 0; }
@@ -293,8 +301,19 @@ table.payments td.r { text-align:right; }
 <div class="bottom-wrap">
     <div class="row">
         <div class="col" style="width:50%; padding-top:6px;">
+            <div class="pay-method-title">Pembayaran dapat dilakukan melalui</div>
+            <div class="pay-method-val">
+                @forelse($rekeningTujuans as $i => $rekening)
+                    {{ $i + 1 }}. {{ $rekening->nama_bank }} — {{ $rekening->nomor_rekening }}
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;a.n. {{ $rekening->nama_pemilik }}
+                    @if(! $loop->last)<br>@endif
+                @empty
+                    —
+                @endforelse
+            </div>
+
             @if($partisipasi->keterangan || $barterNominal > 0)
-                <div class="pay-method-title">Keterangan</div>
+                <div class="pay-method-title" style="margin-top:12px;">Keterangan</div>
                 <div class="pay-method-val">
                     @if($partisipasi->keterangan)
                         {{ $partisipasi->keterangan }}
@@ -355,15 +374,24 @@ table.payments td.r { text-align:right; }
                 <th>Tanggal</th>
                 <th>Pembayar</th>
                 <th>Metode</th>
+                <th>Rekening Tujuan</th>
                 <th class="r">Nominal</th>
             </tr>
         </thead>
         <tbody>
             @foreach($partisipasi->dataPembayarans as $bayar)
+            @php
+                $metode = $metodeLabels[$bayar->metode_pembayaran] ?? ($bayar->metode_pembayaran ? strtoupper($bayar->metode_pembayaran) : '-');
+                $rek = $bayar->rekeningTujuan;
+                $rekLabel = $rek
+                    ? $rek->nama_bank.' · '.$rek->nomor_rekening
+                    : '-';
+            @endphp
             <tr>
                 <td>{{ $bayar->tanggal_bayar?->format('d M Y') ?? '-' }}</td>
                 <td>{{ $bayar->nama_pembayar ?? '-' }}</td>
-                <td>{{ $bayar->metode_pembayaran ?? '-' }}{{ $bayar->termin_pembayaran ? ' · '.$bayar->termin_pembayaran : '' }}</td>
+                <td>{{ $metode }}{{ $bayar->termin_pembayaran ? ' · '.$bayar->termin_pembayaran : '' }}</td>
+                <td>{{ $rekLabel }}</td>
                 <td class="r">Rp {{ number_format((int) $bayar->nominal, 0, ',', '.') }}</td>
             </tr>
             @endforeach

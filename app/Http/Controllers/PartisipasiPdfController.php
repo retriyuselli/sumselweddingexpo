@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expo;
 use App\Models\Partisipasi;
 use App\Models\Penyelenggara;
+use App\Models\RekeningTujuan;
 use App\Models\Vendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class PartisipasiPdfController extends Controller
             'penyelenggara' => Penyelenggara::first(),
             'onlyActive' => $onlyActive,
             'pendampingNames' => $pendampingNames,
-            'generatedAt' => now(),
+            'generatedAt' => now('Asia/Jakarta'),
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($filename);
@@ -66,10 +67,16 @@ class PartisipasiPdfController extends Controller
             'categoryTenant',
             'tenantSpot',
             'dataPembayarans' => fn ($q) => $q->orderBy('tanggal_bayar')->orderBy('id'),
+            'dataPembayarans.rekeningTujuan',
         ]);
 
         $penyelenggara = Penyelenggara::first();
-        $invoiceNumber = sprintf('INV-%s-%05d', now()->format('Y'), $partisipasi->id);
+        $rekeningTujuans = RekeningTujuan::query()
+            ->orderBy('nama_bank')
+            ->orderBy('nama_pemilik')
+            ->get();
+        $generatedAt = now('Asia/Jakarta');
+        $invoiceNumber = sprintf('INV-%s-%05d', $generatedAt->format('Y'), $partisipasi->id);
         $filename = 'Invoice-'.$invoiceNumber.'.pdf';
 
         $pdf = Pdf::loadView('pdf.partisipasi-invoice', [
@@ -77,9 +84,10 @@ class PartisipasiPdfController extends Controller
             'expo' => $partisipasi->expo,
             'vendor' => $partisipasi->vendor,
             'penyelenggara' => $penyelenggara,
+            'rekeningTujuans' => $rekeningTujuans,
             'invoiceNumber' => $invoiceNumber,
             'logoBase64' => $this->localImageDataUri($penyelenggara?->logo),
-            'generatedAt' => now(),
+            'generatedAt' => $generatedAt,
         ])
             ->setPaper('a4', 'portrait')
             ->setOption('defaultFont', 'DejaVu Sans');
