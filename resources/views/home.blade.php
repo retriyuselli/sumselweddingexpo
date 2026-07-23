@@ -475,77 +475,19 @@
                         <h3 class="text-lg font-bold text-neutral-900">Tanggal & Waktu</h3>
                     </div>
                     <div class="space-y-4">
-                        @if ($eventStart && $eventEnd)
-                            @php
-                                $duration = $eventStart->diffInDays($eventEnd) + 1;
-                                $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                            @endphp
-                            @for ($i = 0; $i < $duration; $i++)
-                                @php
-                                    $currentDate = $eventStart->copy()->addDays($i);
-                                    $dayName = $days[$currentDate->dayOfWeek];
-                                    $dayLabel =
-                                        $i === 0
-                                            ? 'Hari Pertama'
-                                            : ($i === $duration - 1
-                                                ? 'Hari Terakhir'
-                                                : 'Hari Ke-' . ($i + 1));
-                                    $activity =
-                                        $i === 0
-                                            ? 'Grand Opening & Talkshow'
-                                            : ($i === $duration - 1
-                                                ? 'Grand Doorprize'
-                                                : 'Fashion Show & Live Music');
-                                @endphp
-                                <div class="flex items-start gap-4 p-4 bg-rose-50 rounded-xl">
-                                    <div class="text-center min-w-[60px]">
-                                        <div class="text-lg font-bold text-rose-600">{{ $currentDate->format('d') }}</div>
-                                        <div class="text-sm text-neutral-600">{{ strtoupper($currentDate->format('M')) }}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-neutral-900">{{ $dayName }} -
-                                            {{ $dayLabel }}</div>
-                                        <div class="text-sm text-neutral-600 mt-1">10:00 - 21:00 WIB</div>
-                                        <div class="text-xs text-neutral-500 mt-1">{{ $activity }}</div>
-                                    </div>
-                                </div>
-                            @endfor
-                        @else
+                        @foreach ($scheduleDays as $day)
                             <div class="flex items-start gap-4 p-4 bg-rose-50 rounded-xl">
                                 <div class="text-center min-w-[60px]">
-                                    <div class="text-lg font-bold text-rose-600">16</div>
-                                    <div class="text-sm text-neutral-600">JAN</div>
+                                    <div class="text-lg font-bold text-rose-600">{{ $day['date']->format('d') }}</div>
+                                    <div class="text-sm text-neutral-600">{{ strtoupper($day['date']->format('M')) }}</div>
                                 </div>
                                 <div>
-                                    <div class="font-semibold text-neutral-900">Jumat - Hari Pertama</div>
-                                    <div class="text-sm text-neutral-600 mt-1">10:00 - 21:00 WIB</div>
-                                    <div class="text-xs text-neutral-500 mt-1">Grand Opening & Talkshow</div>
+                                    <div class="font-semibold text-neutral-900">{{ $day['day_name'] }} - {{ $day['day_label'] }}</div>
+                                    <div class="text-sm text-neutral-600 mt-1">{{ $day['waktu'] }}</div>
+                                    <div class="text-xs text-neutral-500 mt-1">{{ $day['activity'] }}</div>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-4 p-4 bg-rose-50 rounded-xl">
-                                <div class="text-center min-w-[60px]">
-                                    <div class="text-lg font-bold text-rose-600">17</div>
-                                    <div class="text-sm text-neutral-600">JAN</div>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-neutral-900">Sabtu - Hari Kedua</div>
-                                    <div class="text-sm text-neutral-600 mt-1">10:00 - 21:00 WIB</div>
-                                    <div class="text-xs text-neutral-500 mt-1">Fashion Show & Live Music</div>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-4 p-4 bg-rose-50 rounded-xl">
-                                <div class="text-center min-w-[60px]">
-                                    <div class="text-lg font-bold text-rose-600">18</div>
-                                    <div class="text-sm text-neutral-600">JAN</div>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-neutral-900">Minggu - Hari Terakhir</div>
-                                    <div class="text-sm text-neutral-600 mt-1">10:00 - 21:00 WIB</div>
-                                    <div class="text-xs text-neutral-500 mt-1">Grand Doorprize</div>
-                                </div>
-                            </div>
-                        @endif
+                        @endforeach
                     </div>
                 </div>
 
