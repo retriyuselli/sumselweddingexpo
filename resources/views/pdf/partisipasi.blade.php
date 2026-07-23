@@ -40,6 +40,60 @@
         .footer { margin-top: 10px; font-size: 8px; color: #666; }
         .empty { padding: 20px; text-align: center; color: #666; border: 1px dashed #ccc; }
         .sub { font-size: 6.5px; color: #6b7280; }
+
+        .summary {
+            margin-top: 14px;
+            page-break-inside: avoid;
+            border: 1.5px solid #003D79;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .summary-title {
+            background: #003D79;
+            color: #fff;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 6px 10px;
+        }
+        table.summary-grid {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        table.summary-grid td {
+            width: 25%;
+            vertical-align: top;
+            padding: 8px 10px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+        table.summary-grid td:nth-child(4n) { border-right: none; }
+        table.summary-grid .label {
+            font-size: 7px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 3px;
+        }
+        table.summary-grid .value {
+            font-size: 11px;
+            font-weight: bold;
+            color: #111827;
+        }
+        table.summary-grid .value.green { color: #15803d; }
+        table.summary-grid .value.amber { color: #b45309; }
+        table.summary-grid .value.blue { color: #003D79; }
+        table.summary-grid .value.red { color: #b91c1c; }
+        .summary-note {
+            padding: 6px 10px;
+            font-size: 7px;
+            color: #6b7280;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +104,10 @@
         $totalHargaBersih = 0;
         $totalDibayar = 0;
         $totalSisa = 0;
+        $jumlahLunas = 0;
+        $jumlahBelum = 0;
+        $jumlahBarter = 0;
+        $jumlahAktif = 0;
     @endphp
 
     <div class="header-fixed">
@@ -134,6 +192,18 @@
                             ? $p->statusPembayaranEfektif($dibayar)
                             : (($hargaBersih === 0 || $dibayar >= $hargaBersih) ? 'Lunas' : 'Belum Lunas');
                         $isLunas = $status === 'Lunas';
+
+                        if ($isLunas) {
+                            $jumlahLunas++;
+                        } else {
+                            $jumlahBelum++;
+                        }
+                        if ($barter > 0) {
+                            $jumlahBarter++;
+                        }
+                        if ($p->is_active) {
+                            $jumlahAktif++;
+                        }
                     @endphp
                     <tr>
                         <td class="text-center">{{ $i + 1 }}</td>
@@ -200,24 +270,85 @@
                 </tr>
             </tfoot>
         </table>
+
+        @php
+            $persenLunas = $partisipasis->count() > 0
+                ? round(($jumlahLunas / $partisipasis->count()) * 100, 1)
+                : 0;
+            $persenTerbayar = $totalHargaBersih > 0
+                ? round(($totalDibayar / $totalHargaBersih) * 100, 1)
+                : ($totalHargaBersih === 0 && $partisipasis->isNotEmpty() ? 100 : 0);
+        @endphp
+
+        <div class="summary">
+            <div class="summary-title">Ringkasan Pembayaran</div>
+            <table class="summary-grid">
+                <tr>
+                    <td>
+                        <div class="label">Total Harga Jual</div>
+                        <div class="value">Rp {{ number_format($totalHargaJual, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Total Diskon</div>
+                        <div class="value amber">Rp {{ number_format($totalDiskon, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Total Barter</div>
+                        <div class="value blue">Rp {{ number_format($totalBarter, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Total Harga Bersih / Tagihan</div>
+                        <div class="value">Rp {{ number_format($totalHargaBersih, 0, ',', '.') }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="label">Total Pembayaran (Sudah Dibayar)</div>
+                        <div class="value green">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Total Sisa Pembayaran</div>
+                        <div class="value {{ $totalSisa > 0 ? 'red' : 'green' }}">Rp {{ number_format($totalSisa, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Total Yang Belum Dibayar</div>
+                        <div class="value {{ $totalSisa > 0 ? 'amber' : 'green' }}">Rp {{ number_format($totalSisa, 0, ',', '.') }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Progress Pelunasan</div>
+                        <div class="value blue">{{ number_format($persenTerbayar, 1, ',', '.') }}%</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="label">Jumlah Partisipasi</div>
+                        <div class="value">{{ $partisipasis->count() }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Sudah Lunas</div>
+                        <div class="value green">{{ $jumlahLunas }} ({{ number_format($persenLunas, 1, ',', '.') }}%)</div>
+                    </td>
+                    <td>
+                        <div class="label">Belum Lunas</div>
+                        <div class="value amber">{{ $jumlahBelum }}</div>
+                    </td>
+                    <td>
+                        <div class="label">Partisipasi Ada Barter</div>
+                        <div class="value blue">{{ $jumlahBarter }}</div>
+                    </td>
+                </tr>
+            </table>
+            <div class="summary-note">
+                Catatan: Harga Bersih = Harga Jual − Diskon − Barter.
+                Total Sisa / Belum Dibayar = Harga Bersih − Total Pembayaran.
+                Partisipasi aktif: {{ $jumlahAktif }} dari {{ $partisipasis->count() }}.
+            </div>
+        </div>
     @endif
     </div>
 
     <div class="footer">
-        @php
-            $jumlahLunas = $partisipasis->filter(function ($p) {
-                $dibayar = (int) ($p->total_pembayaran ?? 0);
-
-                return method_exists($p, 'statusPembayaranEfektif')
-                    ? $p->statusPembayaranEfektif($dibayar) === 'Lunas'
-                    : ($p->status_pembayaran === 'Lunas');
-            })->count();
-            $jumlahBelum = $partisipasis->count() - $jumlahLunas;
-        @endphp
-        Total: {{ $partisipasis->count() }} partisipasi
-        · Lunas: {{ $jumlahLunas }}
-        · Belum Lunas: {{ $jumlahBelum }}
-        · Digenerate: {{ $generatedAt->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB
+        Digenerate: {{ $generatedAt->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB
     </div>
 </body>
 </html>
