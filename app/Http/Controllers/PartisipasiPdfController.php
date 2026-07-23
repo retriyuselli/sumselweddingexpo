@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filament\Resources\Partisipasis\PartisipasiResource;
 use App\Models\Expo;
 use App\Models\Partisipasi;
 use App\Models\Penyelenggara;
@@ -12,14 +13,37 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class PartisipasiPdfController extends Controller
 {
-    public function download(Request $request, Expo $expo)
+    public function download(Request $request, Expo $expo): Response|View
     {
         $this->authorizeAccess('Anda tidak memiliki akses untuk mengunduh daftar partisipasi.');
 
         $onlyActive = $request->boolean('only_active', false);
+
+        if (! $request->boolean('download') && ! $request->boolean('raw')) {
+            return view('pdf.viewer', [
+                'title' => 'Daftar Partisipasi — '.$expo->nama_expo,
+                'subtitle' => trim(implode(' · ', array_filter([
+                    $expo->periode,
+                    $expo->tanggal_mulai?->format('d M Y'),
+                    $onlyActive ? 'Hanya aktif' : 'Semua partisipasi',
+                ]))),
+                'backUrl' => PartisipasiResource::getUrl('index'),
+                'downloadUrl' => route('partisipasis.pdf', [
+                    'expo' => $expo,
+                    'only_active' => $onlyActive ? 1 : 0,
+                    'download' => 1,
+                ]),
+                'pdfUrl' => route('partisipasis.pdf', [
+                    'expo' => $expo,
+                    'only_active' => $onlyActive ? 1 : 0,
+                    'raw' => 1,
+                ]),
+            ]);
+        }
 
         $partisipasis = $expo->partisipasis()
             ->with(['vendor.jenisUsaha', 'categoryTenant', 'tenantSpot'])
@@ -61,9 +85,30 @@ class PartisipasiPdfController extends Controller
         return $pdf->stream($filename);
     }
 
-    public function invoice(Request $request, Partisipasi $partisipasi): Response
+    public function invoice(Request $request, Partisipasi $partisipasi): Response|View
     {
         $this->authorizeAccess('Anda tidak memiliki akses untuk mengunduh invoice partisipasi.');
+
+        if (! $request->boolean('download') && ! $request->boolean('raw')) {
+            $partisipasi->loadMissing(['vendor', 'expo']);
+
+            return view('pdf.viewer', [
+                'title' => 'Invoice Partisipasi',
+                'subtitle' => trim(implode(' · ', array_filter([
+                    $partisipasi->vendor?->nama_vendor,
+                    $partisipasi->expo?->nama_expo,
+                ]))),
+                'backUrl' => PartisipasiResource::getUrl('index'),
+                'downloadUrl' => route('partisipasis.invoice', [
+                    'partisipasi' => $partisipasi,
+                    'download' => 1,
+                ]),
+                'pdfUrl' => route('partisipasis.invoice', [
+                    'partisipasi' => $partisipasi,
+                    'raw' => 1,
+                ]),
+            ]);
+        }
 
         $partisipasi->load([
             'expo',
@@ -96,7 +141,7 @@ class PartisipasiPdfController extends Controller
             ->setPaper('a4', 'portrait')
             ->setOption('defaultFont', 'DejaVu Sans');
 
-        $disposition = $request->boolean('download', true) ? 'attachment' : 'inline';
+        $disposition = $request->boolean('download') ? 'attachment' : 'inline';
 
         $response = response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',

@@ -110,10 +110,7 @@ class PartisipasisTable
                         ->label('Preview Invoice')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
-                        ->url(fn (Partisipasi $record) => route('partisipasis.invoice', [
-                            'partisipasi' => $record,
-                            'download' => 0,
-                        ]))
+                        ->url(fn (Partisipasi $record) => route('partisipasis.invoice', $record))
                         ->openUrlInNewTab(),
                     Action::make('downloadInvoice')
                         ->label('Unduh Invoice')
