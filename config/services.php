@@ -42,4 +42,13 @@ return [
         'dp_fixed' => env('MIDTRANS_DP_FIXED', 0),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env(
+            'GOOGLE_REDIRECT_URI',
+            rtrim((string) env('APP_URL', ''), '/').'/auth/google/callback',
+        ),
+    ],
+
 ];

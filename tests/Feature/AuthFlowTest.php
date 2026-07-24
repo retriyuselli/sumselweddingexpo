@@ -27,19 +27,23 @@ class AuthFlowTest extends TestCase
     {
         Notification::fake();
 
-        $this->post(route('register.post'), [
-            'name' => 'Demo User',
-            'email' => 'demo@example.com',
-            'password' => 'weak',
-            'password_confirmation' => 'weak',
-        ])->assertSessionHasErrors('password');
+        $this->from(route('register'))
+            ->post(route('register.post'), [
+                'name' => 'Demo User',
+                'email' => 'demo@example.com',
+                'password' => 'weak',
+                'password_confirmation' => 'weak',
+                'terms' => '1',
+            ])->assertSessionHasErrors('password');
 
-        $this->post(route('register.post'), [
-            'name' => 'Demo User',
-            'email' => 'demo@example.com',
-            'password' => 'Password1',
-            'password_confirmation' => 'Password1',
-        ])->assertRedirect(route('verification.notice'));
+        $this->from(route('register'))
+            ->post(route('register.post'), [
+                'name' => 'Demo User',
+                'email' => 'demo@example.com',
+                'password' => 'Password1',
+                'password_confirmation' => 'Password1',
+                'terms' => '1',
+            ])->assertRedirect(route('verification.notice'));
 
         $user = User::where('email', 'demo@example.com')->first();
         $this->assertNotNull($user);
@@ -55,10 +59,34 @@ class AuthFlowTest extends TestCase
 
         $user = User::factory()->create(['email' => 'resetme@example.com']);
 
-        $this->post(route('password.email'), [
-            'email' => 'resetme@example.com',
-        ])->assertSessionHas('success');
+        $this->from(route('password.request'))
+            ->post(route('password.email'), [
+                'email' => 'resetme@example.com',
+            ])
+            ->assertSessionHas('status');
 
+        Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    #[Test]
+    public function forgot_password_mentions_google_for_google_accounts(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email' => 'googleuser@example.com',
+            'google_id' => 'google-123',
+        ]);
+
+        $this->from(route('password.request'))
+            ->post(route('password.email'), [
+                'email' => 'googleuser@example.com',
+            ])
+            ->assertSessionHas('status');
+
+        $status = session('status');
+        $this->assertIsString($status);
+        $this->assertStringContainsString('Google', $status);
         Notification::assertSentTo($user, ResetPassword::class);
     }
 
@@ -68,12 +96,13 @@ class AuthFlowTest extends TestCase
         $user = User::factory()->create(['email' => 'resetme2@example.com']);
         $token = Password::createToken($user);
 
-        $this->post(route('password.update'), [
-            'token' => $token,
-            'email' => 'resetme2@example.com',
-            'password' => 'NewPass12',
-            'password_confirmation' => 'NewPass12',
-        ])->assertRedirect(route('login'));
+        $this->from(route('password.reset', ['token' => $token]))
+            ->post(route('password.update'), [
+                'token' => $token,
+                'email' => 'resetme2@example.com',
+                'password' => 'NewPass12',
+                'password_confirmation' => 'NewPass12',
+            ])->assertRedirect(route('login'));
 
         $this->assertTrue(auth()->attempt([
             'email' => 'resetme2@example.com',
@@ -92,6 +121,7 @@ class AuthFlowTest extends TestCase
         ]);
 
         $this->actingAs($user)
+            ->from(route('profile'))
             ->put(route('profile.update'), [
                 'name' => $user->name,
                 'email' => 'new@example.com',

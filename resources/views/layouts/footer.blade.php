@@ -3,7 +3,7 @@
         <div class="text-sm text-neutral-600">&copy; {{ date('Y') }} Sumsel Wedding Expo.</div>
         <div class="flex items-center justify-center gap-4 text-sm text-neutral-600">
             <a href="#" class="hover:text-neutral-900">Kebijakan Privasi</a>
-            <a href="#" class="hover:text-neutral-900">Syarat & Ketentuan</a>
+            <a href="{{ route('terms') }}" class="hover:text-neutral-900">Syarat & Ketentuan</a>
             @auth
                 @if (auth()->user()->hasRole('super_admin'))
                     <a href="/admin" class="hover:text-neutral-900">Admin</a>

@@ -52,6 +52,12 @@
                         Simpan Password
                     </button>
                 </form>
+
+                <p class="mt-4 text-center text-xs text-neutral-500">
+                    Jika akun Anda terhubung Google, setelah ini Anda bisa login dengan password baru
+                    <span class="whitespace-nowrap">atau tetap memakai</span>
+                    <a href="{{ route('auth.google.redirect') }}" class="text-rose-600 hover:text-rose-700 font-medium">Login dengan Google</a>.
+                </p>
             </div>
         </div>
     </section>

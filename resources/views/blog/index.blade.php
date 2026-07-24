@@ -19,55 +19,56 @@
         </section>
 
         <!-- Featured Article -->
-        <section class="py-12 bg-white">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mb-6 sm:mb-8">
-                    <h2 class="text-xl sm:text-2xl font-bold mb-2">Artikel Pilihan</h2>
-                    <div class="h-1 w-20 bg-rose-600"></div>
-                </div>
+        @if ($featuredBlog ?? null)
+            <section class="py-12 bg-white">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="mb-6 sm:mb-8">
+                        <h2 class="text-xl sm:text-2xl font-bold mb-2">Artikel Pilihan</h2>
+                        <div class="h-1 w-20 bg-rose-600"></div>
+                    </div>
 
-                <div
-                    class="grid md:grid-cols-2 gap-8 items-center bg-linear-to-r from-rose-50 to-pink-50 rounded-2xl overflow-hidden">
-                    <div class="order-2 md:order-1 p-6 sm:p-8">
-                        <span
-                            class="inline-block px-3 py-1 bg-rose-600 text-white text-xs font-semibold rounded-full mb-3 sm:mb-4">Featured</span>
-                        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">{{ $featuredBlog->title }}</h3>
-                        <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
-                            {{ $featuredBlog->excerpt }}
-                        </p>
-                        <div class="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
-                            <span class="flex items-center gap-1">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                    <div
+                        class="grid md:grid-cols-2 gap-8 items-center bg-linear-to-r from-rose-50 to-pink-50 rounded-2xl overflow-hidden">
+                        <div class="order-2 md:order-1 p-6 sm:p-8">
+                            <span
+                                class="inline-block px-3 py-1 bg-rose-600 text-white text-xs font-semibold rounded-full mb-3 sm:mb-4">Featured</span>
+                            <h3 class="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">{{ $featuredBlog->title }}</h3>
+                            <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
+                                {{ $featuredBlog->excerpt }}
+                            </p>
+                            <div class="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    {{ optional($featuredBlog->date)->translatedFormat('d M Y') ?? optional($featuredBlog->created_at)->translatedFormat('d M Y') }}
+                                </span>
+                                @if ($featuredBlog->category)
+                                    <span class="flex items-center gap-1">
+                                        {{ $featuredBlog->category->name }}
+                                    </span>
+                                @endif
+                            </div>
+                            <a href="{{ route('blog.show', $featuredBlog->slug) }}"
+                                class="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition text-sm sm:text-base">
+                                Baca Selengkapnya
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                                     </path>
                                 </svg>
-                                22 Okt 2026
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                8 menit baca
-                            </span>
+                            </a>
                         </div>
-                        <a href="{{ route('blog.show', $featuredBlog->slug) }}"
-                            class="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition text-sm sm:text-base">
-                            Baca Selengkapnya
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="order-1 md:order-2">
-                        <img src="{{ $featuredBlog->image_url }}" alt="Featured Article" class="w-full h-full object-cover">
+                        <div class="order-1 md:order-2">
+                            <img src="{{ $featuredBlog->image_url }}" alt="{{ $featuredBlog->title }}"
+                                class="w-full h-full object-cover">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        @endif
 
         <!-- Categories -->
         <section class="py-12 bg-white">
@@ -101,14 +102,16 @@
                         <!-- Article -->
                         <article
                             class="blog-item bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300"
-                            data-category="{{ $blog->category->slug }}">
+                            data-category="{{ $blog->category?->slug }}">
                             <div class="relative overflow-hidden">
                                 <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}"
                                     class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
-                                <span
-                                    class="absolute top-4 left-4 px-3 py-1 bg-{{ $blog->category_color ?: 'purple' }}-600 text-white text-xs font-semibold rounded-full">
-                                    {{ $blog->category->name }}
-                                </span>
+                                @if ($blog->category)
+                                    <span
+                                        class="absolute top-4 left-4 px-3 py-1 bg-{{ $blog->category_color ?: 'purple' }}-600 text-white text-xs font-semibold rounded-full">
+                                        {{ $blog->category->name }}
+                                    </span>
+                                @endif
                             </div>
                             <div class="p-4 sm:p-6">
                                 <h3
@@ -126,9 +129,11 @@
                                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                                             </path>
                                         </svg>
-                                        {{ $blog->date->format('d M Y') }}
+                                        {{ optional($blog->date)->format('d M Y') ?? optional($blog->created_at)->format('d M Y') }}
                                     </span>
-                                    <span>{{ $blog->read_time }} 123min baca</span>
+                                    @if ($blog->read_time)
+                                        <span>{{ $blog->read_time }} menit baca</span>
+                                    @endif
                                 </div>
                             </div>
                         </article>

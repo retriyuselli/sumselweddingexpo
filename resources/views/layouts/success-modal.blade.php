@@ -22,9 +22,15 @@
                 </div>
 
                 <div class="mt-6 flex items-center justify-end gap-3">
-                    <a href="/dashboard" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
-                        Dashboard
-                    </a>
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
+                            Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
+                            Ke Login
+                        </a>
+                    @endauth
                     <button type="button" @click="open = false" class="px-4 py-2 rounded-lg border border-neutral-200 text-neutral-700 hover:bg-neutral-50">
                         Tutup
                     </button>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BlogController;
@@ -56,6 +57,8 @@ Route::get('/partisipasis/{partisipasi}/invoice', [PartisipasiPdfController::cla
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
 Route::view('/lokasi', 'lokasi')->name('lokasi');
+// Syarat & Ketentuan
+Route::view('/syarat-ketentuan', 'terms')->name('terms');
 // Halaman Penyelenggara (via controller)
 Route::get('/penyelenggara', [PenyelenggaraController::class, 'index'])->name('penyelenggara');
 // Halaman Gallery (menampilkan image_path dari model Gallery)
@@ -139,6 +142,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Registration Routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware(['guest', 'throttle:5,1']);
+
+// Google OAuth
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/google', [GoogleAuthenticationController::class, 'redirect'])
+        ->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthenticationController::class, 'callback'])
+        ->name('auth.google.callback');
+});
 
 // Password Reset
 Route::middleware('guest')->group(function () {

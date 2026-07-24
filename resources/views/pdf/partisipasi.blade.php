@@ -151,18 +151,16 @@
                     <th style="width:16%;">Vendor</th>
                     <th style="width:12%;">Vendor Pendamping</th>
                     <th class="text-center" style="width:6%;">Paket</th>
-                    <th class="text-center" style="width:5%;">Blok</th>
+                    <th class="text-center" style="width:6%;">Blok</th>
                     <th class="text-right" style="width:9%;">Harga Jual</th>
                     <th class="text-right" style="width:7%;">Diskon</th>
                     <th class="text-right" style="width:7%;">Barter</th>
                     <th class="text-right" style="width:9%;">Harga Bersih</th>
                     <th class="text-right" style="width:9%;">Dibayar</th>
                     <th class="text-right" style="width:7%;">Sisa</th>
-                    <th class="text-center" style="width:7%;">Status</th>
-                    <th class="text-center" style="width:4%;">Aktif</th>
+                    <th class="text-center" style="width:9%;">Status</th>
                 </tr>
-            </thead>
-            <tbody>
+            </thead>            <tbody>
                 @foreach ($partisipasis as $i => $p)
                     @php
                         $pendampingIds = is_array($p->vendor_pendamping) ? $p->vendor_pendamping : [];
@@ -228,7 +226,16 @@
                             @php $cat = $p->categoryTenant?->category; @endphp
                             {{ $cat?->label() ?? '-' }}
                         </td>
-                        <td class="text-center">{{ $p->tenantSpot?->kode_booth ?? '-' }}</td>
+                        <td class="text-center">
+                            {{ $p->tenantSpot?->kode_booth ?? '-' }}
+                            <div class="sub">
+                                @if ($p->is_active)
+                                    <span class="badge-yes">Aktif</span>
+                                @else
+                                    <span class="badge-no">Nonaktif</span>
+                                @endif
+                            </div>
+                        </td>
                         <td class="text-right">{{ number_format($hargaJual, 0, ',', '.') }}</td>
                         <td class="text-right">{{ $diskon > 0 ? number_format($diskon, 0, ',', '.') : '-' }}</td>
                         <td class="text-right">
@@ -247,13 +254,6 @@
                         <td class="text-center">
                             <span class="{{ $isLunas ? 'badge-lunas' : 'badge-belum' }}">{{ $status }}</span>
                         </td>
-                        <td class="text-center">
-                            @if ($p->is_active)
-                                <span class="badge-yes">Ya</span>
-                            @else
-                                <span class="badge-no">Tidak</span>
-                            @endif
-                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -266,7 +266,7 @@
                     <td class="text-right">{{ number_format($totalHargaBersih, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($totalDibayar, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($totalSisa, 0, ',', '.') }}</td>
-                    <td colspan="2"></td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>

@@ -126,8 +126,9 @@ class BlogController extends Controller
         }
 
         $categories = BlogCategory::withCount('blogs')->get();
+        $featuredBlog = null;
 
-        return view('blog.index', compact('blogs', 'categories'));
+        return view('blog.index', compact('blogs', 'categories', 'featuredBlog'));
     }
 
     /**

@@ -16,6 +16,7 @@
         "jeffgreco13/filament-breezy": "^3.0",
         "laramint/laravel-brain": "^2.3",
         "laravel/framework": "^13.0",
+        "laravel/socialite": "^5.29",
         "laravel/tinker": "^3.0",
         "midtrans/midtrans-php": "^2.6",
         "opcodesio/log-viewer": "^3.24",
