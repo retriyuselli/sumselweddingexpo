@@ -104,11 +104,11 @@ class DoorprizeForm
                                             ->visibility('private')
                                             ->directory('doorprizes/ktp')
                                             ->columnSpanFull(),
-                                        FileUpload::make('surat_penyataan')
+                                        FileUpload::make('surat_pernyataan')
                                             ->label('Surat Pernyataan')
                                             ->disk('local')
                                             ->visibility('private')
-                                            ->directory('doorprizes/surat-penyataan')
+                                            ->directory('doorprizes/surat-pernyataan')
                                             ->openable()
                                             ->columnSpanFull(),
                                         Toggle::make('sudah_download_tring')
@@ -125,18 +125,14 @@ class DoorprizeForm
                                     ->schema([
                                         Placeholder::make('total_nom_trx')
                                             ->label('Total Nominal Transaksi')
-                                            ->content(function (Get $get) {
-                                                $transactions = $get('transactions');
-                                                $total = collect($transactions)->sum(fn($item) => intval(str_replace(',', '', $item['nom_trx'] ?? 0)));
-                                                return 'Rp ' . number_format($total, 0, ',', '.');
-                                            }),
+                                            ->content(fn (Get $get) => Doorprize::formatRupiah(
+                                                Doorprize::sumTransactionField($get('transactions'), 'nom_trx')
+                                            )),
                                         Placeholder::make('total_no_rev')
                                             ->label('Total Nominal Revenue')
-                                            ->content(function (Get $get) {
-                                                $transactions = $get('transactions');
-                                                $total = collect($transactions)->sum(fn($item) => intval(str_replace(',', '', $item['no_rev'] ?? 0)));
-                                                return 'Rp ' . number_format($total, 0, ',', '.');
-                                            }),
+                                            ->content(fn (Get $get) => Doorprize::formatRupiah(
+                                                Doorprize::sumTransactionField($get('transactions'), 'no_rev')
+                                            )),
                                     ])->columns(2),
                                 Repeater::make('transactions')
                                     ->label('Detail Transaksi')
@@ -152,11 +148,15 @@ class DoorprizeForm
                                         TextInput::make('nom_trx')
                                             ->label('Nominal Transaksi')
                                             ->prefix('Rp')
-                                            ->minValue(2000000)
-                                            ->helperText('Minimal transaksi Rp 2.000.000')
+                                            ->minValue(Doorprize::MIN_NOMINAL_TRANSAKSI)
+                                            ->helperText('Minimal transaksi '.Doorprize::formatRupiah(Doorprize::MIN_NOMINAL_TRANSAKSI))
                                             ->mask(RawJs::make('$money($input)'))
                                             ->stripCharacters(',')
                                             ->numeric()
+                                            ->rules(['integer', 'min:'.Doorprize::MIN_NOMINAL_TRANSAKSI])
+                                            ->validationMessages([
+                                                'min' => 'Nominal transaksi minimal '.Doorprize::formatRupiah(Doorprize::MIN_NOMINAL_TRANSAKSI).'.',
+                                            ])
                                             ->live(debounce: 500)
                                             ->required(),
                                         TextInput::make('no_rev')
@@ -165,6 +165,7 @@ class DoorprizeForm
                                             ->mask(RawJs::make('$money($input)'))
                                             ->stripCharacters(',')
                                             ->numeric()
+                                            ->rules(['integer', 'min:0'])
                                             ->live(debounce: 500)
                                             ->required(),
                                         FileUpload::make('bukti_trx')

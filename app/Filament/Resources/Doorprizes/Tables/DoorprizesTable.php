@@ -53,18 +53,12 @@ class DoorprizesTable
                     ->fontFamily('mono'),
                 TextColumn::make('total_nom_trx')
                     ->label('Total Transaksi')
-                    ->state(function (Doorprize $record): string {
-                        $total = collect($record->transactions)->sum(fn($item) => (int) str_replace(',', '', $item['nom_trx'] ?? 0));
-                        return 'Rp ' . number_format($total, 0, ',', '.');
-                    })
+                    ->state(fn (Doorprize $record): string => Doorprize::formatRupiah($record->total_nominal_transaksi))
                     ->badge()
                     ->color('warning'),
                 TextColumn::make('total_no_rev')
                     ->label('Total Revenue')
-                    ->state(function (Doorprize $record): string {
-                        $total = collect($record->transactions)->sum(fn($item) => (int) str_replace(',', '', $item['no_rev'] ?? 0));
-                        return 'Rp ' . number_format($total, 0, ',', '.');
-                    })
+                    ->state(fn (Doorprize $record): string => Doorprize::formatRupiah($record->total_nominal_revenue))
                     ->badge()
                     ->color('success'),
                 TextColumn::make('no_wa')

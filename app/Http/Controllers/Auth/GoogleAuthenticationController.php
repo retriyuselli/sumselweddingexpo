@@ -21,9 +21,17 @@ class GoogleAuthenticationController extends Controller
                 ->withErrors(['email' => 'Login Google belum dikonfigurasi oleh administrator.']);
         }
 
-        return Socialite::driver('google')
-            ->scopes(['openid', 'email', 'profile'])
-            ->redirect();
+        try {
+            return Socialite::driver('google')
+                ->scopes(['openid', 'email', 'profile'])
+                ->redirect();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['email' => 'Login Google sedang tidak tersedia. Silakan coba lagi nanti.']);
+        }
     }
 
     public function callback(): RedirectResponse

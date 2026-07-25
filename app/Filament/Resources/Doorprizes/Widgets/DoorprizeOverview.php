@@ -16,15 +16,11 @@ class DoorprizeOverview extends StatsOverviewWidget
 
         $belumDownload = $total - $sudahDownload;
 
-        $txRows = Doorprize::query()->select('transactions')->get();
-        $flat = $txRows->flatMap(fn (Doorprize $record) => $record->transactions ?? []);
+        $records = Doorprize::query()->select(['transactions', 'foto_ktp'])->get();
 
-        $totalTransaksi = $flat->sum(fn ($item) => (int) str_replace(',', '', $item['nom_trx'] ?? 0));
-        $totalRevenue = $flat->sum(fn ($item) => (int) str_replace(',', '', $item['no_rev'] ?? 0));
-
-        $belumFotoKtp = Doorprize::where(function ($q) {
-            $q->whereNull('foto_ktp')->orWhere('foto_ktp', '');
-        })->count();
+        $totalTransaksi = $records->sum(fn (Doorprize $record) => $record->total_nominal_transaksi);
+        $totalRevenue = $records->sum(fn (Doorprize $record) => $record->total_nominal_revenue);
+        $belumFotoKtp = $records->filter(fn (Doorprize $record) => ! $record->hasFotoKtp())->count();
 
         return [
             Stat::make('Total Pemenang', (string) $total)
@@ -47,12 +43,12 @@ class DoorprizeOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('danger'),
 
-            Stat::make('Total Transaksi', ''.number_format($totalTransaksi, 0, ',', '.'))
+            Stat::make('Total Transaksi', Doorprize::formatRupiah((int) $totalTransaksi))
                 ->description('Akumulasi nominal transaksi')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('warning'),
 
-            Stat::make('Total Revenue', ''.number_format($totalRevenue, 0, ',', '.'))
+            Stat::make('Total Revenue', Doorprize::formatRupiah((int) $totalRevenue))
                 ->description('Akumulasi nominal revenue')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('info'),
