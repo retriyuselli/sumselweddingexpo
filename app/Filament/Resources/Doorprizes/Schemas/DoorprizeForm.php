@@ -19,7 +19,6 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
-use Illuminate\Support\Str;
 
 class DoorprizeForm
 {
@@ -43,7 +42,7 @@ class DoorprizeForm
                                                 ->get()
                                                 ->mapWithKeys(fn (Expo $expo) => [$expo->id => self::expoLabel($expo)])
                                                 ->all())
-                                            ->helperText('Ditampilkan: nama expo · periode · tanggal · lokasi · status')
+                                            ->helperText('Ditampilkan: nama expo · periode · tanggal')
                                             ->searchable()
                                             ->preload()
                                             ->live()
@@ -207,8 +206,6 @@ class DoorprizeForm
         $parts = array_filter([
             $expo->periode ? 'Periode '.$expo->periode : null,
             $tanggal,
-            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
-            $expo->status ? 'Aktif' : 'Nonaktif',
         ]);
 
         return $parts === []

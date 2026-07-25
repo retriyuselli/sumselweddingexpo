@@ -14,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 class DoorprizesTable
 {
@@ -146,8 +145,6 @@ class DoorprizesTable
         return array_values(array_filter([
             $expo->periode ? 'Periode '.$expo->periode : null,
             $tanggal,
-            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
-            $expo->status ? 'Aktif' : 'Nonaktif',
         ]));
     }
 }
