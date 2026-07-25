@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DoorprizeResource extends Resource
 {
@@ -31,6 +32,12 @@ class DoorprizeResource extends Resource
     public static function table(Table $table): Table
     {
         return DoorprizesTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['partisipasi.expo', 'partisipasi.vendor']);
     }
 
     public static function getRelations(): array

@@ -19,6 +19,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
+use Illuminate\Support\Str;
 
 class DoorprizeForm
 {
@@ -36,7 +37,15 @@ class DoorprizeForm
                                     ->schema([
                                         Select::make('expo_id')
                                             ->label('Pilih Expo')
-                                            ->options(Expo::all()->pluck('nama_expo', 'id'))
+                                            ->options(fn (): array => Expo::query()
+                                                ->orderByDesc('tanggal_mulai')
+                                                ->orderByDesc('id')
+                                                ->get()
+                                                ->mapWithKeys(fn (Expo $expo) => [$expo->id => self::expoLabel($expo)])
+                                                ->all())
+                                            ->helperText('Ditampilkan: nama expo · periode · tanggal · lokasi · status')
+                                            ->searchable()
+                                            ->preload()
                                             ->live()
                                             ->afterStateUpdated(fn (callable $set) => $set('partisipasi_id', null))
                                             ->afterStateHydrated(fn (Select $component, ?Doorprize $record) => $component->state($record?->partisipasi?->expo_id))
@@ -183,5 +192,27 @@ class DoorprizeForm
                             
                     ])->columnSpanFull(),
             ]);
+    }
+
+    protected static function expoLabel(Expo $expo): string
+    {
+        $tanggal = null;
+        if ($expo->tanggal_mulai) {
+            $tanggal = $expo->tanggal_mulai->format('d M Y');
+            if ($expo->tanggal_selesai && ! $expo->tanggal_mulai->equalTo($expo->tanggal_selesai)) {
+                $tanggal .= ' – '.$expo->tanggal_selesai->format('d M Y');
+            }
+        }
+
+        $parts = array_filter([
+            $expo->periode ? 'Periode '.$expo->periode : null,
+            $tanggal,
+            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
+            $expo->status ? 'Aktif' : 'Nonaktif',
+        ]);
+
+        return $parts === []
+            ? $expo->nama_expo.' [#'.$expo->id.']'
+            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
     }
 }

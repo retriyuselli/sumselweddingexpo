@@ -14,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class DoorprizesTable
 {
@@ -37,8 +38,8 @@ class DoorprizesTable
                     ->label('Expo')
                     ->searchable()
                     ->sortable()
-                    ->badge()
-                    ->color('info'),
+                    ->wrap()
+                    ->description(fn (Doorprize $record) => self::expoLabelParts($record->partisipasi?->expo)),
                 TextColumn::make('partisipasi.vendor.nama_vendor')
                     ->label('Tenant / Vendor')
                     ->searchable()
@@ -75,10 +76,15 @@ class DoorprizesTable
             ])
             ->filters([
                 SelectFilter::make('expo')
-                    ->label('Filter by Expo')
-                    ->options(Expo::pluck('nama_expo', 'id'))
+                    ->label('Filter Expo')
+                    ->options(fn (): array => Expo::query()
+                        ->orderByDesc('tanggal_mulai')
+                        ->orderByDesc('id')
+                        ->get()
+                        ->mapWithKeys(fn (Expo $expo) => [$expo->id => self::expoFilterLabel($expo)])
+                        ->all())
                     ->query(function (Builder $query, array $data) {
-                        if (!empty($data['value'])) {
+                        if (! empty($data['value'])) {
                             $query->whereHas('partisipasi', function ($query) use ($data) {
                                 $query->where('expo_id', $data['value']);
                             });
@@ -102,5 +108,46 @@ class DoorprizesTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function expoFilterLabel(Expo $expo): string
+    {
+        $parts = self::expoDetailParts($expo);
+
+        return $parts === []
+            ? $expo->nama_expo.' [#'.$expo->id.']'
+            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
+    }
+
+    protected static function expoLabelParts(?Expo $expo): ?string
+    {
+        if (! $expo) {
+            return null;
+        }
+
+        $parts = self::expoDetailParts($expo);
+
+        return $parts === [] ? null : implode(' · ', $parts);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected static function expoDetailParts(Expo $expo): array
+    {
+        $tanggal = null;
+        if ($expo->tanggal_mulai) {
+            $tanggal = $expo->tanggal_mulai->format('d M Y');
+            if ($expo->tanggal_selesai && ! $expo->tanggal_mulai->equalTo($expo->tanggal_selesai)) {
+                $tanggal .= ' – '.$expo->tanggal_selesai->format('d M Y');
+            }
+        }
+
+        return array_values(array_filter([
+            $expo->periode ? 'Periode '.$expo->periode : null,
+            $tanggal,
+            $expo->lokasi ? Str::limit($expo->lokasi, 40) : null,
+            $expo->status ? 'Aktif' : 'Nonaktif',
+        ]));
     }
 }
