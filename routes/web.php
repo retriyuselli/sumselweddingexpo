@@ -21,23 +21,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DoorprizeReportController;
 use App\Http\Controllers\LabaRugiReportController;
 use App\Http\Controllers\PartisipasiPdfController;
-use Illuminate\Filesystem\ServeFile;
+use App\Http\Controllers\PrivateFileController;
 
 /*
 |--------------------------------------------------------------------------
-| Private local disk file serving
+| Private local disk file serving (auth-based)
 |--------------------------------------------------------------------------
-| Laravel normally auto-registers this when disks.local.serve = true, but
-| that registration is SKIPPED when routes are cached (`optimize`).
-| Registering it here keeps temporary URLs (e.g. Foto KTP) working in production.
+| Avoids Laravel signed temporary URLs, which often break on Hostinger
+| after route:cache / reverse-proxy HTTPS. Requires logged-in session.
 */
-Route::get('/storage-private/{path}', function (Request $request, string $path) {
-    return (new ServeFile(
-        'local',
-        config('filesystems.disks.local', []),
-        app()->isProduction(),
-    ))($request, $path);
-})->where('path', '.*')->name('storage.local');
+Route::get('/storage-private/{path}', PrivateFileController::class)
+    ->where('path', '.*')
+    ->middleware(['auth'])
+    ->name('storage.local');
 
 Route::get('/form-tring-pegadaian.pdf', function () {
     $penyelenggara = \App\Models\Penyelenggara::first();

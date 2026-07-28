@@ -31,16 +31,13 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Temporary URL untuk disk local (private) — harus di web.php agar
-        // tetap tersedia setelah `php artisan optimize` / route:cache.
+        // URL file private untuk Filament (ImageColumn / FileUpload preview).
+        // Auth-based (bukan signed URL) agar stabil di Hostinger + route:cache.
         Storage::disk('local')->buildTemporaryUrlsUsing(
             function (string $path, DateTimeInterface $expiration, array $options): string {
-                return URL::to(URL::temporarySignedRoute(
-                    'storage.local',
-                    $expiration,
-                    ['path' => strtr(rawurlencode($path), ['%2F' => '/'])],
-                    absolute: false,
-                ));
+                return URL::route('storage.local', [
+                    'path' => strtr(rawurlencode($path), ['%2F' => '/']),
+                ]);
             }
         );
 
