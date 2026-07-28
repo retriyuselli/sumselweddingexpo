@@ -4,8 +4,9 @@ namespace App\Filament\Resources\Doorprizes\Tables;
 
 use App\Models\Doorprize;
 use App\Models\Expo;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -27,23 +28,25 @@ class DoorprizesTable
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(fn ($record) => $record->nik),
+                    ->description(fn (Doorprize $record): ?string => $record->nik),
                 ImageColumn::make('foto_ktp')
                     ->label('Foto KTP')
                     ->disk('local')
                     ->visibility('private')
-                    ->circular(),
+                    ->circular()
+                    ->checkFileExistence(false),
                 TextColumn::make('partisipasi.expo.nama_expo')
                     ->label('Expo')
                     ->searchable()
                     ->sortable()
                     ->wrap()
-                    ->description(fn (Doorprize $record) => self::expoLabelParts($record->partisipasi?->expo)),
+                    ->description(fn (Doorprize $record): ?string => $record->partisipasi?->expo?->labelDetails()),
                 TextColumn::make('partisipasi.vendor.nama_vendor')
                     ->label('Tenant / Vendor')
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->placeholder('—'),
                 TextColumn::make('kodevoucher')
                     ->label('Kode Voucher')
                     ->searchable()
@@ -67,6 +70,12 @@ class DoorprizesTable
                     ->copyable()
                     ->icon('heroicon-m-phone')
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sudah_download_tring')
+                    ->label('TRING')
+                    ->badge()
+                    ->formatStateUsing(fn (?bool $state): string => $state ? 'Sudah' : 'Belum')
+                    ->color(fn (?bool $state): string => $state ? 'success' : 'warning')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime('d M Y, H:i')
@@ -80,71 +89,42 @@ class DoorprizesTable
                         ->orderByDesc('tanggal_mulai')
                         ->orderByDesc('id')
                         ->get()
-                        ->mapWithKeys(fn (Expo $expo) => [$expo->id => self::expoFilterLabel($expo)])
+                        ->mapWithKeys(fn (Expo $expo) => [$expo->id => $expo->labelForSelect()])
                         ->all())
-                    ->query(function (Builder $query, array $data) {
+                    ->query(function (Builder $query, array $data): void {
                         if (! empty($data['value'])) {
-                            $query->whereHas('partisipasi', function ($query) use ($data) {
+                            $query->whereHas('partisipasi', function (Builder $query) use ($data): void {
                                 $query->where('expo_id', $data['value']);
                             });
                         }
                     })
                     ->searchable()
                     ->preload(),
+                SelectFilter::make('sudah_download_tring')
+                    ->label('Status TRING')
+                    ->options([
+                        '1' => 'Sudah download',
+                        '0' => 'Belum download',
+                    ]),
             ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                Action::make('downloadForm')
-                    ->label('Lihat / Cetak Form TRING')
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->color('success')
-                    ->url(fn (Doorprize $record) => route('doorprizes.form-tring-pegadaian.pdf', $record))
-                    ->openUrlInNewTab(),
+            ->recordActions([
+                ActionGroup::make([
+                    EditAction::make(),
+                    Action::make('downloadForm')
+                        ->label('Lihat / Cetak Form TRING')
+                        ->icon('heroicon-m-arrow-top-right-on-square')
+                        ->color('success')
+                        ->url(fn (Doorprize $record) => route('doorprizes.form-tring-pegadaian.pdf', $record))
+                        ->openUrlInNewTab(),
+                    DeleteAction::make(),
+                ]),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
-    }
-
-    protected static function expoFilterLabel(Expo $expo): string
-    {
-        $parts = self::expoDetailParts($expo);
-
-        return $parts === []
-            ? $expo->nama_expo.' [#'.$expo->id.']'
-            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
-    }
-
-    protected static function expoLabelParts(?Expo $expo): ?string
-    {
-        if (! $expo) {
-            return null;
-        }
-
-        $parts = self::expoDetailParts($expo);
-
-        return $parts === [] ? null : implode(' · ', $parts);
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected static function expoDetailParts(Expo $expo): array
-    {
-        $tanggal = null;
-        if ($expo->tanggal_mulai) {
-            $tanggal = $expo->tanggal_mulai->format('d M Y');
-            if ($expo->tanggal_selesai && ! $expo->tanggal_mulai->equalTo($expo->tanggal_selesai)) {
-                $tanggal .= ' – '.$expo->tanggal_selesai->format('d M Y');
-            }
-        }
-
-        return array_values(array_filter([
-            $expo->periode ? 'Periode '.$expo->periode : null,
-            $tanggal,
-        ]));
+            ])
+            ->emptyStateHeading('Belum ada data doorprize')
+            ->emptyStateDescription('Tambahkan pemenang undian untuk mulai mencatat data.');
     }
 }

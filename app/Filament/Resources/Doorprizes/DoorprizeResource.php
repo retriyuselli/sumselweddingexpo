@@ -20,9 +20,17 @@ class DoorprizeResource extends Resource
 {
     protected static ?string $model = Doorprize::class;
 
+    protected static ?string $navigationLabel = 'Doorprize';
+
+    protected static ?string $modelLabel = 'Doorprize';
+
+    protected static ?string $pluralModelLabel = 'Doorprize';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
     protected static string|UnitEnum|null $navigationGroup = 'Expo';
+
+    protected static ?int $navigationSort = 40;
 
     public static function form(Schema $schema): Schema
     {

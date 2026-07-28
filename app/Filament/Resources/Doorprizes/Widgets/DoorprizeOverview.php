@@ -10,17 +10,25 @@ class DoorprizeOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $total = Doorprize::count();
+        $total = Doorprize::query()->count();
+        $sudahDownload = Doorprize::query()->where('sudah_download_tring', true)->count();
+        $belumDownload = max(0, $total - $sudahDownload);
+        $belumFotoKtp = Doorprize::query()
+            ->where(fn ($q) => $q->whereNull('foto_ktp')->orWhere('foto_ktp', ''))
+            ->count();
 
-        $sudahDownload = Doorprize::where('sudah_download_tring', true)->count();
+        $totalTransaksi = 0;
+        $totalRevenue = 0;
 
-        $belumDownload = $total - $sudahDownload;
-
-        $records = Doorprize::query()->select(['transactions', 'foto_ktp'])->get();
-
-        $totalTransaksi = $records->sum(fn (Doorprize $record) => $record->total_nominal_transaksi);
-        $totalRevenue = $records->sum(fn (Doorprize $record) => $record->total_nominal_revenue);
-        $belumFotoKtp = $records->filter(fn (Doorprize $record) => ! $record->hasFotoKtp())->count();
+        Doorprize::query()
+            ->select(['id', 'transactions'])
+            ->orderBy('id')
+            ->chunkById(200, function ($records) use (&$totalTransaksi, &$totalRevenue): void {
+                foreach ($records as $record) {
+                    $totalTransaksi += $record->total_nominal_transaksi;
+                    $totalRevenue += $record->total_nominal_revenue;
+                }
+            });
 
         return [
             Stat::make('Total Pemenang', (string) $total)
@@ -43,12 +51,12 @@ class DoorprizeOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('danger'),
 
-            Stat::make('Total Transaksi', Doorprize::formatRupiah((int) $totalTransaksi))
+            Stat::make('Total Transaksi', Doorprize::formatRupiah($totalTransaksi))
                 ->description('Akumulasi nominal transaksi')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('warning'),
 
-            Stat::make('Total Revenue', Doorprize::formatRupiah((int) $totalRevenue))
+            Stat::make('Total Revenue', Doorprize::formatRupiah($totalRevenue))
                 ->description('Akumulasi nominal revenue')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('info'),

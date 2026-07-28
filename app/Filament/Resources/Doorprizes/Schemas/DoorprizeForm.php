@@ -40,7 +40,7 @@ class DoorprizeForm
                                                 ->orderByDesc('tanggal_mulai')
                                                 ->orderByDesc('id')
                                                 ->get()
-                                                ->mapWithKeys(fn (Expo $expo) => [$expo->id => self::expoLabel($expo)])
+                                                ->mapWithKeys(fn (Expo $expo) => [$expo->id => $expo->labelForSelect()])
                                                 ->all())
                                             ->helperText('Ditampilkan: nama expo · periode · tanggal')
                                             ->searchable()
@@ -53,11 +53,22 @@ class DoorprizeForm
                                             ->prefixIcon('heroicon-o-calendar'),
                                         Select::make('partisipasi_id')
                                             ->label('Tenant / Vendor')
-                                            ->options(fn (callable $get) => Partisipasi::query()
-                                                ->where('expo_id', $get('expo_id'))
-                                                ->with('vendor')
-                                                ->get()
-                                                ->pluck('vendor.nama_vendor', 'id'))
+                                            ->options(function (callable $get): array {
+                                                $expoId = $get('expo_id');
+                                                if (blank($expoId)) {
+                                                    return [];
+                                                }
+
+                                                return Partisipasi::query()
+                                                    ->where('expo_id', $expoId)
+                                                    ->with('vendor')
+                                                    ->get()
+                                                    ->mapWithKeys(fn (Partisipasi $partisipasi) => [
+                                                        $partisipasi->id => $partisipasi->vendor?->nama_vendor
+                                                            ?? ('Partisipasi #'.$partisipasi->id),
+                                                    ])
+                                                    ->all();
+                                            })
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -79,14 +90,17 @@ class DoorprizeForm
                                         TextInput::make('no_wa')
                                             ->label('No. WhatsApp')
                                             ->tel()
-                                            ->numeric()
                                             ->required()
-                                            ->maxLength(15)
-                                            ->prefixIcon('heroicon-o-phone'),
+                                            ->maxLength(20)
+                                            ->prefixIcon('heroicon-o-phone')
+                                            ->helperText('Contoh: 081234567890')
+                                            ->rule('regex:/^[0-9+\-\s]{8,20}$/'),
                                         TextInput::make('nik')
                                             ->label('NIK')
-                                            ->numeric()
-                                            ->prefixIcon('heroicon-o-identification'),
+                                            ->maxLength(20)
+                                            ->prefixIcon('heroicon-o-identification')
+                                            ->rule('nullable|regex:/^[0-9]{16}$/')
+                                            ->helperText('16 digit NIK (opsional).'),
                                         TextInput::make('kodevoucher')
                                             ->label('Kode Voucher')
                                             ->required()
@@ -94,7 +108,7 @@ class DoorprizeForm
                                             ->maxLength(255)
                                             ->prefixIcon('heroicon-o-ticket')
                                             ->helperText('Kode voucher harus unik.')
-                                            ->dehydrateStateUsing(fn (string $state): string => strtoupper($state)),
+                                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtoupper($state) : $state),
                                         Textarea::make('alamat')
                                             ->label('Alamat Domisili')
                                             ->required()
@@ -111,13 +125,18 @@ class DoorprizeForm
                                             ->disk('local')
                                             ->visibility('private')
                                             ->directory('doorprizes/ktp')
+                                            ->imagePreviewHeight('160')
+                                            ->openable()
+                                            ->downloadable()
                                             ->columnSpanFull(),
                                         FileUpload::make('surat_pernyataan')
                                             ->label('Surat Pernyataan')
+                                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                                             ->disk('local')
                                             ->visibility('private')
                                             ->directory('doorprizes/surat-pernyataan')
                                             ->openable()
+                                            ->downloadable()
                                             ->columnSpanFull(),
                                         Toggle::make('sudah_download_tring')
                                             ->label('Apakah sudah download aplikasi Tring! Pegadaian?')
@@ -148,6 +167,7 @@ class DoorprizeForm
                                     ->collapsible()
                                     ->itemLabel(fn (array $state): ?string => $state['name_package'] ?? null)
                                     ->cloneable()
+                                    ->defaultItems(0)
                                     ->schema([
                                         TextInput::make('name_package')
                                             ->label('Nama Paket')
@@ -182,34 +202,17 @@ class DoorprizeForm
                                             ->disk('local')
                                             ->visibility('private')
                                             ->directory('doorprizes/transactions')
+                                            ->imagePreviewHeight('160')
+                                            ->openable()
+                                            ->downloadable()
                                             ->required()
                                             ->columnSpanFull(),
                                     ])
                                     ->columns(2)
                                     ->columnSpanFull(),
                             ]),
-                            
+
                     ])->columnSpanFull(),
             ]);
-    }
-
-    protected static function expoLabel(Expo $expo): string
-    {
-        $tanggal = null;
-        if ($expo->tanggal_mulai) {
-            $tanggal = $expo->tanggal_mulai->format('d M Y');
-            if ($expo->tanggal_selesai && ! $expo->tanggal_mulai->equalTo($expo->tanggal_selesai)) {
-                $tanggal .= ' – '.$expo->tanggal_selesai->format('d M Y');
-            }
-        }
-
-        $parts = array_filter([
-            $expo->periode ? 'Periode '.$expo->periode : null,
-            $tanggal,
-        ]);
-
-        return $parts === []
-            ? $expo->nama_expo.' [#'.$expo->id.']'
-            : $expo->nama_expo.' ('.implode(' · ', $parts).')';
     }
 }

@@ -70,4 +70,45 @@ class Expo extends Model
     {
         return $this->hasMany(TenantSpot::class);
     }
+
+    /**
+     * Label ringkas untuk select/filter (nama · periode · tanggal).
+     */
+    public function labelForSelect(): string
+    {
+        $tanggal = null;
+        if ($this->tanggal_mulai) {
+            $tanggal = $this->tanggal_mulai->format('d M Y');
+            if ($this->tanggal_selesai && ! $this->tanggal_mulai->equalTo($this->tanggal_selesai)) {
+                $tanggal .= ' – '.$this->tanggal_selesai->format('d M Y');
+            }
+        }
+
+        $parts = array_values(array_filter([
+            $this->periode ? 'Periode '.$this->periode : null,
+            $tanggal,
+        ]));
+
+        return $parts === []
+            ? $this->nama_expo.' [#'.$this->id.']'
+            : $this->nama_expo.' ('.implode(' · ', $parts).')';
+    }
+
+    public function labelDetails(): ?string
+    {
+        $tanggal = null;
+        if ($this->tanggal_mulai) {
+            $tanggal = $this->tanggal_mulai->format('d M Y');
+            if ($this->tanggal_selesai && ! $this->tanggal_mulai->equalTo($this->tanggal_selesai)) {
+                $tanggal .= ' – '.$this->tanggal_selesai->format('d M Y');
+            }
+        }
+
+        $parts = array_values(array_filter([
+            $this->periode ? 'Periode '.$this->periode : null,
+            $tanggal,
+        ]));
+
+        return $parts === [] ? null : implode(' · ', $parts);
+    }
 }

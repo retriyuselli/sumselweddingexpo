@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateDoorprize extends CreateRecord
 {
     protected static string $resource = DoorprizeResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
