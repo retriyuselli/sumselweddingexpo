@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Penyelenggara;
 use App\Services\ExpoResolver;
+use DateTimeInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +30,19 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
+
+        // Temporary URL untuk disk local (private) — harus di web.php agar
+        // tetap tersedia setelah `php artisan optimize` / route:cache.
+        Storage::disk('local')->buildTemporaryUrlsUsing(
+            function (string $path, DateTimeInterface $expiration, array $options): string {
+                return URL::to(URL::temporarySignedRoute(
+                    'storage.local',
+                    $expiration,
+                    ['path' => strtr(rawurlencode($path), ['%2F' => '/'])],
+                    absolute: false,
+                ));
+            }
+        );
 
         // Log Viewer: hanya bisa diakses oleh super_admin dan admin
         Gate::define('viewLogViewer', function ($user) {

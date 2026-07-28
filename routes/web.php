@@ -21,6 +21,23 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DoorprizeReportController;
 use App\Http\Controllers\LabaRugiReportController;
 use App\Http\Controllers\PartisipasiPdfController;
+use Illuminate\Filesystem\ServeFile;
+
+/*
+|--------------------------------------------------------------------------
+| Private local disk file serving
+|--------------------------------------------------------------------------
+| Laravel normally auto-registers this when disks.local.serve = true, but
+| that registration is SKIPPED when routes are cached (`optimize`).
+| Registering it here keeps temporary URLs (e.g. Foto KTP) working in production.
+*/
+Route::get('/storage-private/{path}', function (Request $request, string $path) {
+    return (new ServeFile(
+        'local',
+        config('filesystems.disks.local', []),
+        app()->isProduction(),
+    ))($request, $path);
+})->where('path', '.*')->name('storage.local');
 
 Route::get('/form-tring-pegadaian.pdf', function () {
     $penyelenggara = \App\Models\Penyelenggara::first();

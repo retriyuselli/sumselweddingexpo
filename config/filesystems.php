@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // serve dinonaktifkan: route di-register manual di web.php
+            // agar tetap ada saat `php artisan route:cache` / `optimize`
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
