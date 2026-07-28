@@ -99,7 +99,7 @@ class DoorprizeForm
                                             ->label('NIK')
                                             ->maxLength(20)
                                             ->prefixIcon('heroicon-o-identification')
-                                            ->rule('nullable|regex:/^[0-9]{16}$/')
+                                            ->rules(['nullable', 'regex:/^[0-9]{16}$/'])
                                             ->helperText('16 digit NIK (opsional).'),
                                         TextInput::make('kodevoucher')
                                             ->label('Kode Voucher')
