@@ -3,36 +3,40 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Partisipasi;
+use App\Services\LabaRugiAggregator;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Support\Icons\Heroicon;
 
 class LaporanPiutangStatsOverview extends BaseWidget
 {
     public ?string $heading = 'Laporan Piutang';
-    
+
+    /** Only mounted via LaporanPiutang::getHeaderWidgets() */
+    protected static bool $isDiscovered = false;
+
+    protected static bool $isLazy = true;
+
     protected function getStats(): array
     {
-        $query = Partisipasi::query()
-            ->where('status_pembayaran', '!=', 'Lunas')
-            ->where('sisa_pembayaran', '>', 0);
+        $query = Partisipasi::query()->where('sisa_pembayaran', '>', 0);
 
-        $totalPiutang = $query->sum('sisa_pembayaran');
-        $jumlahTenant = $query->count();
-        $piutangTertinggi = $query->max('sisa_pembayaran');
+        $totalPiutang = (float) (clone $query)->sum('sisa_pembayaran');
+        $jumlahTenant = (clone $query)->count();
+        $piutangTertinggi = (float) ((clone $query)->max('sisa_pembayaran') ?? 0);
 
         return [
-            Stat::make('Total Piutang Tertunggak', '' . number_format($totalPiutang, 0, ',', '.'))
+            Stat::make('Total Piutang Tertunggak', LabaRugiAggregator::formatRupiah($totalPiutang))
                 ->description('Total tagihan yang belum dibayar')
                 ->descriptionIcon(Heroicon::OutlinedBanknotes)
                 ->color('danger'),
 
-            Stat::make('Jumlah Tenant Menunggak', $jumlahTenant . ' Tenant')
+            Stat::make('Jumlah Tenant Menunggak', $jumlahTenant.' Tenant')
                 ->description('Vendor yang belum lunas')
                 ->descriptionIcon(Heroicon::OutlinedUsers)
                 ->color('warning'),
 
-            Stat::make('Piutang Tertinggi', '' . number_format($piutangTertinggi, 0, ',', '.'))
+            Stat::make('Piutang Tertinggi', LabaRugiAggregator::formatRupiah($piutangTertinggi))
                 ->description('Nominal tunggakan terbesar')
                 ->descriptionIcon(Heroicon::OutlinedExclamationCircle)
                 ->color('danger'),
