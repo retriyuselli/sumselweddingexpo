@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Laporan Detail Laba Rugi</title>
+    <title>Laporan Laba Rugi — {{ $expos[0]->nama_expo ?? 'Expo' }}</title>
     <style>
         @font-face {
             font-family: 'Poppins';
@@ -11,21 +10,18 @@
             font-weight: 400;
             src: url('{{ base_path('resources/fonts/poppins/Poppins-Regular.ttf') }}') format('truetype');
         }
-
         @font-face {
             font-family: 'Poppins';
             font-style: normal;
             font-weight: 500;
             src: url('{{ base_path('resources/fonts/poppins/Poppins-Medium.ttf') }}') format('truetype');
         }
-
         @font-face {
             font-family: 'Poppins';
             font-style: normal;
             font-weight: 600;
             src: url('{{ base_path('resources/fonts/poppins/Poppins-SemiBold.ttf') }}') format('truetype');
         }
-
         @font-face {
             font-family: 'Poppins';
             font-style: normal;
@@ -33,240 +29,308 @@
             src: url('{{ base_path('resources/fonts/poppins/Poppins-Bold.ttf') }}') format('truetype');
         }
 
-        /*
-         * Aturan DomPDF:
-         * - margin-top @page harus LEBIH BESAR dari ( |header.top| + sedikit buffer )
-         * - tinggi header aktual (logo+teks+border) harus < |header.top|
-         * agar halaman 2+ tidak menumpuk dengan tabel.
-         */
+        /* Header fixed harus muat di margin-top (hindari overlap halaman 2+) */
         @page {
-            margin: 155px 32px 36px 48px;
+            margin: 120px 28px 40px 28px;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', DejaVu Sans, sans-serif;
-            font-size: 11px;
+            font-size: 9px;
+            color: #142033;
             margin: 0;
-        }
-
-        strong, b, .total-row, .section-title, .company-name, th {
-            font-family: 'Poppins', DejaVu Sans, sans-serif;
+            line-height: 1.4;
         }
 
         header {
             position: fixed;
-            top: -140px;
+            top: -100px;
             left: 0;
             right: 0;
-            height: 125px;
+            height: 88px;
         }
 
-        .header-container {
+        .brand {
             width: 100%;
-            border-bottom: 2px solid #333;
-            padding: 0 0 10px 0;
+            border-bottom: 2.5px solid #0f3d5e;
+            padding-bottom: 8px;
         }
 
-        .header-table {
+        .brand-table {
             width: 100%;
             border-collapse: collapse;
-            border: none;
-            margin: 0;
         }
 
-        .header-table td {
+        .brand-table td {
             border: none !important;
             vertical-align: middle;
             padding: 0;
-            background: transparent;
+            background: transparent !important;
         }
 
-        .logo-cell {
-            width: 110px;
-            text-align: left;
+        .brand-logo {
+            width: 88px;
         }
 
-        .logo-img {
-            width: 100px;
-            max-width: 100px;
-            max-height: 68px;
+        .brand-logo img {
+            width: 78px;
+            max-height: 56px;
             height: auto;
             display: block;
         }
 
-        .company-info {
-            text-align: left;
-            padding-left: 14px !important;
+        .brand-meta {
+            padding-left: 12px !important;
         }
 
-        .company-name {
-            font-size: 15px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
-            text-transform: uppercase;
-            line-height: 1.25;
-        }
-
-        .company-address {
+        .brand-name {
             margin: 0;
-            font-size: 9.5px;
-            color: #555;
-            line-height: 1.4;
-        }
-
-        .report-title-center {
-            text-align: center;
-            margin: 0 0 18px 0;
-            padding-top: 4px;
-            clear: both;
-        }
-
-        .report-title-center h1 {
-            margin: 0;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
+            color: #0f3d5e;
             letter-spacing: 0.3px;
         }
 
-        .report-title-center h2 {
-            margin: 6px 0 0;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
+        .brand-address {
+            margin: 3px 0 0;
+            font-size: 8px;
+            color: #64748b;
+            line-height: 1.35;
         }
 
-        .report-title-center p {
+        .hero {
+            text-align: center;
+            margin: 0 0 14px;
+            padding: 10px 12px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .hero-eyebrow {
+            margin: 0 0 4px;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #142033;
+            letter-spacing: 0.4px;
+        }
+
+        .hero h2 {
             margin: 4px 0 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: #0f3d5e;
+        }
+
+        .hero p {
+            margin: 4px 0 0;
+            font-size: 8px;
+            color: #64748b;
+        }
+
+        .kpi {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px 0;
+            margin: 0 0 16px;
+        }
+
+        .kpi td {
+            width: 25%;
+            border: 1px solid #e2e8f0 !important;
+            background: #fff !important;
+            padding: 8px 9px !important;
+            vertical-align: top;
+        }
+
+        .kpi .label {
+            display: block;
+            font-size: 7.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #64748b;
+            margin-bottom: 3px;
+        }
+
+        .kpi .value {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: #142033;
+        }
+
+        .kpi .value.green { color: #15803d; }
+        .kpi .value.red { color: #b91c1c; }
+        .kpi .value.amber { color: #b45309; }
+        .kpi .value.blue { color: #0369a1; }
+
+        .section {
+            margin-top: 16px;
+            page-break-inside: avoid;
+        }
+
+        .section-head {
+            background: #0f3d5e;
+            color: #fff;
             font-size: 9px;
-            color: #666;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            margin: 0 0 8px;
+        }
+
+        .section-head.amber { background: #9a3412; }
+        .section-head.blue { background: #0c4a6e; }
+
+        .subhead {
+            margin: 10px 0 5px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #142033;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0 0 8px;
         }
 
         table.data thead {
             display: table-header-group;
         }
 
-        /* Old header styles replaced by above */
-        .section-title {
-            font-weight: bold;
-            font-size: 12px;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            color: #333;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 2px;
-        }
-
-        .subsection-title {
-            font-weight: bold;
-            font-size: 11px;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 4px 5px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f4f4f4;
+        table.data th {
+            background: #eef2f7;
+            color: #142033;
+            border: 1px solid #e2e8f0;
+            padding: 5px 6px;
+            font-size: 7.5px;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        table.data td {
+            border: 1px solid #e2e8f0;
+            padding: 4px 6px;
+            font-size: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        table.data tr:nth-child(even) td {
+            background: #fcfdfe;
+        }
+
+        table.data .foot td {
+            background: #f1f5f9 !important;
+            font-weight: 700;
+        }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .muted { color: #64748b; }
+        .green { color: #15803d; }
+        .red { color: #b91c1c; }
+        .amber { color: #b45309; }
+        .blue { color: #0369a1; }
+        .bold { font-weight: 700; }
+
+        .badge {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 2px;
+            font-size: 7px;
+            font-weight: 600;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge.ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .summary {
+            width: 55%;
+            margin-top: 8px;
+            border-collapse: collapse;
+        }
+
+        .summary td {
+            border: 1px solid #e2e8f0;
+            padding: 7px 10px;
             font-size: 9px;
         }
 
-        td {
-            font-size: 9px;
+        .summary .result td {
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .font-bold {
-            font-weight: bold;
-        }
-
-        .success {
-            color: #16a34a;
-        }
-
-        .danger {
-            color: #dc2626;
-        }
-
-        .warning {
-            color: #d97706;
-        }
-
-        .info {
-            color: #0284c7;
-        }
-
-        .total-row td {
-            background-color: #fafafa;
-            font-weight: bold;
-        }
-
-        .summary-box {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-            background-color: #f9f9f9;
-            width: 50%;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
+        .note {
+            margin-top: 14px;
+            font-size: 7.5px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 6px;
         }
 
         .page-break {
             page-break-after: always;
         }
 
-        .no-border {
-            border: none;
+        .download-wrap {
+            text-align: center;
+            margin-top: 22px;
+            page-break-inside: avoid;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #0f3d5e;
+            color: #fff;
+            padding: 9px 18px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 9px;
+            letter-spacing: 0.4px;
         }
     </style>
 </head>
-
 <body>
     <header>
-        <div class="header-container">
-            <table class="header-table">
+        <div class="brand">
+            <table class="brand-table">
                 <tr>
-                    @if (isset($penyelenggara) && $penyelenggara->logo)
-                        <td class="logo-cell">
-                            <img src="{{ public_path('storage/' . $penyelenggara->logo) }}" alt="Logo"
-                                class="logo-img">
+                    @if (! empty($penyelenggara?->logo))
+                        <td class="brand-logo">
+                            <img src="{{ public_path('storage/'.$penyelenggara->logo) }}" alt="Logo">
                         </td>
                     @endif
-                    <td class="company-info">
-                        @if (isset($penyelenggara))
-                            <h1 class="company-name">{{ $penyelenggara->name }}</h1>
-                            <p class="company-address">
-                                {{ $penyelenggara->alamat }}<br>
-                                Telp: {{ $penyelenggara->no_tlp }}
-                            </p>
-                        @else
-                            <h1 class="company-name">SWE 2 JAN</h1>
-                        @endif
+                    <td class="brand-meta">
+                        <p class="brand-name">{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</p>
+                        <p class="brand-address">
+                            {{ $penyelenggara->alamat ?? 'Palembang, Sumatera Selatan' }}
+                            @if (! empty($penyelenggara?->no_tlp))
+                                <br>Telp: {{ $penyelenggara->no_tlp }}
+                            @endif
+                        </p>
                     </td>
                 </tr>
             </table>
@@ -275,76 +339,102 @@
 
     @foreach ($expos as $index => $expo)
         <div class="{{ $index > 0 ? 'page-break' : '' }}">
-            <div class="report-title-center">
-                <h1>Laporan Laba Rugi Detail</h1>
-                <h2>{{ $expo->nama_expo }}</h2>
-                <p>Dicetak pada: {{ now()->format('d F Y H:i') }}</p>
-            </div>
-
             @php
-                // Cash basis — samakan dengan LabaRugiAggregator (SUM data pembayaran)
                 $totalPartisipasi = $expo->partisipasis->sum(
                     fn ($p) => (float) $p->dataPembayarans->sum('nominal')
                 );
-                $totalSponsor = $expo->sponsors->sum('nominal');
+                $totalSponsor = (float) $expo->sponsors->sum('nominal');
                 $totalPemasukan = $totalPartisipasi + $totalSponsor;
-
-                $totalPengeluaran = $expo->pengeluarans->sum('nominal');
+                $totalPengeluaran = (float) $expo->pengeluarans->sum('nominal');
                 $labaRugi = $totalPemasukan - $totalPengeluaran;
 
-                $piutangList = $expo->partisipasis->where('sisa_pembayaran', '>', 0);
-                $totalPiutang = $piutangList->sum('sisa_pembayaran');
+                $piutangList = $expo->partisipasis->where('sisa_pembayaran', '>', 0)->values();
+                $totalPiutang = (float) $piutangList->sum('sisa_pembayaran');
 
-                $barterList = $expo->partisipasis->where('is_barter', true);
-                $totalBarter = $barterList->sum(fn ($p) => (float) ($p->barter_nominal ?? 0));
+                $barterList = $expo->partisipasis->where('is_barter', true)->values();
+                $totalBarter = (float) $barterList->sum(fn ($p) => (float) ($p->barter_nominal ?? 0));
+
+                $periode = $expo->labelDetails();
             @endphp
 
-            <!-- I. PEMASUKAN -->
-            <div class="section-title">I. Pemasukan</div>
+            <div class="hero">
+                <p class="hero-eyebrow">Laporan Keuangan · Cash Basis</p>
+                <h1>Laporan Laba Rugi Detail</h1>
+                <h2>{{ $expo->nama_expo }}</h2>
+                <p>
+                    @if ($periode){{ $periode }} · @endif
+                    Dicetak {{ now('Asia/Jakarta')->format('d M Y, H:i') }} WIB
+                </p>
+            </div>
 
-            <div class="subsection-title">A. Partisipasi Tenant</div>
-            <table>
+            <table class="kpi">
+                <tr>
+                    <td>
+                        <span class="label">Pemasukan</span>
+                        <span class="value green">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</span>
+                    </td>
+                    <td>
+                        <span class="label">Pengeluaran</span>
+                        <span class="value red">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</span>
+                    </td>
+                    <td>
+                        <span class="label">Piutang</span>
+                        <span class="value amber">Rp {{ number_format($totalPiutang, 0, ',', '.') }}</span>
+                    </td>
+                    <td>
+                        <span class="label">Laba / Rugi</span>
+                        <span class="value {{ $labaRugi >= 0 ? 'green' : 'red' }}">
+                            Rp {{ number_format($labaRugi, 0, ',', '.') }}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            {{-- I. PEMASUKAN --}}
+            <div class="section-head">I. Pemasukan</div>
+
+            <div class="subhead">A. Partisipasi Tenant</div>
+            <table class="data">
                 <thead>
                     <tr>
-                        <th width="5%" class="text-center">No</th>
-                        <th width="25%">Vendor</th>
-                        <th width="8%">Blok</th>
-                        <th width="8%">Status</th>
-                        <th width="12%">Tanggal Bayar</th>
-                        <th width="15%" class="text-right">Nominal Bayar</th>
-                        <th width="15%" class="text-right">Total Tagihan</th>
+                        <th style="width:4%" class="text-center">No</th>
+                        <th style="width:24%">Vendor</th>
+                        <th style="width:8%" class="text-center">Blok</th>
+                        <th style="width:10%" class="text-center">Status</th>
+                        <th style="width:18%">Tanggal Bayar</th>
+                        <th style="width:18%" class="text-right">Nominal Bayar</th>
+                        <th style="width:18%" class="text-right">Total Tagihan</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($expo->partisipasis as $i => $partisipasi)
+                    @forelse ($expo->partisipasis as $i => $partisipasi)
+                        @php
+                            $bayar = (float) $partisipasi->dataPembayarans->sum('nominal');
+                            $tanggal = $partisipasi->dataPembayarans
+                                ->pluck('tanggal_bayar')
+                                ->filter()
+                                ->map(fn ($d) => $d->format('d/m/y'))
+                                ->implode(', ');
+                        @endphp
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
-                            <td>{{ $partisipasi->vendor->nama_vendor ?? '-' }}</td>
-                            <td>{{ $partisipasi->tenantSpot?->kode_booth ?? '-' }}</td>
-                            <td>{{ $partisipasi->status_pembayaran }}</td>
-                            <td>
-                                @if ($partisipasi->dataPembayarans->isNotEmpty())
-                                    <dl style="padding-left: 0px; margin: 0;">
-                                        @foreach ($partisipasi->dataPembayarans as $pembayaran)
-                                            <dt>{{ $pembayaran->tanggal_bayar ? $pembayaran->tanggal_bayar->format('d M Y') : '-' }}
-                                            </dt>
-                                        @endforeach
-                                    </dl>
-                                @else
-                                    -
-                                @endif
+                            <td>{{ $partisipasi->vendor->nama_vendor ?? '—' }}</td>
+                            <td class="text-center">{{ $partisipasi->tenantSpot?->kode_booth ?? '—' }}</td>
+                            <td class="text-center">
+                                <span class="badge {{ $partisipasi->status_pembayaran === 'Lunas' ? 'ok' : '' }}">
+                                    {{ $partisipasi->status_pembayaran ?: '—' }}
+                                </span>
                             </td>
-                            <td class="text-right">{{ number_format($partisipasi->dataPembayarans->sum('nominal'), 0, ',', '.') }}
-                            </td>
-                            <td class="text-right text-gray-500">
-                                {{ number_format($partisipasi->harga_bersih, 0, ',', '.') }}</td>
+                            <td>{{ $tanggal !== '' ? $tanggal : '—' }}</td>
+                            <td class="text-right">{{ number_format($bayar, 0, ',', '.') }}</td>
+                            <td class="text-right muted">{{ number_format((float) $partisipasi->harga_bersih, 0, ',', '.') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">Tidak ada data partisipasi</td>
+                            <td colspan="7" class="text-center muted">Tidak ada data partisipasi</td>
                         </tr>
                     @endforelse
-                    <tr class="total-row">
+                    <tr class="foot">
                         <td colspan="5" class="text-right">Subtotal Partisipasi</td>
                         <td class="text-right">{{ number_format($totalPartisipasi, 0, ',', '.') }}</td>
                         <td></td>
@@ -352,179 +442,176 @@
                 </tbody>
             </table>
 
-            <div class="subsection-title">B. Sponsor</div>
-            <table>
+            <div class="subhead">B. Sponsor</div>
+            <table class="data">
                 <thead>
                     <tr>
-                        <th width="5%" class="text-center">No</th>
-                        <th width="40%">Nama Sponsor</th>
-                        <th width="35%">Keterangan</th>
-                        <th width="20%" class="text-right">Nominal</th>
+                        <th style="width:5%" class="text-center">No</th>
+                        <th style="width:30%">Nama Sponsor</th>
+                        <th style="width:45%">Keterangan</th>
+                        <th style="width:20%" class="text-right">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($expo->sponsors as $i => $sponsor)
+                    @forelse ($expo->sponsors as $i => $sponsor)
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
                             <td>{{ $sponsor->name }}</td>
                             <td>
-                                @if (isset($sponsor->kewajiban) && is_array($sponsor->kewajiban))
-                                    <ul style="padding-left: 15px; margin: 0;">
-                                        @foreach ($sponsor->kewajiban as $kewajiban)
-                                            <li>{{ $kewajiban }}</li>
-                                        @endforeach
-                                    </ul>
+                                @if (is_array($sponsor->kewajiban ?? null))
+                                    {{ implode(', ', $sponsor->kewajiban) }}
                                 @else
-                                    {{ $sponsor->kewajiban ?? '-' }}
+                                    {{ $sponsor->kewajiban ?: '—' }}
                                 @endif
                             </td>
-                            <td class="text-right">{{ number_format($sponsor->nominal, 0, ',', '.') }}</td>
+                            <td class="text-right">{{ number_format((float) $sponsor->nominal, 0, ',', '.') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center">Tidak ada data sponsor</td>
+                            <td colspan="4" class="text-center muted">Tidak ada data sponsor</td>
                         </tr>
                     @endforelse
-                    <tr class="total-row">
+                    <tr class="foot">
                         <td colspan="3" class="text-right">Subtotal Sponsor</td>
                         <td class="text-right">{{ number_format($totalSponsor, 0, ',', '.') }}</td>
                     </tr>
                 </tbody>
             </table>
 
-            <table style="margin-top: 10px; border: none;">
-                <tr class="total-row" style="background-color: #e6fffa;">
-                    <td class="text-right no-border" width="80%">TOTAL PEMASUKAN (A + B)</td>
-                    <td class="text-right success font-bold" width="20%">Rp
-                        {{ number_format($totalPemasukan, 0, ',', '.') }}</td>
+            <table class="summary" style="width:100%; margin-top:4px;">
+                <tr>
+                    <td class="text-right bold" style="width:80%; background:#ecfdf5;">Total Pemasukan (A + B)</td>
+                    <td class="text-right bold green" style="width:20%; background:#ecfdf5;">
+                        Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+                    </td>
                 </tr>
             </table>
 
-            <!-- II. PENGELUARAN -->
-            <div class="section-title">II. Pengeluaran</div>
-            <table>
+            {{-- II. PENGELUARAN --}}
+            <div class="section-head" style="margin-top:16px;">II. Pengeluaran</div>
+            <table class="data">
                 <thead>
                     <tr>
-                        <th width="5%" class="text-center">No</th>
-                        <th width="30%">Judul Pengeluaran</th>
-                        <th width="15%">Tanggal</th>
-                        <th width="30%">Keterangan</th>
-                        <th width="20%" class="text-right">Nominal</th>
+                        <th style="width:5%" class="text-center">No</th>
+                        <th style="width:28%">Judul</th>
+                        <th style="width:14%">Tanggal</th>
+                        <th style="width:33%">Keterangan</th>
+                        <th style="width:20%" class="text-right">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($expo->pengeluarans as $i => $pengeluaran)
+                    @forelse ($expo->pengeluarans as $i => $pengeluaran)
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
                             <td>{{ $pengeluaran->nama_pengeluaran }}</td>
-                            <td>{{ $pengeluaran->tanggal ? $pengeluaran->tanggal->format('d M Y') : '-' }}</td>
-                            <td>{{ $pengeluaran->keterangan ?? '-' }}</td>
-                            <td class="text-right">{{ number_format($pengeluaran->nominal, 0, ',', '.') }}</td>
+                            <td>{{ $pengeluaran->tanggal ? $pengeluaran->tanggal->format('d M Y') : '—' }}</td>
+                            <td>{{ $pengeluaran->keterangan ?: '—' }}</td>
+                            <td class="text-right">{{ number_format((float) $pengeluaran->nominal, 0, ',', '.') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center">Tidak ada data pengeluaran</td>
+                            <td colspan="5" class="text-center muted">Tidak ada data pengeluaran</td>
                         </tr>
                     @endforelse
-                    <tr class="total-row">
+                    <tr class="foot">
                         <td colspan="4" class="text-right">Total Pengeluaran</td>
-                        <td class="text-right danger">{{ number_format($totalPengeluaran, 0, ',', '.') }}</td>
+                        <td class="text-right red">{{ number_format($totalPengeluaran, 0, ',', '.') }}</td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- III. RINGKASAN -->
-            <div class="section-title">III. Ringkasan Laba / Rugi</div>
-            <table style="width: 50%;">
+            {{-- III. RINGKASAN --}}
+            <div class="section-head" style="margin-top:16px;">III. Ringkasan Laba / Rugi</div>
+            <table class="summary">
                 <tr>
-                    <td class="font-bold">Total Pemasukan</td>
-                    <td class="text-right success">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</td>
+                    <td class="bold">Total Pemasukan</td>
+                    <td class="text-right green bold">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</td>
                 </tr>
                 <tr>
-                    <td class="font-bold">Total Pengeluaran</td>
-                    <td class="text-right danger">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</td>
+                    <td class="bold">Total Pengeluaran</td>
+                    <td class="text-right red bold">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</td>
                 </tr>
-                <tr class="total-row" style="background-color: {{ $labaRugi >= 0 ? '#f0fdf4' : '#fef2f2' }};">
-                    <td class="font-bold text-lg">LABA / RUGI BERSIH</td>
-                    <td class="text-right font-bold text-lg {{ $labaRugi >= 0 ? 'success' : 'danger' }}">
+                <tr class="result" style="background: {{ $labaRugi >= 0 ? '#f0fdf4' : '#fef2f2' }};">
+                    <td>Laba / Rugi Bersih</td>
+                    <td class="text-right {{ $labaRugi >= 0 ? 'green' : 'red' }}">
                         Rp {{ number_format($labaRugi, 0, ',', '.') }}
                     </td>
                 </tr>
             </table>
 
-            <!-- IV. PIUTANG -->
+            {{-- IV. PIUTANG --}}
             @if ($totalPiutang > 0)
-                <div class="section-title" style="color: #d97706;">IV. Rincian Piutang (Belum Lunas)</div>
-                <table>
+                <div class="section-head amber" style="margin-top:16px;">IV. Rincian Piutang</div>
+                <table class="data">
                     <thead>
                         <tr>
-                            <th width="5%" class="text-center">No</th>
-                            <th width="35%">Vendor</th>
-                            <th width="20%">Blok</th>
-                            <th width="20%" class="text-right">Total Tagihan</th>
-                            <th width="20%" class="text-right">Sisa Pembayaran</th>
+                            <th style="width:5%" class="text-center">No</th>
+                            <th style="width:35%">Vendor</th>
+                            <th style="width:15%" class="text-center">Blok</th>
+                            <th style="width:22%" class="text-right">Total Tagihan</th>
+                            <th style="width:23%" class="text-right">Sisa</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($piutangList as $i => $piutang)
                             <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $piutang->vendor->nama_vendor ?? '-' }}</td>
-                                <td>{{ $piutang->tenantSpot?->kode_booth ?? '-' }}</td>
-                                <td class="text-right">{{ number_format($piutang->harga_bersih, 0, ',', '.') }}</td>
-                                <td class="text-right warning font-bold">
-                                    {{ number_format($piutang->sisa_pembayaran, 0, ',', '.') }}</td>
+                                <td class="text-center">{{ $i + 1 }}</td>
+                                <td>{{ $piutang->vendor->nama_vendor ?? '—' }}</td>
+                                <td class="text-center">{{ $piutang->tenantSpot?->kode_booth ?? '—' }}</td>
+                                <td class="text-right">{{ number_format((float) $piutang->harga_bersih, 0, ',', '.') }}</td>
+                                <td class="text-right amber bold">{{ number_format((float) $piutang->sisa_pembayaran, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
-                        <tr class="total-row">
+                        <tr class="foot">
                             <td colspan="4" class="text-right">Total Piutang</td>
-                            <td class="text-right warning">{{ number_format($totalPiutang, 0, ',', '.') }}</td>
+                            <td class="text-right amber">{{ number_format($totalPiutang, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
             @endif
 
-            <!-- V. BARTER -->
+            {{-- V. BARTER --}}
             @if ($totalBarter > 0)
-                <div class="section-title" style="color: #0284c7;">V. Rincian Barter</div>
-                <table>
+                <div class="section-head blue" style="margin-top:16px;">V. Rincian Barter</div>
+                <table class="data">
                     <thead>
                         <tr>
-                            <th width="5%" class="text-center">No</th>
-                            <th width="30%">Vendor</th>
-                            <th width="45%">Keterangan Barter</th>
-                            <th width="20%" class="text-right">Nilai Barter</th>
+                            <th style="width:5%" class="text-center">No</th>
+                            <th style="width:28%">Vendor</th>
+                            <th style="width:47%">Keterangan</th>
+                            <th style="width:20%" class="text-right">Nilai</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($barterList as $i => $barter)
                             <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $barter->vendor->nama_vendor ?? '-' }}</td>
-                                <td>{{ $barter->barter_description }}</td>
-                                <td class="text-right info font-bold">
-                                    {{ number_format($barter->barter_nominal, 0, ',', '.') }}</td>
+                                <td class="text-center">{{ $i + 1 }}</td>
+                                <td>{{ $barter->vendor->nama_vendor ?? '—' }}</td>
+                                <td>{{ $barter->barter_description ?: '—' }}</td>
+                                <td class="text-right blue bold">{{ number_format((float) $barter->barter_nominal, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
-                        <tr class="total-row">
+                        <tr class="foot">
                             <td colspan="3" class="text-right">Total Nilai Barter</td>
-                            <td class="text-right info">{{ number_format($totalBarter, 0, ',', '.') }}</td>
+                            <td class="text-right blue">{{ number_format($totalBarter, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
             @endif
 
-            @if (isset($is_preview) && $is_preview)
-                <div style="text-align: center; margin-top: 30px; page-break-inside: avoid;">
-                    <a href="{{ route('laporan.laba-rugi.download', $expo->id) }}"
-                        style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block;">
+            <p class="note">
+                Catatan: laporan ini menggunakan metode cash basis (uang masuk aktual dari data pembayaran).
+                Piutang dan barter ditampilkan terpisah dan tidak mengurangi/menambah laba bersih di atas.
+            </p>
+
+            @if (! empty($is_preview))
+                <div class="download-wrap">
+                    <a class="download-btn" href="{{ route('laporan.laba-rugi.download', $expo->id) }}">
                         DOWNLOAD PDF
                     </a>
                 </div>
             @endif
-
         </div>
     @endforeach
 </body>
-
 </html>
