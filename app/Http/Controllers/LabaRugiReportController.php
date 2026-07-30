@@ -21,6 +21,7 @@ class LabaRugiReportController extends Controller
     {
         $record->load([
             'partisipasis.vendor',
+            'partisipasis.tenantSpot',
             'partisipasis.dataPembayarans',
             'sponsors',
             'pengeluarans',

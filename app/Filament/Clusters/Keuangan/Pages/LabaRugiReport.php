@@ -7,6 +7,7 @@ use App\Models\Expo;
 use App\Services\LabaRugiAggregator;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -29,6 +30,8 @@ class LabaRugiReport extends Page implements HasTable
 
     protected static ?string $navigationLabel = 'Laba Rugi';
 
+    protected static ?int $navigationSort = 1;
+
     /** @var array<string, \Illuminate\Support\Collection<int, float>>|null */
     protected ?array $financeTotals = null;
 
@@ -46,34 +49,32 @@ class LabaRugiReport extends Page implements HasTable
 
     protected function money(float $amount): string
     {
-        return 'Rp '.number_format($amount, 0, ',', '.');
+        return LabaRugiAggregator::formatRupiah($amount);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(Expo::query())
+            ->query(Expo::query()->orderByDesc('tanggal_mulai')->orderByDesc('id'))
+            ->defaultSort('tanggal_mulai', 'desc')
             ->columns([
                 TextColumn::make('nama_expo')
                     ->label('Nama Expo')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn (Expo $record): ?string => $record->labelDetails()),
 
                 TextColumn::make('pemasukan_partisipasi')
                     ->label('Partisipasi')
                     ->state(function (Expo $record): string {
-                        $total = (float) ($this->financeTotals()['partisipasi'][$record->id] ?? 0);
-
-                        return $this->money($total);
+                        return $this->money((float) ($this->financeTotals()['partisipasi'][$record->id] ?? 0));
                     })
                     ->alignRight(),
 
                 TextColumn::make('pemasukan_sponsor')
                     ->label('Sponsor')
                     ->state(function (Expo $record): string {
-                        $total = (float) ($this->financeTotals()['sponsor'][$record->id] ?? 0);
-
-                        return $this->money($total);
+                        return $this->money((float) ($this->financeTotals()['sponsor'][$record->id] ?? 0));
                     })
                     ->alignRight(),
 
@@ -93,9 +94,7 @@ class LabaRugiReport extends Page implements HasTable
                 TextColumn::make('total_pengeluaran')
                     ->label('Total Pengeluaran')
                     ->state(function (Expo $record): string {
-                        $total = (float) ($this->financeTotals()['pengeluaran'][$record->id] ?? 0);
-
-                        return $this->money($total);
+                        return $this->money((float) ($this->financeTotals()['pengeluaran'][$record->id] ?? 0));
                     })
                     ->color('danger')
                     ->weight('bold')
@@ -104,9 +103,7 @@ class LabaRugiReport extends Page implements HasTable
                 TextColumn::make('piutang')
                     ->label('Piutang')
                     ->state(function (Expo $record): string {
-                        $total = (float) ($this->financeTotals()['piutang'][$record->id] ?? 0);
-
-                        return $this->money($total);
+                        return $this->money((float) ($this->financeTotals()['piutang'][$record->id] ?? 0));
                     })
                     ->color('warning')
                     ->alignRight(),
@@ -114,9 +111,7 @@ class LabaRugiReport extends Page implements HasTable
                 TextColumn::make('barter')
                     ->label('Barter')
                     ->state(function (Expo $record): string {
-                        $total = (float) ($this->financeTotals()['barter'][$record->id] ?? 0);
-
-                        return $this->money($total);
+                        return $this->money((float) ($this->financeTotals()['barter'][$record->id] ?? 0));
                     })
                     ->color('info')
                     ->alignRight(),
@@ -125,11 +120,7 @@ class LabaRugiReport extends Page implements HasTable
                     ->label('Status')
                     ->badge()
                     ->state(function (Expo $record): string {
-                        $totals = $this->financeTotals();
-                        $pemasukan = (float) ($totals['partisipasi'][$record->id] ?? 0)
-                            + (float) ($totals['sponsor'][$record->id] ?? 0);
-                        $pengeluaran = (float) ($totals['pengeluaran'][$record->id] ?? 0);
-                        $labaRugi = $pemasukan - $pengeluaran;
+                        $labaRugi = $this->labaRugiFor($record);
 
                         if ($labaRugi > 0) {
                             return 'Untung';
@@ -143,31 +134,45 @@ class LabaRugiReport extends Page implements HasTable
                     ->color(fn (string $state): string => match ($state) {
                         'Untung' => 'success',
                         'Rugi' => 'danger',
-                        'Impas' => 'gray',
+                        default => 'gray',
                     })
                     ->alignCenter(),
 
                 TextColumn::make('laba_rugi')
                     ->label('Laba / Rugi')
-                    ->state(function (Expo $record): string {
-                        $totals = $this->financeTotals();
-                        $pemasukan = (float) ($totals['partisipasi'][$record->id] ?? 0)
-                            + (float) ($totals['sponsor'][$record->id] ?? 0);
-                        $pengeluaran = (float) ($totals['pengeluaran'][$record->id] ?? 0);
-
-                        return $this->money($pemasukan - $pengeluaran);
-                    })
-                    ->color(fn (string $state): string => str_contains($state, '-') ? 'danger' : 'success')
+                    ->state(fn (Expo $record): string => $this->money($this->labaRugiFor($record)))
+                    ->color(fn (Expo $record): string => $this->labaRugiFor($record) < 0 ? 'danger' : 'success')
                     ->weight('bold')
                     ->alignRight(),
             ])
-            ->actions([
-                Action::make('download')
-                    ->label('Download Laporan')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Expo $record) => route('laporan.laba-rugi.stream', $record))
-                    ->openUrlInNewTab(),
+            ->recordActions([
+                ActionGroup::make([
+                    Action::make('preview')
+                        ->label('Preview Laporan')
+                        ->icon('heroicon-o-eye')
+                        ->color('gray')
+                        ->url(fn (Expo $record) => route('laporan.laba-rugi.stream', $record))
+                        ->openUrlInNewTab(),
+                    Action::make('download')
+                        ->label('Download PDF')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('success')
+                        ->url(fn (Expo $record) => route('laporan.laba-rugi.download', $record))
+                        ->openUrlInNewTab(),
+                ]),
             ])
-            ->paginated(false);
+            ->paginated(false)
+            ->emptyStateHeading('Belum ada data expo')
+            ->emptyStateDescription('Tambahkan expo terlebih dahulu untuk melihat laporan laba rugi.');
+    }
+
+    protected function labaRugiFor(Expo $record): float
+    {
+        $totals = $this->financeTotals();
+        $pemasukan = (float) ($totals['partisipasi'][$record->id] ?? 0)
+            + (float) ($totals['sponsor'][$record->id] ?? 0);
+        $pengeluaran = (float) ($totals['pengeluaran'][$record->id] ?? 0);
+
+        return $pemasukan - $pengeluaran;
     }
 }

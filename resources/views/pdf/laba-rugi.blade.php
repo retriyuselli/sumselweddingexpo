@@ -229,8 +229,10 @@
             </div>
 
             @php
-                // Pre-calculate totals for this expo
-                $totalPartisipasi = $expo->partisipasis->sum('total_pembayaran');
+                // Cash basis — samakan dengan LabaRugiAggregator (SUM data pembayaran)
+                $totalPartisipasi = $expo->partisipasis->sum(
+                    fn ($p) => (float) $p->dataPembayarans->sum('nominal')
+                );
                 $totalSponsor = $expo->sponsors->sum('nominal');
                 $totalPemasukan = $totalPartisipasi + $totalSponsor;
 
@@ -241,7 +243,7 @@
                 $totalPiutang = $piutangList->sum('sisa_pembayaran');
 
                 $barterList = $expo->partisipasis->where('is_barter', true);
-                $totalBarter = $barterList->sum('barter_nominal');
+                $totalBarter = $barterList->sum(fn ($p) => (float) ($p->barter_nominal ?? 0));
             @endphp
 
             <!-- I. PEMASUKAN -->
@@ -279,7 +281,7 @@
                                     -
                                 @endif
                             </td>
-                            <td class="text-right">{{ number_format($partisipasi->total_pembayaran, 0, ',', '.') }}
+                            <td class="text-right">{{ number_format($partisipasi->dataPembayarans->sum('nominal'), 0, ',', '.') }}
                             </td>
                             <td class="text-right text-gray-500">
                                 {{ number_format($partisipasi->harga_bersih, 0, ',', '.') }}</td>

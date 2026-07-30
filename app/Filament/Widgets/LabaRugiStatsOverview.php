@@ -21,20 +21,20 @@ class LabaRugiStatsOverview extends BaseWidget
         $totals = app(LabaRugiAggregator::class)->globalTotals();
 
         return [
-            Stat::make('Total Pemasukan', ''.number_format($totals['pemasukan'], 0, ',', '.'))
+            Stat::make('Total Pemasukan', LabaRugiAggregator::formatRupiah($totals['pemasukan']))
                 ->icon(Heroicon::OutlinedArrowTrendingUp)
                 ->color('success'),
 
-            Stat::make('Total Pengeluaran', ''.number_format($totals['pengeluaran'], 0, ',', '.'))
+            Stat::make('Total Pengeluaran', LabaRugiAggregator::formatRupiah($totals['pengeluaran']))
                 ->icon(Heroicon::OutlinedArrowTrendingDown)
                 ->color('danger'),
 
-            Stat::make('Total Piutang', ''.number_format($totals['piutang'], 0, ',', '.'))
+            Stat::make('Total Piutang', LabaRugiAggregator::formatRupiah($totals['piutang']))
                 ->icon(Heroicon::OutlinedExclamationCircle)
                 ->description('Potensi pemasukan tertunda')
                 ->color('warning'),
 
-            Stat::make('Laba Bersih', ''.number_format($totals['laba_rugi'], 0, ',', '.'))
+            Stat::make('Laba Bersih', LabaRugiAggregator::formatRupiah($totals['laba_rugi']))
                 ->icon(Heroicon::OutlinedBanknotes)
                 ->description('Berdasarkan uang masuk (Cash Basis)')
                 ->color($totals['laba_rugi'] >= 0 ? 'primary' : 'danger'),

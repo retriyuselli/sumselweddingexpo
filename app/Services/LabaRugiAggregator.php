@@ -15,6 +15,8 @@ class LabaRugiAggregator
     /**
      * Compute finance totals for all expos in a handful of grouped queries.
      *
+     * Cash basis: pemasukan partisipasi = SUM(data_pembayarans.nominal).
+     *
      * @return array{
      *     partisipasi: Collection<int, float>,
      *     sponsor: Collection<int, float>,
@@ -27,6 +29,7 @@ class LabaRugiAggregator
     {
         $partisipasi = DataPembayaran::query()
             ->join('partisipasis', 'partisipasis.id', '=', 'data_pembayarans.partisipasi_id')
+            ->whereNull('partisipasis.deleted_at')
             ->select('partisipasis.expo_id', DB::raw('COALESCE(SUM(data_pembayarans.nominal), 0) as total'))
             ->groupBy('partisipasis.expo_id')
             ->pluck('total', 'expo_id')
@@ -44,8 +47,9 @@ class LabaRugiAggregator
             ->pluck('total', 'expo_id')
             ->map(fn ($v) => (float) $v);
 
+        // Samakan dengan Laporan Piutang & PDF: sisa > 0 (bukan hanya status != Lunas)
         $piutang = Partisipasi::query()
-            ->where('status_pembayaran', '!=', 'Lunas')
+            ->where('sisa_pembayaran', '>', 0)
             ->select('expo_id', DB::raw('COALESCE(SUM(sisa_pembayaran), 0) as total'))
             ->groupBy('expo_id')
             ->pluck('total', 'expo_id')
@@ -53,7 +57,7 @@ class LabaRugiAggregator
 
         $barter = Partisipasi::query()
             ->where('is_barter', true)
-            ->select('expo_id', DB::raw('COALESCE(SUM(barter_nominal), 0) as total'))
+            ->select('expo_id', DB::raw('COALESCE(SUM(COALESCE(barter_nominal, 0)), 0) as total'))
             ->groupBy('expo_id')
             ->pluck('total', 'expo_id')
             ->map(fn ($v) => (float) $v);
@@ -101,5 +105,10 @@ class LabaRugiAggregator
             'barter' => $barter,
             'laba_rugi' => $pemasukan - $pengeluaran,
         ];
+    }
+
+    public static function formatRupiah(float|int $amount): string
+    {
+        return 'Rp '.number_format((float) $amount, 0, ',', '.');
     }
 }
