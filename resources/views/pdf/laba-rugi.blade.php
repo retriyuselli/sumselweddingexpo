@@ -5,14 +5,46 @@
     <meta charset="utf-8">
     <title>Laporan Detail Laba Rugi</title>
     <style>
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ base_path('resources/fonts/poppins/Poppins-Regular.ttf') }}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 500;
+            src: url('{{ base_path('resources/fonts/poppins/Poppins-Medium.ttf') }}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 600;
+            src: url('{{ base_path('resources/fonts/poppins/Poppins-SemiBold.ttf') }}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{ base_path('resources/fonts/poppins/Poppins-Bold.ttf') }}') format('truetype');
+        }
+
         @page {
             margin: 110px 35px 35px 60px;
         }
 
         body {
-            font-family: sans-serif;
+            font-family: 'Poppins', DejaVu Sans, sans-serif;
             font-size: 11px;
             margin: 0;
+        }
+
+        strong, b, .total-row, .section-title, .company-name, th {
+            font-family: 'Poppins', DejaVu Sans, sans-serif;
         }
 
         header {

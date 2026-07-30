@@ -27,11 +27,17 @@ class LabaRugiReportController extends Controller
             'pengeluarans',
         ]);
 
+        if (! is_dir(storage_path('fonts'))) {
+            mkdir(storage_path('fonts'), 0755, true);
+        }
+
         return Pdf::loadView('pdf.laba-rugi', [
             'expos' => [$record],
             'penyelenggara' => Penyelenggara::first(),
             'is_preview' => $isPreview,
-        ])->setPaper('a4', 'portrait');
+        ])
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'Poppins');
     }
 
     public function stream(Expo $record)
