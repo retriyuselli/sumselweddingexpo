@@ -33,8 +33,14 @@
             src: url('{{ base_path('resources/fonts/poppins/Poppins-Bold.ttf') }}') format('truetype');
         }
 
+        /*
+         * Aturan DomPDF:
+         * - margin-top @page harus LEBIH BESAR dari ( |header.top| + sedikit buffer )
+         * - tinggi header aktual (logo+teks+border) harus < |header.top|
+         * agar halaman 2+ tidak menumpuk dengan tabel.
+         */
         @page {
-            margin: 140px 35px 35px 60px;
+            margin: 155px 32px 36px 48px;
         }
 
         body {
@@ -49,84 +55,95 @@
 
         header {
             position: fixed;
-            top: -70px;
-            left: 0px;
-            right: 0px;
-            height: 120px;
+            top: -140px;
+            left: 0;
+            right: 0;
+            height: 125px;
         }
 
         .header-container {
             width: 100%;
-            margin-bottom: 20px;
             border-bottom: 2px solid #333;
-            padding-bottom: 10px;
+            padding: 0 0 10px 0;
         }
 
         .header-table {
             width: 100%;
+            border-collapse: collapse;
             border: none;
-            margin-bottom: 0;
+            margin: 0;
         }
 
         .header-table td {
-            border: none;
+            border: none !important;
             vertical-align: middle;
             padding: 0;
+            background: transparent;
         }
 
         .logo-cell {
-            width: 100px;
+            width: 110px;
             text-align: left;
         }
 
         .logo-img {
-            max-width: 150px;
-            max-height: 80px;
+            width: 100px;
+            max-width: 100px;
+            max-height: 68px;
+            height: auto;
+            display: block;
         }
 
         .company-info {
             text-align: left;
-            padding-left: 15px !important;
+            padding-left: 14px !important;
         }
 
         .company-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
             text-transform: uppercase;
+            line-height: 1.25;
         }
 
         .company-address {
-            margin: 5px 0 0;
-            font-size: 11px;
+            margin: 0;
+            font-size: 9.5px;
             color: #555;
+            line-height: 1.4;
         }
 
         .report-title-center {
             text-align: center;
-            margin-top: 24px;
-            margin-bottom: 20px;
-            padding-top: 8px;
+            margin: 0 0 18px 0;
+            padding-top: 4px;
             clear: both;
         }
 
         .report-title-center h1 {
             margin: 0;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .report-title-center h2 {
-            margin: 5px 0 0;
-            font-size: 14px;
+            margin: 6px 0 0;
+            font-size: 13px;
+            font-weight: 600;
             color: #333;
         }
 
         .report-title-center p {
-            margin: 5px 0 0;
-            font-size: 10px;
+            margin: 4px 0 0;
+            font-size: 9px;
             color: #666;
+        }
+
+        table.data thead {
+            display: table-header-group;
         }
 
         /* Old header styles replaced by above */
@@ -158,18 +175,18 @@
         th,
         td {
             border: 1px solid #ddd;
-            padding: 5px;
+            padding: 4px 5px;
             text-align: left;
         }
 
         th {
             background-color: #f4f4f4;
-            font-weight: bold;
-            font-size: 10px;
+            font-weight: 700;
+            font-size: 9px;
         }
 
         td {
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .text-right {
