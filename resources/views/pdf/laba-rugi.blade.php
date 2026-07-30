@@ -34,7 +34,7 @@
         }
 
         @page {
-            margin: 110px 35px 35px 60px;
+            margin: 140px 35px 35px 60px;
         }
 
         body {
@@ -104,12 +104,16 @@
 
         .report-title-center {
             text-align: center;
+            margin-top: 24px;
             margin-bottom: 20px;
+            padding-top: 8px;
+            clear: both;
         }
 
         .report-title-center h1 {
             margin: 0;
             font-size: 16px;
+            font-weight: 700;
             text-transform: uppercase;
         }
 
