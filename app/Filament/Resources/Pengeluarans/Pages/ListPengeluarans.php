@@ -14,6 +14,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard\Step;
@@ -25,6 +26,8 @@ use Throwable;
 
 class ListPengeluarans extends ListRecords
 {
+    use ExposesTableToWidgets;
+
     protected static string $resource = PengeluaranResource::class;
 
     protected function getHeaderActions(): array

@@ -2,18 +2,39 @@
 
 namespace App\Filament\Resources\Pengeluarans\Widgets;
 
-use App\Models\Pengeluaran;
+use App\Filament\Resources\Pengeluarans\Pages\ListPengeluarans;
+use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 
 class PengeluaranOverview extends StatsOverviewWidget
 {
+    use InteractsWithPageTable;
+
+    protected static bool $isLazy = false;
+
+    protected function getTablePage(): string
+    {
+        return ListPengeluarans::class;
+    }
+
     protected function getStats(): array
     {
+        $baseQuery = $this->getPageTableQuery();
+
+        $totalNominal = (clone $baseQuery)->sum('nominal');
+        $totalCount = (clone $baseQuery)->count();
+        $tanpaBukti = (clone $baseQuery)
+            ->where(fn (Builder $query) => $query
+                ->whereNull('bukti_transfer')
+                ->orWhere('bukti_transfer', ''))
+            ->count();
+
         return [
-            Stat::make('Total Pengeluaran', '' . number_format(Pengeluaran::sum('nominal'), 0, ',', '.')),
-            Stat::make('Jumlah Transaksi', Pengeluaran::count()),
-            Stat::make('Tanpa Bukti Transfer', Pengeluaran::whereNull('bukti_transfer')->count())
+            Stat::make('Total Pengeluaran', number_format((int) $totalNominal, 0, ',', '.')),
+            Stat::make('Jumlah Transaksi', number_format($totalCount, 0, ',', '.')),
+            Stat::make('Tanpa Bukti Transfer', number_format($tanpaBukti, 0, ',', '.'))
                 ->color('danger'),
         ];
     }
