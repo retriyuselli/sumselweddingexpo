@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\CategoryTenant;
 use App\Models\Expo;
 use App\Models\Partisipasi;
+use App\Models\TenantSpot;
 use App\Models\Vendor;
 use App\Services\ExpoResolver;
 use Illuminate\Database\Seeder;
@@ -36,8 +37,16 @@ class PartisipasiSeeder extends Seeder
             return;
         }
 
+        $availableSpots = TenantSpot::where('expo_id', $expo->id)
+            ->whereDoesntHave('partisipasi')
+            ->orderBy('blok')
+            ->orderBy('nomor')
+            ->get()
+            ->values();
+
         $created = 0;
         $blokCounter = 1;
+        $spotIndex = 0;
         $selectedVendors = $vendors->take(15);
 
         foreach ($selectedVendors as $index => $vendor) {
@@ -58,9 +67,17 @@ class PartisipasiSeeder extends Seeder
                 default => 'Belum Lunas',
             };
 
-            $row = chr(65 + (int) floor(($blokCounter - 1) / 10));
-            $number = str_pad(((($blokCounter - 1) % 10) + 1), 2, '0', STR_PAD_LEFT);
-            $blok = $row.'-'.$number;
+            $spot = $availableSpots[$spotIndex] ?? null;
+            if ($spot) {
+                $blok = $spot->kode_booth;
+                $tenantSpotId = $spot->id;
+                $spotIndex++;
+            } else {
+                $row = chr(65 + (int) floor(($blokCounter - 1) / 10));
+                $number = str_pad(((($blokCounter - 1) % 10) + 1), 2, '0', STR_PAD_LEFT);
+                $blok = $row.'-'.$number;
+                $tenantSpotId = null;
+            }
 
             $bookingDate = $expo->tanggal_mulai->copy()->subDays(5 + ($index % 20));
 
@@ -80,6 +97,7 @@ class PartisipasiSeeder extends Seeder
                 'status_pembayaran' => $status,
                 'is_active' => true,
                 'category_tenant_id' => $category->id,
+                'tenant_spot_id' => $tenantSpotId,
                 'blok_tenant' => $blok,
                 'harga_jual' => $category->harga_jual,
                 'diskon' => 0,
