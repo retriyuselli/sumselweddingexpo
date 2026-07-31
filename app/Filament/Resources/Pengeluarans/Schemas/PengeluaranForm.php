@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\Pengeluarans\Schemas;
 
-use Dom\Text;
+use App\Models\Expo;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Support\RawJs;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class PengeluaranForm
@@ -24,13 +25,18 @@ class PengeluaranForm
                     ->description('Informasi utama pengeluaran')
                     ->schema([
                         Select::make('expo_id')
-                            ->relationship('expo', 'nama_expo')
+                            ->relationship(
+                                name: 'expo',
+                                titleAttribute: 'nama_expo',
+                                modifyQueryUsing: fn (Builder $query) => $query->orderByDesc('tanggal_mulai'),
+                            )
                             ->searchable()
                             ->preload()
                             ->nullable()
                             ->label('Expo')
                             ->native(false)
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_expo.' ('.$record->periode.')')
+                            ->getOptionLabelFromRecordUsing(fn (Expo $record) => $record->labelForSelect())
+                            ->helperText('Label menampilkan nama · periode · tanggal pelaksanaan.')
                             ->columnSpanFull(),
 
                         TextInput::make('nama_pengeluaran')
@@ -43,6 +49,7 @@ class PengeluaranForm
                         DatePicker::make('tanggal')
                             ->required()
                             ->native(false)
+                            ->default(now())
                             ->displayFormat('d F Y')
                             ->label('Tanggal Pengeluaran'),
 
@@ -82,22 +89,34 @@ class PengeluaranForm
                             ->relationship('rekeningTujuan', 'nama_bank')
                             ->searchable()
                             ->preload()
+                            ->required()
                             ->label('Sumber Dana')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening)
+                            ->getOptionLabelFromRecordUsing(
+                                fn ($record) => $record->nama_bank.' - '.$record->nomor_rekening.' ('.$record->nama_pemilik.')'
+                            )
                             ->native(false),
-                        
+
                         TextInput::make('rek_transfer')
                             ->label('No Rekening Penerima')
-                            ->numeric(),
+                            ->tel()
+                            ->maxLength(50)
+                            ->placeholder('Contoh: 1234567890'),
 
                         TextInput::make('nama_rekening_penerima')
-                            ->label('Nama Rekening Penerima'),
+                            ->label('Nama Rekening Penerima')
+                            ->maxLength(255)
+                            ->placeholder('Nama pemilik rekening penerima'),
 
                         FileUpload::make('bukti_transfer')
                             ->directory('bukti-transfer')
-                            ->image()
-                            ->imageEditor()
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'image/jpeg',
+                                'image/png',
+                                'image/webp',
+                            ])
                             ->label('Bukti Transfer')
+                            ->helperText('Boleh gambar (JPG/PNG/WebP) atau PDF.')
                             ->openable()
                             ->downloadable()
                             ->columnSpanFull(),
