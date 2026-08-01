@@ -109,6 +109,6 @@ class LabaRugiAggregator
 
     public static function formatRupiah(float|int $amount): string
     {
-        return 'Rp '.number_format((float) $amount, 0, ',', '.');
+        return number_format((float) $amount, 0, ',', '.');
     }
 }

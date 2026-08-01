@@ -51,6 +51,12 @@ class DataPembayaranResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['partisipasi.vendor', 'partisipasi.expo', 'rekeningTujuan']);
+    }
+
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()

@@ -2,64 +2,56 @@
 
 namespace App\Filament\Resources\DataPembayarans\Widgets;
 
-use App\Models\DataPembayaran;
-use App\Models\Partisipasi;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use App\Filament\Resources\DataPembayarans\Pages\ListDataPembayarans;
+use Filament\Widgets\Concerns\InteractsWithPageTable;
+use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Database\Eloquent\Builder;
 
-class DataPembayaranOverview extends BaseWidget
+class DataPembayaranOverview extends StatsOverviewWidget
 {
-    use InteractsWithPageFilters;
+    use InteractsWithPageTable;
+
+    protected static bool $isLazy = false;
+
+    protected function getTablePage(): string
+    {
+        return ListDataPembayarans::class;
+    }
 
     protected function getStats(): array
     {
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-        $expoId = $this->filters['expo_id'] ?? null;
+        $baseQuery = $this->getPageTableQuery();
 
-        $query = DataPembayaran::query();
-        $partisipasiQuery = Partisipasi::query();
-
-        if ($expoId) {
-            $query->whereHas('partisipasi', function ($q) use ($expoId) {
-                $q->where('expo_id', $expoId);
-            });
-            $partisipasiQuery->where('expo_id', $expoId);
-        }
-
-        if ($startDate) {
-            $query->whereDate('tanggal_bayar', '>=', $startDate);
-            $partisipasiQuery->whereDate('created_at', '>=', $startDate);
-        }
-
-        if ($endDate) {
-            $query->whereDate('tanggal_bayar', '<=', $endDate);
-            $partisipasiQuery->whereDate('created_at', '<=', $endDate);
-        }
+        $totalNominal = (clone $baseQuery)->sum('nominal');
+        $totalCount = (clone $baseQuery)->count();
+        $tanpaBukti = (clone $baseQuery)
+            ->where(fn (Builder $query) => $query
+                ->whereNull('bukti_transfer')
+                ->orWhere('bukti_transfer', ''))
+            ->count();
+        $hariIni = (clone $baseQuery)
+            ->whereDate('tanggal_bayar', today())
+            ->sum('nominal');
 
         return [
-            Stat::make('Total Pembayaran', 'Rp ' . number_format($query->sum('nominal'), 0, ',', '.'))
-                ->description('Total semua pembayaran yang masuk')
+            Stat::make('Total Pembayaran', ''.number_format((int) $totalNominal, 0, ',', '.'))
+                ->description('Total nominal sesuai filter tabel')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
-            
-            Stat::make('Sudah Lunas', (clone $partisipasiQuery)->where('status_pembayaran', 'Lunas')->count())
-                ->description('Total partisipasi lunas')
-                ->descriptionIcon('heroicon-m-check-badge')
-                ->color('success'),
 
-            Stat::make('Belum Lunas', (clone $partisipasiQuery)->where('status_pembayaran', 'Belum Lunas')->count())
-                ->description('Total partisipasi belum lunas')
-                ->descriptionIcon('heroicon-m-clock')
-                ->color('danger'),
-                
-            Stat::make('Jumlah Transaksi', $query->count())
-                ->description('Total transaksi tercatat')
+            Stat::make('Jumlah Transaksi', number_format($totalCount, 0, ',', '.'))
+                ->description('Transaksi tercatat sesuai filter')
                 ->descriptionIcon('heroicon-m-list-bullet')
                 ->color('primary'),
-            Stat::make('Pembayaran Hari Ini', 'Rp ' . number_format(DataPembayaran::whereDate('tanggal_bayar', today())->sum('nominal'), 0, ',', '.'))
-                ->description('Total pembayaran tanggal ' . today()->format('d M Y'))
+
+            Stat::make('Tanpa Bukti Transfer', number_format($tanpaBukti, 0, ',', '.'))
+                ->description('Belum dilengkapi bukti')
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color('danger'),
+
+            Stat::make('Pembayaran Hari Ini', ''.number_format((int) $hariIni, 0, ',', '.'))
+                ->description('Tanggal bayar '.today()->format('d M Y').' (ikut filter)')
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
         ];
