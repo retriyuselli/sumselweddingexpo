@@ -71,13 +71,12 @@
         }
 
         .brand-logo {
-            width: 88px;
+            width: 64px;
         }
 
         .brand-logo img {
-            width: 78px;
-            max-height: 56px;
-            height: auto;
+            width: 56px;
+            height: 56px;
             display: block;
         }
 
@@ -541,7 +540,7 @@
 
             {{-- IV. PIUTANG --}}
             @if ($totalPiutang > 0)
-                <div class="section-head amber" style="margin-top:16px;">IV. Rincian Piutang</div>
+                <div class="section-head amber" style="margin-top:16px; color:#fff;">IV. Rincian Piutang</div>
                 <table class="data">
                     <thead>
                         <tr>
@@ -572,7 +571,7 @@
 
             {{-- V. BARTER --}}
             @if ($totalBarter > 0)
-                <div class="section-head blue" style="margin-top:16px;">V. Rincian Barter</div>
+                <div class="section-head blue" style="margin-top:16px; color:#fff;">V. Rincian Barter</div>
                 <table class="data">
                     <thead>
                         <tr>
