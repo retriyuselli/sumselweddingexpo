@@ -94,6 +94,7 @@ class PengeluaranSeeder extends Seeder
                 'rek_transfer' => $item['rek_transfer'],
                 'nama_rekening_penerima' => $item['nama_rekening_penerima'],
                 'bukti_transfer' => null,
+                'nota_dinas' => null,
                 'user_id' => $admin?->id,
             ]);
 

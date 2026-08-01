@@ -120,6 +120,15 @@ class PengeluaranForm
                             ->openable()
                             ->downloadable()
                             ->columnSpanFull(),
+
+                        FileUpload::make('nota_dinas')
+                            ->directory('nota-dinas')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->label('Nota Dinas')
+                            ->helperText('Upload file PDF Nota Dinas.')
+                            ->openable()
+                            ->downloadable()
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpan(1),

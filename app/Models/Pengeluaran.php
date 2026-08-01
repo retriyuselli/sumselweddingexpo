@@ -20,12 +20,23 @@ class Pengeluaran extends Model
         'rek_transfer',
         'nama_rekening_penerima',
         'bukti_transfer',
+        'nota_dinas',
         'user_id',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
     ];
+
+    public function hasNotaDinas(): bool
+    {
+        return filled($this->nota_dinas);
+    }
+
+    public function hasBuktiTransfer(): bool
+    {
+        return filled($this->bukti_transfer);
+    }
 
     public function expo()
     {

@@ -89,13 +89,25 @@ class PengeluaransTable
                 IconColumn::make('bukti_transfer')
                     ->label('Bukti')
                     ->boolean()
-                    ->getStateUsing(fn (Pengeluaran $record): bool => filled($record->bukti_transfer))
+                    ->getStateUsing(fn (Pengeluaran $record): bool => $record->hasBuktiTransfer())
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-exclamation-circle')
                     ->trueColor('success')
                     ->falseColor('danger')
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderByRaw('bukti_transfer IS NULL '.$direction);
+                    }),
+
+                IconColumn::make('nota_dinas')
+                    ->label('Nota Dinas')
+                    ->boolean()
+                    ->getStateUsing(fn (Pengeluaran $record): bool => $record->hasNotaDinas())
+                    ->trueIcon('heroicon-o-document-check')
+                    ->falseIcon('heroicon-o-document')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw('nota_dinas IS NULL '.$direction);
                     }),
 
                 ImageColumn::make('bukti_preview')
@@ -155,6 +167,16 @@ class PengeluaransTable
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('bukti_transfer')->where('bukti_transfer', '!=', ''),
                         false: fn (Builder $query) => $query->where(fn (Builder $q) => $q->whereNull('bukti_transfer')->orWhere('bukti_transfer', '')),
+                    ),
+
+                TernaryFilter::make('nota_dinas')
+                    ->label('Nota Dinas')
+                    ->placeholder('Semua')
+                    ->trueLabel('Sudah ada Nota Dinas')
+                    ->falseLabel('Belum ada Nota Dinas')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('nota_dinas')->where('nota_dinas', '!=', ''),
+                        false: fn (Builder $query) => $query->where(fn (Builder $q) => $q->whereNull('nota_dinas')->orWhere('nota_dinas', '')),
                     ),
 
                 Filter::make('tanggal_between')

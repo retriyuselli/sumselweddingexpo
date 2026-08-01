@@ -322,6 +322,7 @@ class PengeluaranExcelImporter
         Pengeluaran::create([
             ...$payload,
             'bukti_transfer' => null,
+            'nota_dinas' => null,
             'user_id' => $userId,
         ]);
     }
