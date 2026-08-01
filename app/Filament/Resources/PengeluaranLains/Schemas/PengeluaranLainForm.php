@@ -78,10 +78,24 @@ class PengeluaranLainForm
 
                         FileUpload::make('bukti_transfer')
                             ->directory('bukti-transfer')
-                            ->image()
-                            ->imageEditor()
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'image/jpeg',
+                                'image/png',
+                                'image/webp',
+                            ])
                             ->required()
                             ->label('Bukti Transfer')
+                            ->helperText('Boleh gambar (JPG/PNG/WebP) atau PDF.')
+                            ->openable()
+                            ->downloadable()
+                            ->columnSpanFull(),
+
+                        FileUpload::make('nota_dinas')
+                            ->directory('nota-dinas')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->label('Nota Dinas')
+                            ->helperText('Upload file PDF Nota Dinas.')
                             ->openable()
                             ->downloadable()
                             ->columnSpanFull(),

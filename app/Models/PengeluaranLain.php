@@ -18,11 +18,22 @@ class PengeluaranLain extends Model
         'rekening_tujuan_id',
         'user_id',
         'bukti_transfer',
+        'nota_dinas',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
     ];
+
+    public function hasNotaDinas(): bool
+    {
+        return filled($this->nota_dinas);
+    }
+
+    public function hasBuktiTransfer(): bool
+    {
+        return filled($this->bukti_transfer);
+    }
 
     public function rekeningTujuan()
     {

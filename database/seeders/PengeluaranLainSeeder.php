@@ -63,6 +63,7 @@ class PengeluaranLainSeeder extends Seeder
                 'rekening_tujuan_id' => $rekening->id,
                 'user_id' => $admin?->id,
                 'bukti_transfer' => 'seeders/bukti-transfer-placeholder.jpg',
+                'nota_dinas' => null,
             ]);
 
             $created++;
