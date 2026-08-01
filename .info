@@ -103,4 +103,36 @@ Perubahan yang Dilakukan:
 2. Memaksa HTTPS di Production pada `app/Providers/AppServiceProvider.php`:
     - Menambahkan pengecekan: `if (app()->environment('production')) { URL::forceScheme('https'); }`
     - Ini memastikan semua tautan yang dibuat (termasuk tautan aset) menggunakan `https://` saat aplikasi dalam mode production, mencegah error mixed content.
+
+[PERBAIKAN] Error 405 di /livewire-*/update (Filament/Livewire)
+Tanggal: 01-08-2026
+
+Gejala:
+- Browser: Oops! The server returned a "405 Method Not Allowed"
+- URL: https://sumselweddingexpo.com/livewire-XXXX/update
+- Hanya di production; lokal biasanya normal
+
+Penyebab umum (Hostinger):
+1. CDN / cache Hostinger mengubah POST Livewire jadi GET (redirect 301/302 → 405)
+2. Route Livewire tidak sampai ke `public/index.php`
+3. `route:cache` / config lama setelah deploy / ganti APP_KEY
+
+Perbaikan server (wajib cek di hPanel Hostinger):
+1. CDN / Cache → Bypass / exclude path:
+   - `/livewire*`
+   - `/livewire-*`
+   - `/admin*`
+2. Pastikan document root domain = `.../public_html/public` (bukan root project)
+3. Jangan cache HTML/JSON untuk admin Filament
+
+Setelah git pull di server:
+```bash
+cd /home/u380354370/domains/sumselweddingexpo.com/public_html
+/opt/alt/php84/usr/bin/php artisan optimize:clear
+/opt/alt/php84/usr/bin/php artisan optimize
+```
+
+Cek cepat di Network tab browser:
+- Request ke `/livewire-*/update` harus **POST** status **200**
+- Jika POST → 301/302 → GET → 405: itu CDN/redirect, bukan bug aplikasi
 ```

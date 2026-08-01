@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # Livewire update/assets harus selalu ke Laravel (POST), jangan dianggap file statis / di-cache CDN
+    RewriteRule ^livewire(?:-[a-f0-9]+)?/(?:update|livewire\.js(?:\.map)?|livewire\.min\.js)$ index.php [L,NC]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
