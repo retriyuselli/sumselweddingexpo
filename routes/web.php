@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarController;
@@ -74,6 +75,14 @@ Route::get('/partisipasis/{expo}/pdf', [PartisipasiPdfController::class, 'downlo
 Route::get('/partisipasis/{partisipasi}/invoice', [PartisipasiPdfController::class, 'invoice'])
     ->middleware(['auth'])
     ->name('partisipasis.invoice');
+
+Route::get('/absensi/{expo}/qr', [AbsensiController::class, 'qr'])
+    ->middleware('auth')
+    ->name('absensi.qr');
+Route::get('/absensi/{expo}', [AbsensiController::class, 'show'])->name('absensi.show');
+Route::post('/absensi/{expo}', [AbsensiController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('absensi.store');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran

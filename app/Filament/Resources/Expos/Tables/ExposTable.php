@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Expos\Tables;
 
+use App\Filament\Resources\Expos\ExpoResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -47,6 +48,7 @@ class ExposTable
                     ->falseLabel('Tidak Aktif'),
             ])
             ->recordActions([
+                ExpoResource::qrAbsensiAction(),
                 EditAction::make(),
             ])
             ->toolbarActions([

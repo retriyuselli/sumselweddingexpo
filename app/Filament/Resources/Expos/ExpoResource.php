@@ -10,8 +10,10 @@ use App\Filament\Resources\Expos\Schemas\ExpoForm;
 use App\Filament\Resources\Expos\Tables\ExposTable;
 use App\Models\Expo;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,6 +50,24 @@ class ExpoResource extends Resource
             'create' => CreateExpo::route('/create'),
             'edit' => EditExpo::route('/{record}/edit'),
         ];
+    }
+
+    public static function qrAbsensiAction(): Action
+    {
+        return Action::make('qrAbsensi')
+            ->label('QR Absensi')
+            ->icon(Heroicon::OutlinedQrCode)
+            ->modalHeading(fn (Expo $record): string => 'QR Absensi — '.$record->nama_expo)
+            ->modalDescription(function (Expo $record): string {
+                $mulai = $record->tanggal_mulai?->locale('id')->translatedFormat('d F Y') ?? '-';
+                $selesai = $record->tanggal_selesai?->locale('id')->translatedFormat('d F Y') ?? '-';
+
+                return "Tamu memindai kode ini, lalu mengisi email dan nomor telepon. Absensi pukul 09.00–22.00 WIB, dari {$mulai} sampai {$selesai}. Email dan nomor telepon hanya bisa tercatat sekali per hari.";
+            })
+            ->modalContent(fn (Expo $record) => view('filament.expos.qr-absensi', ['expo' => $record]))
+            ->modalSubmitAction(false)
+            ->modalCancelActionLabel('Tutup')
+            ->modalWidth(Width::Medium);
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

@@ -15,6 +15,7 @@ class EditExpo extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ExpoResource::qrAbsensiAction(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),
