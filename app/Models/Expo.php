@@ -30,12 +30,17 @@ class Expo extends Model
         'alamat',
         'status',
         'periode',
+        'visitor_prizes_enabled',
+        'visitor_prizes',
+        'visitor_prize_terms',
     ];
 
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
         'status' => 'boolean',
+        'visitor_prizes_enabled' => 'boolean',
+        'visitor_prizes' => 'array',
     ];
 
     public function categoryTenants()

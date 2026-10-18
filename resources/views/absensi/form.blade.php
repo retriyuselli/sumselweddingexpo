@@ -26,9 +26,11 @@
                     <div class="status" role="status">{{ session('status') }}</div>
                 @endif
                 <div class="section-kicker"><span class="line" aria-hidden="true"></span><span>SELAMAT DATANG</span></div>
-                <h2 id="attendance-heading">{{ $open ? 'Catat kehadiran Anda.' : 'Sampai jumpa di expo.' }}</h2>
+                <h2 id="attendance-heading">Terima kasih sudah mengunjungi Sumsel Wedding Expo.</h2>
+                <p class="intro visitor-welcome">Senang menjadi bagian dari perjalanan menuju hari bahagia Anda. Temukan inspirasi pernikahan, kenali vendor pilihan, dan jelajahi potongan harga serta promo menarik selama kegiatan berlangsung.</p>
+                @include('absensi.visitor-prizes')
                 @if ($open)
-                    <p class="intro">Lengkapi informasi berikut untuk mencatat kunjungan Anda pada {{ $today->locale('id')->translatedFormat('d F Y') }}.</p>
+                    <p class="intro">Lengkapi data kunjungan Anda dan jadilah bagian dari kemeriahan expo pada {{ $today->locale('id')->translatedFormat('d F Y') }}.</p>
                     <div class="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Absensi dibuka pukul <strong>09.00–22.00 WIB</strong></span></div>
                     <form method="POST" action="{{ route('absensi.store', $expo) }}">
                         @csrf
@@ -45,14 +47,14 @@
                         <button type="submit">Catat kehadiran <span aria-hidden="true">&rarr;</span></button>
                     </form>
                 @else
-                    <p class="intro">Informasi waktu pencatatan kehadiran untuk edisi expo ini.</p>
+                    <p class="intro">Kunjungan Anda menjadi bagian istimewa dari cerita Sumsel Wedding Expo. Berikut informasi pencatatan kehadiran untuk edisi ini.</p>
                     <div class="notice" role="status"><span class="notice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>Jadwal absensi</h3><p>{{ $notice }}</p></div></div>
-                    <p class="note">Silakan buka kembali halaman ini pada waktu absensi yang tersedia.</p>
+                    <p class="note">Catat kehadiran Anda pada jadwal yang tersedia, lalu nikmati pengalaman expo dan berbagai penawaran dari vendor peserta.</p>
                 @endif
                 <div class="content-footer"><span>SUMSEL WEDDING EXPO</span><a href="{{ url('/') }}">Jelajahi expo <span aria-hidden="true">&nearr;</span></a></div>
             </section>
         </div>
-        <footer>Setiap pertemuan, awal sebuah cerita.<a href="{{ route('privacy') }}">Kebijakan Privasi</a></footer>
+        <footer>Terima kasih telah menjadi bagian dari cerita kami.<a href="{{ route('privacy') }}">Kebijakan Privasi</a></footer>
     </main>
 </body>
 </html>
