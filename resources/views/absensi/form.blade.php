@@ -31,7 +31,7 @@
                 @include('absensi.visitor-prizes')
                 @if ($open)
                     <p class="intro">Lengkapi data kunjungan Anda dan jadilah bagian dari kemeriahan expo pada {{ $today->locale('id')->translatedFormat('d F Y') }}.</p>
-                    <div class="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Absensi dibuka pukul <strong>09.00–22.00 WIB</strong></span></div>
+                    <div class="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Absensi dibuka <strong>{{ $expo->absensiHoursLabel() }}</strong></span></div>
                     <form method="POST" action="{{ route('absensi.store', $expo) }}">
                         @csrf
                         <div class="field">

@@ -26,6 +26,8 @@ class Expo extends Model
         'nama_expo',
         'tanggal_mulai',
         'tanggal_selesai',
+        'jam_buka_absensi',
+        'jam_tutup_absensi',
         'lokasi',
         'alamat',
         'status',
@@ -130,9 +132,52 @@ class Expo extends Model
             return false;
         }
 
+        $opens = $this->absensiOpenTime();
+        $closes = $this->absensiCloseTime();
+        if ($closes <= $opens) {
+            return false;
+        }
+
         $time = $moment->format('H:i:s');
 
-        return $time >= '09:00:00' && $time <= '22:00:00';
+        return $time >= $opens && $time <= $closes;
+    }
+
+    public function absensiHoursLabel(): string
+    {
+        return 'pukul '.$this->formatAbsensiClock($this->absensiOpenTime()).'–'.$this->formatAbsensiClock($this->absensiCloseTime()).' WIB';
+    }
+
+    public function absensiOpenTime(): string
+    {
+        return $this->normalizeAbsensiClock($this->jam_buka_absensi, '09:00:00');
+    }
+
+    public function absensiCloseTime(): string
+    {
+        return $this->normalizeAbsensiClock($this->jam_tutup_absensi, '22:00:00');
+    }
+
+    private function normalizeAbsensiClock(mixed $value, string $fallback): string
+    {
+        if ($value instanceof CarbonInterface) {
+            return $value->format('H:i:s');
+        }
+
+        $value = trim((string) $value);
+        if (preg_match('/^\d{2}:\d{2}$/', $value) === 1) {
+            return $value.':00';
+        }
+        if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $value) === 1) {
+            return $value;
+        }
+
+        return $fallback;
+    }
+
+    private function formatAbsensiClock(string $time): string
+    {
+        return str_replace(':', '.', substr($time, 0, 5));
     }
 
     public function absensiClosedMessage(?CarbonInterface $moment = null): ?string
@@ -148,7 +193,7 @@ class Expo extends Model
         }
 
         $date = $moment->copy()->startOfDay();
-        $hours = 'pukul 09.00–22.00 WIB';
+        $hours = $this->absensiHoursLabel();
 
         if ($this->tanggal_mulai && $date->lt($this->tanggal_mulai->copy()->startOfDay())) {
             return 'Absensi dibuka pada '.$this->tanggal_mulai->locale('id')->translatedFormat('d F Y').', '.$hours.'.';

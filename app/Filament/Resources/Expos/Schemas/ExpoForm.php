@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -33,6 +34,23 @@ class ExpoForm
                             ->required()
                             ->afterOrEqual('tanggal_mulai')
                             ->label('Tanggal Selesai'),
+
+                        TimePicker::make('jam_buka_absensi')
+                            ->label('Jam Buka Absensi')
+                            ->required()
+                            ->seconds(false)
+                            ->native(false)
+                            ->default('09:00')
+                            ->helperText('Waktu WIB. Tamu bisa absen mulai jam ini.'),
+
+                        TimePicker::make('jam_tutup_absensi')
+                            ->label('Jam Tutup Absensi')
+                            ->required()
+                            ->seconds(false)
+                            ->native(false)
+                            ->default('22:00')
+                            ->after('jam_buka_absensi')
+                            ->helperText('Waktu WIB. Tepat di jam ini masih bisa absen.'),
 
                         TextInput::make('lokasi')
                             ->required()

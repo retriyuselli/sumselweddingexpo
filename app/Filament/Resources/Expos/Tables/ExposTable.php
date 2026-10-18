@@ -27,7 +27,7 @@ class ExposTable
                     ->date('d M Y')
                     ->sortable()
                     ->label('Tanggal')
-                    ->description(fn ($record) => 's/d ' . $record->tanggal_selesai->format('d M Y')),
+                    ->description(fn ($record) => 's/d '.$record->tanggal_selesai->format('d M Y').' · '.$record->absensiHoursLabel()),
 
                 TextColumn::make('lokasi')
                     ->label('Venue')

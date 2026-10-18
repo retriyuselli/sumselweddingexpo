@@ -107,6 +107,8 @@ class AbsensiTest extends TestCase
             'alamat' => 'Jakabaring',
             'status' => $active,
             'periode' => '2026',
+            'jam_buka_absensi' => '09:00:00',
+            'jam_tutup_absensi' => '22:00:00',
         ]);
     }
 }
