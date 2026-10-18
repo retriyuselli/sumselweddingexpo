@@ -4,105 +4,55 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Absensi — {{ $expo->nama_expo }}</title>
-    <style>
-        :root { color-scheme: light; }
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-            background: #faf7f2;
-            color: #1f2937;
-            padding: max(1.25rem, env(safe-area-inset-top)) 1rem max(1.5rem, env(safe-area-inset-bottom));
-        }
-        main {
-            display: block;
-            width: min(28rem, 100%);
-            margin-left: auto;
-            margin-right: auto;
-        }
-        h1 {
-            margin: 0 0 0.35rem;
-            font-size: 1.5rem;
-            line-height: 1.25;
-            word-break: break-word;
-        }
-        p { margin: 0; line-height: 1.5; }
-        .muted { color: #6b7280; font-size: 0.95rem; }
-        .card {
-            margin-top: 1.25rem;
-            background: #fff;
-            border: 1px solid #eadfce;
-            border-radius: 1rem;
-            padding: 1.25rem;
-        }
-        label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
-        input {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            border: 1px solid #d6d3d1;
-            border-radius: 0.75rem;
-            padding: 0.8rem 0.9rem;
-            font: inherit;
-        }
-        .field { margin-bottom: 1rem; }
-        .error { color: #b91c1c; font-size: 0.875rem; margin-top: 0.35rem; }
-        button {
-            width: 100%;
-            border: 0;
-            border-radius: 0.75rem;
-            background: #f59e0b;
-            color: #111827;
-            font: inherit;
-            font-weight: 700;
-            padding: 0.9rem 1rem;
-            cursor: pointer;
-        }
-        .status {
-            margin-top: 1rem;
-            background: #ecfdf5;
-            color: #065f46;
-            border-radius: 0.75rem;
-            padding: 0.85rem 1rem;
-        }
-    </style>
+    @include('layouts.theme-init')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    @include('absensi.styles')
 </head>
 <body>
     <main>
-        <p class="muted">Sumsel Wedding Expo</p>
-        <h1>{{ $expo->nama_expo }}</h1>
-        <p class="muted">
-            {{ $expo->tanggal_mulai?->locale('id')->translatedFormat('d F Y') }}
-            @if ($expo->tanggal_selesai && ! $expo->tanggal_mulai?->equalTo($expo->tanggal_selesai))
-                – {{ $expo->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}
-            @endif
-        </p>
-
-        @if (session('status'))
-            <div class="status">{{ session('status') }}</div>
-        @endif
-
-        <section class="card">
-            @if ($open)
-                <p style="margin-bottom:1rem;">Isi email dan nomor telepon untuk mencatat kehadiran hari ini, {{ $today->locale('id')->translatedFormat('d F Y') }}. Absensi pukul 09.00–22.00 WIB.</p>
-                <form method="POST" action="{{ route('absensi.store', $expo) }}">
-                    @csrf
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="255" value="{{ old('email') }}">
-                        @error('email')<p class="error">{{ $message }}</p>@enderror
-                    </div>
-                    <div class="field">
-                        <label for="no_tlp">Nomor telepon</label>
-                        <input id="no_tlp" name="no_tlp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30" placeholder="081234567890" value="{{ old('no_tlp') }}">
-                        @error('no_tlp')<p class="error">{{ $message }}</p>@enderror
-                    </div>
-                    <button type="submit">Catat kehadiran</button>
-                </form>
-            @else
-                <p>{{ $notice }}</p>
-            @endif
-        </section>
+        <a class="brand" href="{{ url('/') }}" aria-label="Beranda Sumsel Wedding Expo"><span>SUMSEL</span><small>WEDDING EXPO</small></a>
+        <div class="attendance-shell">
+            <header class="event-header">
+                <span class="eyebrow">YOUR EXPO EXPERIENCE</span>
+                <h1>{{ $expo->nama_expo }}</h1>
+                <p class="event-date">{{ $expo->tanggal_mulai?->locale('id')->translatedFormat('d F Y') }}@if ($expo->tanggal_selesai && ! $expo->tanggal_mulai?->equalTo($expo->tanggal_selesai)) – {{ $expo->tanggal_selesai->locale('id')->translatedFormat('d F Y') }}@endif</p>
+                @if ($expo->lokasi)<p class="event-location">{{ $expo->lokasi }}</p>@endif
+                <span class="event-tag"><span aria-hidden="true"></span>ABSENSI PENGUNJUNG</span>
+            </header>
+            <section class="attendance-content" aria-labelledby="attendance-heading">
+                @if (session('status'))
+                    <div class="status" role="status">{{ session('status') }}</div>
+                @endif
+                <div class="section-kicker"><span class="line" aria-hidden="true"></span><span>SELAMAT DATANG</span></div>
+                <h2 id="attendance-heading">{{ $open ? 'Catat kehadiran Anda.' : 'Sampai jumpa di expo.' }}</h2>
+                @if ($open)
+                    <p class="intro">Lengkapi informasi berikut untuk mencatat kunjungan Anda pada {{ $today->locale('id')->translatedFormat('d F Y') }}.</p>
+                    <div class="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Absensi dibuka pukul <strong>09.00–22.00 WIB</strong></span></div>
+                    <form method="POST" action="{{ route('absensi.store', $expo) }}">
+                        @csrf
+                        <div class="field">
+                            <label for="email">Alamat email</label>
+                            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="255" placeholder="nama@email.com" value="{{ old('email') }}" @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
+                            @error('email')<p class="error" id="email-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="field">
+                            <label for="no_tlp">Nomor telepon</label>
+                            <input id="no_tlp" name="no_tlp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30" placeholder="081234567890" value="{{ old('no_tlp') }}" @error('no_tlp') aria-invalid="true" aria-describedby="phone-error" @enderror>
+                            @error('no_tlp')<p class="error" id="phone-error">{{ $message }}</p>@enderror
+                        </div>
+                        <button type="submit">Catat kehadiran <span aria-hidden="true">&rarr;</span></button>
+                    </form>
+                @else
+                    <p class="intro">Informasi waktu pencatatan kehadiran untuk edisi expo ini.</p>
+                    <div class="notice" role="status"><span class="notice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>Jadwal absensi</h3><p>{{ $notice }}</p></div></div>
+                    <p class="note">Silakan buka kembali halaman ini pada waktu absensi yang tersedia.</p>
+                @endif
+                <div class="content-footer"><span>SUMSEL WEDDING EXPO</span><a href="{{ url('/') }}">Jelajahi expo <span aria-hidden="true">&nearr;</span></a></div>
+            </section>
+        </div>
+        <footer>Setiap pertemuan, awal sebuah cerita.<a href="{{ route('privacy') }}">Kebijakan Privasi</a></footer>
     </main>
 </body>
 </html>
