@@ -35,12 +35,11 @@
                         <div class="bg-white/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-blue-100 shadow-sm">
                             <p class="text-xs text-neutral-500 uppercase tracking-wide font-semibold mb-1">Status
                                 Partisipasi</p>
-                            <p class="text-sm font-medium text-neutral-900">
-                                <span class="text-indigo-600">{{ $expo->nama_expo }}</span>
-                                @if (!empty($isPendamping))
-                                    <span class="ml-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">Vendor Pendamping</span>
-                                @endif
-                            </p>
+                            @if (!empty($isPendamping))
+                                <p class="text-sm font-medium text-neutral-900">
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">Vendor Pendamping</span>
+                                </p>
+                            @endif
                             <p class="text-sm text-neutral-600 mt-0.5">
                                 Paket:
                                 <span class="font-bold text-neutral-900">
