@@ -44,6 +44,21 @@
                             <input id="no_tlp" name="no_tlp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30" placeholder="081234567890" value="{{ old('no_tlp') }}" @error('no_tlp') aria-invalid="true" aria-describedby="phone-error" @enderror>
                             @error('no_tlp')<p class="error" id="phone-error">{{ $message }}</p>@enderror
                         </div>
+                        <div class="field">
+                            <label for="tujuan">Tujuan kunjungan</label>
+                            <select id="tujuan" name="tujuan" required @error('tujuan') aria-invalid="true" aria-describedby="tujuan-error" @enderror>
+                                <option value="" disabled @selected(old('tujuan') === null)>Pilih tujuan</option>
+                                @foreach (\App\Enums\TujuanKunjungan::options() as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('tujuan') === $value)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('tujuan')<p class="error" id="tujuan-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="field" id="tujuan-lainnya-field" @if (old('tujuan') !== \App\Enums\TujuanKunjungan::Lainnya->value) hidden @endif>
+                            <label for="tujuan_lainnya">Tuliskan tujuan Anda</label>
+                            <input id="tujuan_lainnya" name="tujuan_lainnya" type="text" maxlength="255" placeholder="Contoh: Mengantar keluarga" value="{{ old('tujuan_lainnya') }}" @error('tujuan_lainnya') aria-invalid="true" aria-describedby="tujuan-lainnya-error" @enderror>
+                            @error('tujuan_lainnya')<p class="error" id="tujuan-lainnya-error">{{ $message }}</p>@enderror
+                        </div>
                         <button type="submit">Catat kehadiran <span aria-hidden="true">&rarr;</span></button>
                     </form>
                 @else
@@ -56,5 +71,21 @@
         </div>
         <footer>Terima kasih telah menjadi bagian dari cerita kami.<a href="{{ route('privacy') }}">Kebijakan Privasi</a></footer>
     </main>
+    <script>
+        const tujuan = document.getElementById('tujuan');
+        const tujuanLainnyaField = document.getElementById('tujuan-lainnya-field');
+        const tujuanLainnya = document.getElementById('tujuan_lainnya');
+
+        function syncTujuan(clear) {
+            if (!tujuan || !tujuanLainnyaField || !tujuanLainnya) return;
+            const show = tujuan.value === @json(\App\Enums\TujuanKunjungan::Lainnya->value);
+            tujuanLainnyaField.hidden = !show;
+            tujuanLainnya.required = show;
+            if (!show && clear) tujuanLainnya.value = '';
+        }
+
+        tujuan?.addEventListener('change', () => syncTujuan(true));
+        syncTujuan(false);
+    </script>
 </body>
 </html>

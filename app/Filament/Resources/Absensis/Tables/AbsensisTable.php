@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Absensis\Tables;
 
+use App\Models\Absensi;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -36,6 +37,16 @@ class AbsensisTable
                     ->label('No. Telepon')
                     ->searchable()
                     ->copyable(),
+                TextColumn::make('tujuan')
+                    ->label('Tujuan')
+                    ->formatStateUsing(fn ($state, Absensi $record): string => $record->tujuanTampilan())
+                    ->wrap()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $query) use ($search): void {
+                            $query->where('tujuan', 'like', "%{$search}%")
+                                ->orWhere('tujuan_lainnya', 'like', "%{$search}%");
+                        });
+                    }),
                 TextColumn::make('created_at')
                     ->label('Waktu scan')
                     ->dateTime('d M Y H:i')

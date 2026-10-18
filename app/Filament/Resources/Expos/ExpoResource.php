@@ -62,7 +62,7 @@ class ExpoResource extends Resource
                 $mulai = $record->tanggal_mulai?->locale('id')->translatedFormat('d F Y') ?? '-';
                 $selesai = $record->tanggal_selesai?->locale('id')->translatedFormat('d F Y') ?? '-';
 
-                return "Tamu memindai kode ini, lalu mengisi email dan nomor telepon. Absensi {$record->absensiHoursLabel()}, dari {$mulai} sampai {$selesai}. Email dan nomor telepon hanya bisa tercatat sekali per hari.";
+                return "Tamu memindai kode ini, lalu mengisi email dan nomor telepon. Absensi {$record->absensiHoursLabel()}, dari {$mulai} sampai {$selesai}. Pasangan email dan nomor telepon terkunci selama expo. Nomor yang sama tidak bisa dipakai dengan email lain. Pasangan yang sama bisa absen lagi besok.";
             })
             ->modalContent(fn (Expo $record) => view('filament.expos.qr-absensi', ['expo' => $record]))
             ->modalSubmitAction(false)

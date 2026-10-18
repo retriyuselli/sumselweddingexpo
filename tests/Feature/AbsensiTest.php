@@ -20,23 +20,28 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $expo), [
             'email' => 'Tamu@Example.com',
             'no_tlp' => '+62 812-3456-7890',
+            'tujuan' => 'mencari_vendor',
         ])->assertRedirect(route('absensi.show', $expo));
 
         $this->assertDatabaseHas('absensis', [
             'expo_id' => $expo->id,
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
             'tanggal' => now()->toDateString(),
         ]);
 
         $this->post(route('absensi.store', $expo), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081111111111',
+            'tujuan' => 'mencari_venue',
         ])->assertSessionHasErrors('email');
 
         $this->post(route('absensi.store', $expo), [
             'email' => 'lain@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'lainnya',
+            'tujuan_lainnya' => 'Mengantar keluarga',
         ])->assertSessionHasErrors('no_tlp');
 
         $this->travel(1)->days();
@@ -44,7 +49,17 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $expo), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertRedirect(route('absensi.show', $expo));
+
+        $this->assertSame(2, Absensi::query()->count());
+
+        $this->post(route('absensi.store', $expo), [
+            'email' => 'lain@example.com',
+            'no_tlp' => '081234567890',
+            'tujuan' => 'lainnya',
+            'tujuan_lainnya' => 'Mengantar keluarga',
+        ])->assertSessionHasErrors('no_tlp');
 
         $this->assertSame(2, Absensi::query()->count());
     }
@@ -60,6 +75,7 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $upcoming), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertSessionHasErrors('email');
 
         $inactive = $this->expo(now()->toDateString(), now()->toDateString(), false);
@@ -67,6 +83,7 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $inactive), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertSessionHasErrors('email');
 
         $this->assertSame(0, Absensi::query()->count());
@@ -80,6 +97,7 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $expo), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertSessionHasErrors('email');
 
         Carbon::setTestNow(now()->timezone('Asia/Jakarta')->setTime(22, 1));
@@ -87,6 +105,7 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $expo), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertSessionHasErrors('email');
 
         Carbon::setTestNow(now()->timezone('Asia/Jakarta')->setTime(22, 0));
@@ -94,6 +113,7 @@ class AbsensiTest extends TestCase
         $this->post(route('absensi.store', $expo), [
             'email' => 'tamu@example.com',
             'no_tlp' => '081234567890',
+            'tujuan' => 'mencari_vendor',
         ])->assertRedirect(route('absensi.show', $expo));
     }
 
