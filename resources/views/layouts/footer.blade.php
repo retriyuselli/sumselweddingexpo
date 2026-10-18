@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-center gap-4">
         <div class="text-sm text-neutral-600">&copy; {{ date('Y') }} Sumsel Wedding Expo.</div>
         <div class="flex items-center justify-center gap-4 text-sm text-neutral-600">
-            <a href="#" class="hover:text-neutral-900">Kebijakan Privasi</a>
+            <a href="{{ route('privacy') }}" class="hover:text-neutral-900">Kebijakan Privasi</a>
             <a href="{{ route('terms') }}" class="hover:text-neutral-900">Syarat & Ketentuan</a>
             @auth
                 @if (auth()->user()->hasRole('super_admin'))

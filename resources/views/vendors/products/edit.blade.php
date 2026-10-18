@@ -1,12 +1,14 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-product-edit')
 
-@section('title', 'Edit Produk — WeddingExpo')
+@section('title', 'Edit Produk — Sumsel Wedding Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
-        <section class="pt-24 md:pt-28 pb-6 bg-linear-to-r from-blue-50 to-indigo-50">
+    <div class="min-h-screen bg-gray-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-6 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Edit Produk</h1>
+                <span class="swe-page-eyebrow">REFINE YOUR WEDDING OFFERING</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Edit Produk</h1>
                 <p class="text-sm text-neutral-600 mt-1">{{ $vendor->nama_vendor }}</p>
                 <div class="mt-3">
                     <a href="{{ route('vendors.show', $vendor->slug) }}" class="text-xs sm:text-sm text-blue-600 hover:text-blue-700">&larr; Kembali ke halaman vendor</a>
@@ -81,13 +83,13 @@
                         </div>
                         <div class="flex items-center gap-3 sm:col-span-2">
                             <label class="inline-flex items-center gap-2 text-xs text-neutral-700"><input type="checkbox" name="is_active" value="1" class="rounded" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>Aktifkan produk</label>
-                            <button type="submit" class="ml-auto px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs hover:bg-indigo-700">Simpan Perubahan</button>
+                            <button type="submit" class="ml-auto px-3 py-1.5 rounded-lg text-white text-xs swe-action-primary">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
     <script>
         (function() {

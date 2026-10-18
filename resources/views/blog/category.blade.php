@@ -1,15 +1,16 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-blog')
 
-@section('title', $category->name . ' — Blog WeddingExpo')
+@section('title', $category->name . ' — Inspirasi Sumsel Wedding Expo')
 @push('head')
     <meta name="description" content="{{ $category->description }}">
 @endpush
 
 @section('content')
-    <main class="min-h-screen">
+    <div class="min-h-screen">
 
         <!-- Hero Category -->
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <nav class="flex items-center gap-2 text-sm mb-4">
                     <a href="{{ route('blog') }}" class="text-gray-600 hover:text-rose-600">Blog</a>
@@ -18,7 +19,8 @@
                     </svg>
                     <span class="text-rose-600 font-medium">{{ $category->name }}</span>
                 </nav>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">{{ $category->name }}</h1>
+                <span class="swe-page-eyebrow">FIND YOUR INSPIRATION</span>
+<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">{{ $category->name }}</h1>
                 <p class="text-sm sm:text-base text-neutral-600 max-w-3xl">
                     {{ $category->description ?? 'Artikel seputar ' . strtolower($category->name) }}
                 </p>
@@ -152,5 +154,5 @@
             </div>
         </section>
 
-    </main>
+    </div>
 @endsection

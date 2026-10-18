@@ -1,0 +1,1 @@
+<section class="swe-page-hero"><div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><span class="swe-page-eyebrow">{{ $pageEyebrow }}</span><h1>{{ $pageTitle }}</h1><p>{{ $pageDescription }}</p></div></section>

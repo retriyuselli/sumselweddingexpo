@@ -1,12 +1,13 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-profile')
 
-@section('title', 'Profile — WeddingExpo')
+@section('title', 'Profile — Sumsel Wedding Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50">
         
         <!-- Header -->
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
             <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
                     @if($user->avatar_url)
@@ -23,7 +24,8 @@
                         </div>
                     @endif
                     <div>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{{ $user->name }}</h1>
+                        <span class="swe-page-eyebrow">GET TO KNOW YOU</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{{ $user->name }}</h1>
                         <p class="text-xs sm:text-sm text-neutral-600">{{ $user->email }}</p>
                     </div>
                 </div>
@@ -177,7 +179,7 @@
                                     <!-- Save Button -->
                                     <div class="pt-2">
                                         <button type="submit" 
-                                                class="w-full sm:w-auto px-6 py-2.5 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 transition text-xs sm:text-sm">
+                                                class="w-full sm:w-auto px-6 py-2.5 text-white font-semibold rounded-lg transition text-xs sm:text-sm swe-action-primary">
                                             Save Changes
                                         </button>
                                     </div>
@@ -243,7 +245,7 @@
                                     <!-- Update Password Button -->
                                     <div class="pt-2">
                                         <button type="submit" 
-                                                class="w-full sm:w-auto px-6 py-2.5 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 transition text-xs sm:text-sm">
+                                                class="w-full sm:w-auto px-6 py-2.5 text-white font-semibold rounded-lg transition text-xs sm:text-sm swe-action-primary">
                                             Update Password
                                         </button>
                                     </div>
@@ -252,18 +254,18 @@
                         </div>
 
                         <!-- Danger Zone -->
-                        <div class="bg-white rounded-xl border border-red-200 p-4 sm:p-6">
+                        <div class="swe-danger-zone bg-white rounded-xl border p-4 sm:p-6">
                             <div class="mb-4">
-                                <h2 class="text-base sm:text-lg font-bold text-red-600 mb-1">Danger Zone</h2>
-                                <p class="text-xs text-neutral-600">Irreversible actions</p>
+                                <h2 class="text-base sm:text-lg font-bold mb-1">Tindakan Sensitif</h2>
+                                <p class="text-xs text-neutral-600">Tindakan ini tidak dapat dibatalkan</p>
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-red-50 rounded-lg">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 swe-danger-panel rounded-lg">
                                 <div>
-                                    <h3 class="font-medium text-xs sm:text-sm text-neutral-900">Delete Account</h3>
-                                    <p class="text-xs text-neutral-600 mt-1">Once deleted, your account cannot be recovered</p>
+                                    <h3 class="font-medium text-xs sm:text-sm text-neutral-900">Hapus Akun</h3>
+                                    <p class="text-xs text-neutral-600 mt-1">Setelah dihapus, akun Anda tidak dapat dipulihkan</p>
                                 </div>
-                                <button class="px-4 py-2 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition whitespace-nowrap">
-                                    Delete Account
+                                <button class="px-4 py-2 text-xs font-medium rounded-lg transition whitespace-nowrap swe-action-danger">
+                                    Hapus Akun
                                 </button>
                             </div>
                         </div>
@@ -273,7 +275,7 @@
             </div>
         </section>
 
-    </main>
+    </div>
 
     <script>
         function previewAvatar(event) {

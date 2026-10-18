@@ -1,14 +1,26 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-peserta')
 
-@section('title', 'Peserta Expo — WeddingExpo')
+@section('title', 'Peserta Expo — Sumsel Wedding Expo')
+
+@push('head')
+<style>
+.swe-unified .swe-participant-card:hover{border-color:#b78a54}
+.swe-unified .swe-participant-card:hover h3{color:#641b2a}
+.swe-unified .swe-participant-card .swe-booth-badge{background:#f1e8de;border-color:#ddcfc1;color:#641b2a}
+.swe-unified .swe-participant-card .swe-profile-link{color:#641b2a}
+.swe-unified .swe-participant-card .swe-profile-link:hover{color:#4d1421}
+</style>
+@endpush
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
+    <div class="min-h-screen bg-gray-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Peserta Expo</h1>
+                        <span class="swe-page-eyebrow">THE EXPO EXPERIENCE</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Peserta Expo</h1>
                         @if ($expo)
                             <p class="text-sm text-neutral-600 mt-2">
                                 Daftar vendor yang berpartisipasi dalam <span
@@ -61,29 +73,35 @@
                     // Display label: 'A-01' → 'A1', 'B-11' → 'B11'
                     $label = fn($id) => preg_replace('/^([A-Z])-0?(\d+)$/', '$1$2', $id);
 
-                    // Tailwind colour classes for a booth cell
+                    // Theme classes preserve the booth category and availability.
                     $boothColor = function($ps) {
-                        if (!$ps) return 'bg-green-100 border-green-300 text-green-700';
+                        if (!$ps) return 'swe-booth swe-booth-available';
                         return match($ps->categoryTenant?->category?->value ?? '') {
-                            'gold'     => 'bg-yellow-300 border-yellow-500 text-yellow-900',
-                            'platinum' => 'bg-violet-400 border-violet-600 text-white',
-                            'silver'   => 'bg-emerald-300 border-emerald-500 text-emerald-900',
-                            default    => 'bg-gray-200 border-gray-400 text-gray-700',
+                            'gold'     => 'swe-booth swe-booth-gold',
+                            'platinum' => 'swe-booth swe-booth-platinum',
+                            'silver'   => 'swe-booth swe-booth-silver',
+                            default    => 'swe-booth swe-booth-booked',
                         };
                     };
                 @endphp
 
-                <div class="rounded-2xl overflow-hidden shadow-lg mb-6" style="background:linear-gradient(135deg,#9ee8e8 0%,#6dd3d3 100%)">
+                @include('peserta.floorplan-styles')
+                <div class="swe-floorplan rounded-2xl overflow-hidden shadow-lg mb-6">
                     <div class="p-4 md:p-5">
 
                         {{-- Header --}}
-                        <div class="flex flex-wrap gap-3 justify-center items-center mb-4">
+                        <div class="swe-floorplan-header flex flex-wrap gap-3 items-center mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="bg-white rounded-xl px-3 py-1.5 shadow-sm shrink-0">
-                                    <img src="/storage/logo/logoswe.png" alt="SWE" class="h-9 w-auto">
+                                    @if (\Illuminate\Support\Facades\Storage::disk('public')->exists('logo/logoswe.png'))
+                                        <img src="{{ asset('storage/logo/logoswe.png') }}" alt="SWE" class="h-9 w-auto">
+                                    @else
+                                        <span class="text-sm font-bold" style="color:#641b2a;letter-spacing:.12em">SWE</span>
+                                    @endif
                                 </div>
                                 <div>
-                                    <h2 class="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-tight">LAYOUT SWE</h2>
+                                    <span class="swe-floorplan-eyebrow">EXPLORE THE EXHIBITION</span>
+                                    <h2 class="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-tight">Layout SWE</h2>
                                     <p class="text-[11px] text-gray-700 leading-tight">
                                         {{ $expo->tanggal_mulai->format('d M Y') }} – {{ $expo->tanggal_selesai->format('d M Y') }}
                                         @if($expo->lokasi) &nbsp;|&nbsp; {{ Str::words($expo->lokasi, 4, '…') }} @endif
@@ -93,13 +111,24 @@
 
                         </div>
 
+                        <div class="swe-floorplan-guide">
+                            <div class="swe-floorplan-legend" aria-label="Keterangan warna booth">
+                                <span><i class="swe-booth-platinum" aria-hidden="true"></i>Platinum</span>
+                                <span><i class="swe-booth-gold" aria-hidden="true"></i>Gold</span>
+                                <span><i class="swe-booth-silver" aria-hidden="true"></i>Silver</span>
+                                <span><i class="swe-booth-available" aria-hidden="true"></i>Tersedia</span>
+                            </div>
+                            <p>Pilih booth terisi untuk melihat vendor. Gulir atas–bawah atau kiri–kanan untuk menjelajahi denah.</p>
+                        </div>
+
                         {{-- Floor plan (scrollable) --}}
-                        <div class="overflow-x-auto pb-1">
-                            <div class="inline-flex gap-3 items-start" style="min-width:max-content">
+                        <div class="swe-floorplan-scroll overflow-x-auto pb-1" tabindex="0" role="region" aria-label="Denah booth expo, gulir atas bawah dan kiri kanan untuk melihat seluruh area">
+                            <div class="swe-floorplan-blocks inline-flex gap-3" style="min-width:max-content;align-items:flex-end">
 
                                 {{-- ── BLOK A ── --}}
                                 <div class="flex flex-col items-center">
-                                    <div class="bg-white p-3 shadow-md">
+                                    <p class="text-[12px] font-black tracking-widest text-gray-800 mb-1.5">BLOK A</p>
+                                    <div class="swe-floorplan-zone p-3">
                                         <div class="flex flex-col gap-1">
                                             @foreach($blokkABooths as $boothId)
                                                 @php $ps = $boothMap[$boothId] ?? null; @endphp
@@ -110,7 +139,7 @@
                                                     @if($ps)
                                                         <div class="text-center">
                                                             <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
-                                                            <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                            <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                         </div>
                                                     @else
                                                         <span class="text-[9px] opacity-60 text-center block">tersedia</span>
@@ -119,7 +148,6 @@
                                             @endforeach
                                         </div>
                                     </div>
-                                    <p class="text-[12px] font-black tracking-widest text-gray-800 mt-1.5">BLOK A</p>
                                 </div>
 
                                 {{-- ── BLOK B ── --}}
@@ -127,14 +155,14 @@
                                     $bLeftRows  = array_chunk($blokkBLeft,  5);
                                     $bRightRows = array_chunk($blokkBRight, 5);
                                 @endphp
-                                <div class="flex flex-col items-center" style="margin-top:100px">
+                                <div class="flex flex-col items-center">
                                     <p class="text-[12px] font-black tracking-widest text-gray-800 mb-1.5">BLOK B</p>
-                                    <div class="bg-gray-400 p-3 flex gap-3">
+                                    <div class="swe-floorplan-zone p-3 flex gap-3">
 
-                                        {{-- Stage hijau (tinggi penuh) --}}
-                                        <div class="bg-green-400 text-white rounded-xl self-stretch flex items-center justify-center font-black shrink-0"
+                                        {{-- Main stage --}}
+                                        <div class="swe-floorplan-stage rounded-xl self-stretch flex items-center justify-center font-black shrink-0"
                                              style="width:72px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:16px">
-                                            STAGE
+                                            PANGGUNG
                                         </div>
 
                                         {{-- B-01..B-10: seating + booth per baris --}}
@@ -144,7 +172,7 @@
                                                     {{-- Kursi penonton --}}
                                                     <div class="grid grid-cols-10 gap-0.5 shrink-0">
                                                         @for($i = 0; $i < 50; $i++)
-                                                            <div class="w-2.5 h-2.5 bg-white/60 rounded-sm"></div>
+                                                            <div class="swe-floorplan-seat w-2.5 h-2.5 rounded-sm"></div>
                                                         @endfor
                                                     </div>
                                                     {{-- Booth row --}}
@@ -158,10 +186,10 @@
                                                                 @if($ps)
                                                                     <div class="text-center">
                                                                         <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
-                                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                                     </div>
                                                                 @else
-                                                                    <span class="text-[9px] opacity-60 text-center block">avail</span>
+                                                                    <span class="text-[9px] opacity-60 text-center block">tersedia</span>
                                                                 @endif
                                                             </a>
                                                         @endforeach
@@ -183,10 +211,10 @@
                                                             @if($ps)
                                                                 <div class="text-center">
                                                                     <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
-                                                                    <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                                    <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                                 </div>
                                                             @else
-                                                                <span class="text-[9px] opacity-60 text-center block">avail</span>
+                                                                <span class="text-[9px] opacity-60 text-center block">tersedia</span>
                                                             @endif
                                                         </a>
                                                     @endforeach
@@ -198,9 +226,9 @@
                                 </div>
 
                                 {{-- ── BLOK C ── --}}
-                                <div class="self-start flex flex-col items-center" style="margin-top:158px">
+                                <div class="flex flex-col items-center">
                                     <p class="text-[12px] font-black tracking-widest text-gray-800 mb-1.5">BLOK C</p>
-                                    <div class="bg-gray-400 p-3 flex gap-1">
+                                    <div class="swe-floorplan-zone p-3 flex gap-1">
                                         @foreach($blokkCBooths as $boothId)
                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
                                             <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
@@ -210,10 +238,10 @@
                                                 @if($ps)
                                                     <div class="text-center">
                                                         <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
-                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">BOOKED</span>
+                                                        <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                     </div>
                                                 @else
-                                                    <span class="text-[9px] opacity-60 text-center block">avail</span>
+                                                    <span class="text-[9px] opacity-60 text-center block">tersedia</span>
                                                 @endif
                                             </a>
                                         @endforeach
@@ -264,11 +292,11 @@
                             @endphp
                             @continue(! $partisipasi->is_active || ! $vendor)
                             <div id="vendor-{{ $vendor->id }}"
-                                class="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
-                                <div class="p-5">
+                                class="swe-participant-card group flex flex-col bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+                                <div class="p-5 flex flex-1 flex-col">
                                     <div class="flex items-start justify-between mb-4">
                                         <div class="flex items-center gap-3">
-                                            @if ($vendor->logo)
+                                            @if ($vendor->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($vendor->logo))
                                                 <img src="{{ asset('storage/' . $vendor->logo) }}"
                                                     alt="{{ $vendor->nama_vendor }}"
                                                     class="w-12 h-12 rounded-lg object-contain p-1 bg-white border border-neutral-200 shadow-md group-hover:scale-110 transition-transform">
@@ -280,7 +308,7 @@
                                             @endif
                                             <div>
                                                 <h3
-                                                    class="font-bold text-neutral-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                                                    class="font-bold text-neutral-900 line-clamp-1 transition-colors">
                                                     {{ $vendor->nama_vendor }}
                                                 </h3>
                                                 <p class="text-xs text-neutral-500 font-medium">
@@ -296,13 +324,13 @@
                                         </div>
                                         @if ($partisipasi->tenantSpot || $partisipasi->blok_tenant)
                                             <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                                class="swe-booth-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border">
                                                 {{ $partisipasi->tenantSpot?->kode_booth ?? $partisipasi->blok_tenant }}
                                             </span>
                                         @endif
                                     </div>
 
-                                    <div class="space-y-2 text-sm">
+                                    <div class="space-y-2 text-sm mb-4">
                                         <div class="flex items-center text-neutral-600">
                                             <svg class="w-4 h-4 mr-2 text-neutral-400" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -343,9 +371,9 @@
                                         @endif
                                     </div>
 
-                                    <div class="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between">
+                                    <div class="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between">
                                         <a href="{{ route('peserta.show', $vendor->slug) }}"
-                                            class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group-hover:gap-2 transition-all">
+                                            class="swe-profile-link text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                                             Lihat Profil
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -371,5 +399,5 @@
                 @endif
             </div>
         </section>
-    </main>
+    </div>
 @endsection

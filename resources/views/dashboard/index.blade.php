@@ -1,11 +1,12 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-dashboard')
 
-@section('title', 'Dashboard — WeddingExpo')
+@section('title', 'Dashboard — Sumsel Wedding Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50">
 
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
@@ -24,9 +25,10 @@
                             </div>
                         @endif
                         <div>
-                            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-1">Welcome back,
+                            <span class="swe-page-eyebrow">YOUR WEDDING JOURNEY</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-1">Selamat datang kembali,
                                 {{ auth()->user()->name }}!</h1>
-                            <p class="text-xs sm:text-sm text-neutral-600">Here's what's happening with your account</p>
+                            <p class="text-xs sm:text-sm text-neutral-600">Ringkasan aktivitas akun Anda</p>
                         </div>
                     </div>
                 </div>
@@ -55,7 +57,7 @@
                             <div class="shrink-0 flex items-center gap-2">
                                 @if (!empty($currentVendor))
                                     <a href="{{ route('vendors.show', $currentVendor->slug) }}"
-                                        class="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white text-xs hover:bg-blue-700">Profil Vendor</a>
+                                        class="inline-flex items-center px-3 py-2 rounded-full swe-action-primary text-white text-xs">Profil Vendor</a>
                                 @endif
                             </div>
                         </div>
@@ -73,9 +75,9 @@
                                 </svg>
                             </div>
                             <span
-                                class="text-xs px-2 py-1 bg-green-50 text-green-600 rounded-full font-medium">Active</span>
+                                class="text-xs px-2 py-1 bg-green-50 text-green-600 rounded-full font-medium">Aktif</span>
                         </div>
-                        <h3 class="text-xs text-neutral-600 mb-1">Account Status</h3>
+                        <h3 class="text-xs text-neutral-600 mb-1">Status Akun</h3>
                         <p class="text-lg sm:text-xl font-bold text-neutral-900">{{ ucfirst($user->name ?? 'User') }}</p>
                     </div>
 
@@ -90,7 +92,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <h3 class="text-xs text-neutral-600 mb-1">Appointments</h3>
+                        <h3 class="text-xs text-neutral-600 mb-1">Janji Temu</h3>
                         <p class="text-lg sm:text-xl font-bold text-neutral-900">{{ $appointmentsCount ?? 0 }}</p>
                         <p class="text-xs text-neutral-500 mt-1">Total janji temu</p>
                     </div>
@@ -377,7 +379,7 @@
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="text-neutral-600">Status</span>
                                     <span
-                                        class="px-2 py-1 bg-green-50 text-green-600 rounded-full font-medium">Active</span>
+                                        class="px-2 py-1 bg-green-50 text-green-600 rounded-full font-medium">Aktif</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="text-neutral-600">Joined</span>
@@ -387,7 +389,7 @@
                             </div>
                             <div class="pt-4 space-y-2">
                                 <a href="/profile"
-                                    class="block w-full px-4 py-2 text-center text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                    class="block w-full px-4 py-2 text-center text-xs sm:text-sm text-white rounded-lg transition font-medium swe-action-primary">
                                     Edit Profile
                                 </a>
                                 <a href="/settings"
@@ -424,5 +426,5 @@
             </div>
         </section>
 
-    </main>
+    </div>
 @endsection

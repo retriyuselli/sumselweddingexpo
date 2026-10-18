@@ -1,11 +1,12 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-peserta-detail')
 
 @section('title', $vendor->nama_vendor . ' — Peserta Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50">
         {{-- Header Section --}}
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
                     <div class="flex items-start gap-4">
@@ -19,7 +20,8 @@
                             </div>
                         @endif
                         <div class="pt-1">
-                            <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">{{ $vendor->nama_vendor }}</h1>
+                            <span class="swe-page-eyebrow">MEET YOUR WEDDING PARTNER</span>
+<h1 class="text-2xl sm:text-3xl font-bold text-neutral-900">{{ $vendor->nama_vendor }}</h1>
                             <div class="flex flex-wrap items-center gap-2 mt-2 text-sm text-neutral-600">
                                 <span
                                     class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium text-xs">{{ $vendor->jenisUsaha->nama_jenis_usaha ?? 'Umum' }}</span>
@@ -186,5 +188,5 @@
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 @endsection

@@ -1,14 +1,16 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-auth')
 
-@section('title', 'Lupa Password — WeddingExpo')
+@section('title', 'Lupa Password — Sumsel Wedding Expo')
 @push('head')
     <meta name="description" content="Reset password akun WeddingExpo.">
 @endpush
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
+    <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold">Lupa Password</h1>
+            <span class="swe-page-eyebrow">LET US HELP YOU BACK</span>
+<h1 class="text-3xl sm:text-4xl font-bold">Lupa Password</h1>
             <p class="mt-3 text-neutral-600 max-w-2xl">Masukkan email akun Anda. Kami akan kirim link untuk mengatur ulang password.</p>
         </div>
     </section>
@@ -39,7 +41,7 @@
                             placeholder="nama@email.com" required autofocus>
                     </div>
                     <button type="submit"
-                        class="w-full px-4 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition text-sm">
+                        class="w-full px-4 py-3 text-white font-medium rounded-lg transition text-sm swe-action-primary">
                         Kirim Link Reset
                     </button>
                 </form>

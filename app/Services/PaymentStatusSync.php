@@ -34,7 +34,12 @@ class PaymentStatusSync
     public function assertOwnedBy(?User $user, Payment $payment): void
     {
         $order = $payment->relationLoaded('order') ? $payment->order : $payment->order()->first();
-        if ($user && $order && $order->customer_id && (int) $order->customer_id !== (int) $user->id) {
+        $owns = $user
+            && $order
+            && $order->customer_id
+            && (int) $order->customer_id === (int) $user->id;
+
+        if (! $owns) {
             throw new AccessDeniedHttpException('Forbidden');
         }
     }

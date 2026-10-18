@@ -1,6 +1,7 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-exhibitor')
 
-@section('title', 'Daftar Exhibitor — WeddingExpo')
+@section('title', 'Daftar Exhibitor — Sumsel Wedding Expo')
 @push('head')
     <meta name="description"
         content="Informasi pendaftaran exhibitor: paket booth, benefit, jadwal teknis, dan cara mendaftar.">
@@ -8,9 +9,10 @@
 
 @section('content')
     <!-- Hero -->
-    <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
+    <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold">Daftar sebagai Exhibitor</h1>
+            <span class="swe-page-eyebrow">GROW YOUR BRAND WITH US</span>
+<h1 class="text-3xl sm:text-4xl font-bold">Daftar sebagai Exhibitor</h1>
             <p class="mt-3 text-neutral-600 max-w-2xl">Ikut serta sebagai exhibitor dan tampilkan produk/layanan Anda kepada
                 calon pengantin serta mitra industri.</p>
         </div>
@@ -29,7 +31,7 @@
                 </ol>
                 <div class="mt-6">
                     <a href="mailto:exhibitor@weddingexpo.id"
-                        class="inline-flex items-center px-4 py-2 rounded-full bg-rose-600 text-white hover:bg-rose-700 text-sm">Hubungi
+                        class="inline-flex items-center px-4 py-2 rounded-full text-white text-sm swe-action-primary">Hubungi
                         Panitia</a>
                 </div>
             </div>
@@ -77,7 +79,7 @@
                             exhibitor.</p>
                         <div class="flex items-center gap-3">
                             <a href="{{ route('login') }}"
-                                class="inline-flex items-center px-4 py-2 rounded-full bg-rose-600 text-white hover:bg-rose-700 text-sm">
+                                class="inline-flex items-center px-4 py-2 rounded-full text-white text-sm swe-action-primary">
                                 Login untuk Mendaftar
                             </a>
                             <a href="mailto:exhibitor@weddingexpo.id"
@@ -140,7 +142,7 @@
                             @endif
                             <div class="flex items-center gap-3">
                                 <a href="{{ route('dashboard') }}"
-                                    class="inline-flex items-center px-4 py-2 rounded-full bg-neutral-900 text-white hover:bg-neutral-800 text-sm">
+                                    class="inline-flex items-center px-4 py-2 rounded-full text-white text-sm swe-action-primary">
                                     Ke Dashboard
                                 </a>
                             </div>
@@ -308,7 +310,7 @@
                             </div>
                             <div class="sm:col-span-2 flex items-center gap-3">
                                 <button
-                                    class="inline-flex items-center px-4 py-2 rounded-full bg-neutral-900 text-white hover:bg-neutral-800 text-sm"
+                                    class="inline-flex items-center px-4 py-2 rounded-full text-white text-sm swe-action-primary"
                                     type="submit">Kirim</button>
                                 <a class="inline-flex items-center px-4 py-2 rounded-full border border-neutral-300 hover:border-neutral-400 text-sm"
                                     href="mailto:exhibitor@weddingexpo.id">Kirim via Email</a>

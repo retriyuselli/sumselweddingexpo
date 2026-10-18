@@ -1,14 +1,16 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-auth')
 
-@section('title', 'Login — WeddingExpo')
+@section('title', 'Login — Sumsel Wedding Expo')
 @push('head')
     <meta name="description" content="Login untuk mengakses fitur WeddingExpo.">
 @endpush
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
+    <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold">Login</h1>
+            <span class="swe-page-eyebrow">YOUR WEDDING JOURNEY</span>
+<h1 class="text-3xl sm:text-4xl font-bold">Login</h1>
             <p class="mt-3 text-neutral-600 max-w-2xl">Masuk ke akun Anda untuk mengakses berbagai fitur WeddingExpo.</p>
         </div>
     </section>
@@ -24,9 +26,9 @@
                                 ($penyelenggara->banner_2 ?? null) &&
                                 \Illuminate\Support\Facades\Storage::disk('public')->exists($penyelenggara->banner_2)
                                     ? asset('storage/' . $penyelenggara->banner_2)
-                                    : 'https://images.unsplash.com/photo-1763235349041-dfff76ded444?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+                                    : asset('images/swe-home-hero.jpg');
                         @endphp
-                        <img src="{{ $loginBanner }}" alt="Wedding Event" class="w-full h-auto object-contain">
+                        <img src="{{ $loginBanner }}" alt="Wedding Event" class="swe-auth-photo w-full h-auto object-contain">
                     </div>
                     <div class="mt-6 text-center">
                         <h3 class="text-2xl font-bold text-neutral-900">Selamat Datang di Sumsel Wedding Expo</h3>
@@ -100,7 +102,7 @@
                             </div>
 
                             <button type="submit"
-                                class="w-full px-4 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition text-sm">Login</button>
+                                class="w-full px-4 py-3 text-white font-medium rounded-lg transition text-sm swe-action-primary">Login</button>
                         </form>
 
                         <div class="relative my-6">
@@ -150,7 +152,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
             <div class="text-sm text-neutral-600">&copy; {{ date('Y') }} WeddingExpo. Semua hak cipta.</div>
             <div class="flex items-center gap-4 text-sm text-neutral-600">
-                <a href="#" class="hover:text-neutral-900">Kebijakan Privasi</a>
+                <a href="{{ route('privacy') }}" class="hover:text-neutral-900">Kebijakan Privasi</a>
                 <a href="{{ route('terms') }}" class="hover:text-neutral-900">Syarat & Ketentuan</a>
                 @auth
                     @if (auth()->user()->hasRole('super_admin'))

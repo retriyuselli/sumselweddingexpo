@@ -1,11 +1,13 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-appointments')
 
-@section('title', 'Buat Janji Temu — WeddingExpo')
+@section('title', 'Buat Janji Temu — Sumsel Wedding Expo')
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-16">
+@include('layouts/unified-hero', ['pageTitle' => 'Buat Janji Temu', 'pageEyebrow' => 'PLAN YOUR NEXT CONVERSATION', 'pageDescription' => 'Atur percakapan dengan vendor dan rencanakan kunjungan Anda.'])
+    <section class="pt-10 pb-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-2">Buat Janji Temu</h1>
+            <h2 class="text-2xl font-bold mb-2">Buat Janji Temu</h2>
             @if (!empty($expo))
                 <p class="text-sm text-neutral-600 mb-6">Pilih vendor peserta expo <span class="font-medium text-neutral-800">{{ $expo->nama_expo }}</span>.</p>
             @else
@@ -92,7 +94,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-rose-600 text-white hover:bg-rose-700">Kirim Permintaan</button>
+                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white swe-action-primary">Kirim Permintaan</button>
                 </form>
                 @endif
             </div>

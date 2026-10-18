@@ -1,12 +1,14 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-payment')
 
-@section('title', 'Pembayaran Berhasil — WeddingExpo')
+@section('title', 'Status Pembayaran — Sumsel Wedding Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-green-50 to-emerald-50">
+    <div class="min-h-screen bg-gray-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-green-50 to-emerald-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Pembayaran Berhasil</h1>
+                <span class="swe-page-eyebrow">YOUR TRANSACTION AT A GLANCE</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Status Pembayaran</h1>
                 <p class="text-xs sm:text-sm text-neutral-600 mt-1">Ringkasan transaksi Midtrans</p>
             </div>
         </section>
@@ -142,7 +144,7 @@
                         </div>
                     @endif
                     <div class="mt-6 flex items-center gap-3">
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-neutral-900 text-white text-sm hover:bg-neutral-800">Kembali ke Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg text-white text-sm swe-action-primary">Kembali ke Dashboard</a>
                         @if (!empty($code))
                             @php $isSettlement = strtolower((string)($payment?->status ?? '')) === 'settlement'; @endphp
                             <a id="download-link" href="{{ route('payments.receipt') }}?code={{ urlencode($code) }}" class="px-4 py-2 rounded-lg border border-neutral-300 text-neutral-700 text-sm hover:bg-neutral-50 {{ $isSettlement ? '' : 'hidden' }}">Download Bukti</a>
@@ -152,7 +154,7 @@
                 </div>
             </div>
         </section>
-    </main>
+    </div>
     <script>
         const code = @json($code);
         const formatRupiah = (n) => new Intl.NumberFormat('id-ID').format(n || 0);

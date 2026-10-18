@@ -1,17 +1,19 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-blog')
 
-@section('title', 'Blog — WeddingExpo')
+@section('title', 'Blog — Sumsel Wedding Expo')
 @push('head')
     <meta name="description" content="Tips, inspirasi, dan artikel seputar pernikahan dari Sumsel Wedding Expo.">
 @endpush
 
 @section('content')
-    <main class="min-h-screen">
+    <div class="min-h-screen">
 
         <!-- Hero Blog -->
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-rose-50 to-pink-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">Blog & Artikel</h1>
+                <span class="swe-page-eyebrow">IDEAS FOR YOUR SPECIAL DAY</span>
+<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">Blog & Artikel</h1>
                 <p class="text-sm sm:text-base text-neutral-600 max-w-3xl">
                     Dapatkan tips, inspirasi, dan panduan lengkap untuk merencanakan pernikahan impian Anda.
                 </p>
@@ -204,7 +206,7 @@
             </div>
         </section>
 
-    </main>
+    </div>
 @endsection
 
 @push('scripts')

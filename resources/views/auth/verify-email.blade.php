@@ -1,9 +1,11 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-verify')
 
-@section('title', 'Verifikasi Email — WeddingExpo')
+@section('title', 'Verifikasi Email — Sumsel Wedding Expo')
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-16">
+@include('layouts/unified-hero', ['pageTitle' => 'Verifikasi Email Anda', 'pageEyebrow' => 'ONE STEP CLOSER', 'pageDescription' => 'Aktifkan akun untuk melanjutkan perjalanan Anda di Sumsel Wedding Expo.'])
+    <section class="pt-10 pb-16">
         <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8">
             <div class="p-8 rounded-xl border border-neutral-200 bg-white text-center">
                 <div class="mx-auto w-14 h-14 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
@@ -12,7 +14,7 @@
                         <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
                     </svg>
                 </div>
-                <h1 class="text-2xl font-bold text-neutral-900">Verifikasi Email Anda</h1>
+                <h2 class="text-2xl font-bold text-neutral-900">Verifikasi Email Anda</h2>
                 <p class="mt-3 text-sm text-neutral-600">
                     Kami telah mengirim link verifikasi ke
                     <span class="font-medium text-neutral-900">{{ $user->email }}</span>.
@@ -23,7 +25,7 @@
                 <form method="POST" action="{{ route('verification.send') }}" class="mt-6">
                     @csrf
                     <button type="submit"
-                        class="w-full px-4 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition text-sm">
+                        class="w-full px-4 py-3 text-white font-medium rounded-lg transition text-sm swe-action-primary">
                         Kirim Ulang Email Verifikasi
                     </button>
                 </form>

@@ -173,23 +173,6 @@ class AuthController extends Controller
         ]);
     }
 
-    public function updateSettings(Request $request)
-    {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'notifications_email' => ['nullable', 'boolean'],
-            'notifications_sms' => ['nullable', 'boolean'],
-            'privacy_show_email' => ['nullable', 'boolean'],
-            'privacy_show_profile' => ['nullable', 'boolean'],
-        ]);
-
-        // Here you would typically save these settings to a settings table
-        // For now, we'll just return success
-
-        return back()->with('success', 'Settings berhasil diperbarui!');
-    }
-
     public function dashboard()
     {
         $user = Auth::user();

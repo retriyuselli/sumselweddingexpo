@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Home;
 use App\Models\Sponsor;
+use App\Models\Vendor;
 use App\Services\ExpoResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -20,11 +21,11 @@ class HomeController extends Controller
             ]);
         }
 
-        $eventDate = $expo?->tanggal_mulai?->format('Y-m-d H:i:s') ?? '2026-01-16 00:00:00';
+        $eventDate = $expo?->tanggal_mulai?->copy()->timezone('Asia/Jakarta')->startOfDay()->toIso8601String();
         $eventStart = $expo?->tanggal_mulai;
         $eventEnd = $expo?->tanggal_selesai;
-        $eventLocation = $expo?->lokasi ?? 'Palembang Icon';
-        $eventName = $expo?->nama_expo ?? 'Wedding Expo 2026';
+        $eventLocation = $expo?->lokasi;
+        $eventName = $expo?->nama_expo ?? 'Sumsel Wedding Expo';
 
         $scheduleDays = $this->buildScheduleDays(
             $eventStart,
@@ -50,6 +51,15 @@ class HomeController extends Controller
 
         $penyelenggara = $home->penyelenggara;
 
+        $participantQuery = Vendor::query()
+            ->whereHas('partisipasis', fn ($query) => $query
+                ->where('expo_id', $expo?->id)
+                ->where('is_active', true));
+        $participantCount = $expo ? (clone $participantQuery)->count() : 0;
+        $featuredVendors = $expo
+            ? $participantQuery->with('jenisUsaha')->orderBy('nama_vendor')->limit(6)->get()
+            : collect();
+
         return view('home', compact(
             'eventDate',
             'eventStart',
@@ -61,6 +71,8 @@ class HomeController extends Controller
             'sponsors',
             'penyelenggara',
             'scheduleDays',
+            'participantCount',
+            'featuredVendors',
         ));
     }
 
@@ -72,29 +84,7 @@ class HomeController extends Controller
         $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
         if (! $eventStart || ! $eventEnd) {
-            return [
-                [
-                    'date' => Carbon::parse('2026-01-16'),
-                    'day_name' => 'Jumat',
-                    'day_label' => 'Hari Pertama',
-                    'waktu' => '10:00 – 21:00 WIB',
-                    'activity' => 'Grand Opening & Talkshow',
-                ],
-                [
-                    'date' => Carbon::parse('2026-01-17'),
-                    'day_name' => 'Sabtu',
-                    'day_label' => 'Hari Ke-2',
-                    'waktu' => '10:00 – 21:00 WIB',
-                    'activity' => 'Fashion Show & Live Music',
-                ],
-                [
-                    'date' => Carbon::parse('2026-01-18'),
-                    'day_name' => 'Minggu',
-                    'day_label' => 'Hari Terakhir',
-                    'waktu' => '10:00 – 21:00 WIB',
-                    'activity' => 'Grand Doorprize',
-                ],
-            ];
+            return [];
         }
 
         $duration = (int) $eventStart->diffInDays($eventEnd) + 1;
@@ -110,9 +100,7 @@ class HomeController extends Controller
                 ? 'Hari Pertama'
                 : ($i === $duration - 1 ? 'Hari Terakhir' : 'Hari Ke-'.($i + 1));
 
-            $fallbackActivity = $i === 0
-                ? 'Grand Opening & Talkshow'
-                : ($i === $duration - 1 ? 'Grand Doorprize' : 'Fashion Show & Live Music');
+            $fallbackActivity = 'Detail kegiatan segera diumumkan';
 
             $scheduleDays[] = [
                 'date' => $currentDate,
@@ -129,7 +117,7 @@ class HomeController extends Controller
     private function resolveDayWaktu(Collection $dayRundowns): string
     {
         if ($dayRundowns->isEmpty()) {
-            return '10:00 – 21:00 WIB';
+            return 'Jam segera diumumkan';
         }
 
         $starts = [];
@@ -147,7 +135,7 @@ class HomeController extends Controller
         if ($starts === []) {
             $raw = trim((string) $dayRundowns->first()->waktu);
 
-            return $raw === '' ? '10:00 – 21:00 WIB' : $raw.(str_contains(strtoupper($raw), 'WIB') ? '' : ' WIB');
+            return $raw === '' ? 'Jam segera diumumkan' : $raw.(str_contains(strtoupper($raw), 'WIB') ? '' : ' WIB');
         }
 
         sort($starts);

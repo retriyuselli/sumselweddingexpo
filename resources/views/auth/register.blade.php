@@ -1,14 +1,16 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-auth')
 
-@section('title', 'Daftar — WeddingExpo')
+@section('title', 'Daftar — Sumsel Wedding Expo')
 @push('head')
     <meta name="description" content="Daftar untuk membuat akun di WeddingExpo.">
 @endpush
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
+    <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold">Daftar</h1>
+            <span class="swe-page-eyebrow">START YOUR WEDDING STORY</span>
+<h1 class="text-3xl sm:text-4xl font-bold">Daftar</h1>
             <p class="mt-3 text-neutral-600 max-w-2xl">Buat akun untuk menikmati fitur WeddingExpo.</p>
         </div>
     </section>
@@ -24,9 +26,9 @@
                                 ($penyelenggara->banner_2 ?? null) &&
                                 \Illuminate\Support\Facades\Storage::disk('public')->exists($penyelenggara->banner_2)
                                     ? asset('storage/' . $penyelenggara->banner_2)
-                                    : 'https://images.unsplash.com/photo-1763235069111-638a143f4eab?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+                                    : asset('images/swe-home-hero.jpg');
                         @endphp
-                        <img src="{{ $registerBanner }}" alt="Register WeddingExpo" class="w-full h-auto object-contain">
+                        <img src="{{ $registerBanner }}" alt="Register WeddingExpo" class="swe-auth-photo w-full h-auto object-contain">
                     </div>
                     <div class="mt-6 text-center">
                         <h3 class="text-2xl font-bold text-neutral-900">Gabung bersama kami</h3>
@@ -135,7 +137,7 @@
                             @enderror
 
                             <button type="submit"
-                                class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white hover:bg-neutral-800 text-sm">Daftar</button>
+                                class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-white text-sm swe-action-primary">Daftar</button>
                         </form>
 
                         <div class="relative my-6">
@@ -184,7 +186,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
             <div class="text-sm text-neutral-600">&copy; {{ date('Y') }} WeddingExpo. Semua hak cipta.</div>
             <div class="flex items-center gap-4 text-sm text-neutral-600">
-                <a href="#" class="hover:text-neutral-900">Kebijakan Privasi</a>
+                <a href="{{ route('privacy') }}" class="hover:text-neutral-900">Kebijakan Privasi</a>
                 <a href="{{ route('terms') }}" class="hover:text-neutral-900">Syarat & Ketentuan</a>
                 @auth
                     @if (auth()->user()->hasRole('super_admin'))

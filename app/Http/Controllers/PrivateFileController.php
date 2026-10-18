@@ -9,11 +9,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class PrivateFileController extends Controller
 {
     /**
-     * Serve private local-disk files for authenticated users.
+     * Serve private local-disk files for panel admins.
      * Used instead of signed temporary URLs (more reliable on shared hosting).
      */
     public function __invoke(Request $request, string $path): StreamedResponse
     {
+        $user = $request->user();
+        abort_unless($user && $user->hasAnyRole(['super_admin', 'admin']), 403);
+
         $path = rawurldecode($path);
         $path = ltrim(str_replace('\\', '/', $path), '/');
 

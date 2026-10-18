@@ -1,6 +1,7 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-checkout')
 
-@section('title', 'Checkout — WeddingExpo')
+@section('title', 'Checkout — Sumsel Wedding Expo')
 
 @section('content')
     @php
@@ -23,10 +24,11 @@
         $lastCountry = $lastOrder ? ($lastOrder->billing_country ?: 'Indonesia') : 'Indonesia';
         $lastProvince = $lastOrder ? ($lastOrder->billing_province ?: 'Sumatera Selatan') : 'Sumatera Selatan';
     @endphp
-    <main class="min-h-screen bg-gray-50">
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
+    <div class="min-h-screen bg-gray-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">
+                <span class="swe-page-eyebrow">MAKE IT YOURS</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">
                     {{ $vendor ? 'Checkout • ' . $vendor->nama_vendor : 'Checkout' }}</h1>
                 <p class="text-xs sm:text-sm text-neutral-600 mt-1">Pilih produk lalu lakukan pembayaran dengan Midtrans</p>
             </div>
@@ -130,7 +132,7 @@
                         <table id="order-table" class="mt-3 w-full text-sm">
                             <thead>
                                 <tr class="border-b border-neutral-200">
-                                    <th class="py-2 text-left">Product</th>
+                                    <th class="py-2 text-left">Produk</th>
                                     <th class="py-2 text-right">Subtotal</th>
                                 </tr>
                             </thead>
@@ -190,13 +192,13 @@
                             pembayaran dapat diselesaikan sesuai ketentuan.
                         </div>
                         <button id="pay-btn"
-                            class="mt-4 w-full rounded-lg bg-green-600 text-white text-sm px-4 py-2 hover:bg-green-700">Place
+                            class="mt-4 w-full rounded-lg text-white text-sm px-4 py-2 swe-action-primary">Place
                             order</button>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
     <script src="{{ $snapBase }}" data-client-key="{{ $clientKey }}"></script>
     <script>

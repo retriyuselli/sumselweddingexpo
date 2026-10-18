@@ -1,6 +1,7 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-cart')
 
-@section('title', 'Keranjang — WeddingExpo')
+@section('title', 'Keranjang — Sumsel Wedding Expo')
 
 @section('content')
     @php
@@ -9,10 +10,11 @@
             : 'https://app.sandbox.midtrans.com/snap/snap.js';
         $clientKey = config('services.midtrans.client_key');
     @endphp
-    <main class="min-h-screen bg-gray-50">
-        <section class="pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
+    <div class="min-h-screen bg-gray-50">
+        <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-linear-to-r from-blue-50 to-indigo-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Keranjang</h1>
+                <span class="swe-page-eyebrow">YOUR WEDDING SELECTION</span>
+<h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Keranjang</h1>
                 <p class="text-xs sm:text-sm text-neutral-600 mt-1">Ringkasan produk yang akan dibeli</p>
             </div>
         </section>
@@ -25,9 +27,9 @@
                         <table id="cart-table" class="w-full text-sm hidden sm:table">
                             <thead>
                                 <tr class="border-b border-neutral-200">
-                                    <th class="py-2 text-left">Product</th>
-                                    <th class="py-2 text-right">Price</th>
-                                    <th class="py-2 text-center">Quantity</th>
+                                    <th class="py-2 text-left">Produk</th>
+                                    <th class="py-2 text-right">Harga</th>
+                                    <th class="py-2 text-center">Jumlah</th>
                                     <th class="py-2 text-right">Subtotal</th>
                                     <th class="py-2 text-center">&nbsp;</th>
                                 </tr>
@@ -45,7 +47,7 @@
 
                 <div>
                     <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
-                        <h2 class="text-lg font-semibold">Cart totals</h2>
+                        <h2 class="text-lg font-semibold">Ringkasan Pesanan</h2>
                         <table class="mt-3 w-full text-sm">
                             <tbody>
                                 <tr class="border-t border-neutral-200">
@@ -59,12 +61,12 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <a id="to-checkout" href="{{ route('checkout') }}" class="mt-4 w-full inline-flex items-center justify-center rounded-lg bg-green-600 text-white text-sm px-4 py-2 hover:bg-green-700">Proceed to checkout</a>
+                        <a id="to-checkout" href="{{ route('checkout') }}" class="mt-4 w-full inline-flex items-center justify-center rounded-lg text-white text-sm px-4 py-2 swe-action-primary">Lanjut ke Checkout</a>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
     <script src="{{ $snapBase }}" data-client-key="{{ $clientKey }}"></script>
     <script>

@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('layouts.theme-init')
     <title>@yield('title', 'WeddingExpo')</title>
 
     @php
@@ -15,17 +16,23 @@
     <link rel="icon" type="image/png" href="{{ asset($faviconPath) }}">
     <link rel="shortcut icon" href="{{ asset($faviconPath) }}">
 
-    <!-- Font: Poppins -->
+    <!-- Shared typography for public pages, navigation, and footer -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
         rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @hasSection('page-theme')
+        @include('layouts/unified-theme')
+    @endif
+    @include('layouts.action-styles')
+    @include('layouts.motion-styles')
     @stack('head')
+    @include('layouts.theme-styles')
 </head>
 
-<body class="font-[Poppins] text-neutral-800 bg-white">
+<body class="text-neutral-800 bg-white" style="font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif">
     @include('layouts.navbar')
 
     @include('layouts.success-modal')
@@ -60,7 +67,7 @@
                             <form method="POST" action="{{ route('verification.send') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Kirim
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white swe-action-primary">Kirim
                                     ulang verifikasi</button>
                             </form>
                             <button type="button" @click="open = false"
@@ -72,7 +79,7 @@
         @endif
     @endauth
 
-    <main>
+    <main class="@yield('page-theme')">
         @yield('content')
     </main>
 
@@ -83,6 +90,7 @@
     @endif
 
     @stack('scripts')
+    @include('layouts.motion-scripts')
 </body>
 
 </html>

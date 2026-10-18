@@ -1,15 +1,16 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-article')
 
-@section('title', $article['title'] . ' — WeddingExpo Blog')
+@section('title', $article['title'] . ' — Sumsel Wedding Expo Blog')
 @push('head')
     <meta name="description" content="{{ $article['excerpt'] }}">
 @endpush
 
 @section('content')
-    <main class="min-h-screen bg-white">
+    <div class="min-h-screen bg-white">
 
         <!-- Breadcrumb -->
-        <section class="pt-24 pb-6 bg-gray-50">
+        <section class="swe-editorial-breadcrumb pt-24 pb-6 bg-gray-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <nav class="flex items-center gap-2 text-xs text-gray-600">
                     <a href="/" class="hover:text-rose-600">Home</a>
@@ -257,5 +258,5 @@
             </div>
         </div>
 
-    </main>
+    </div>
 @endsection

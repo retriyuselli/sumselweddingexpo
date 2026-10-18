@@ -146,11 +146,14 @@ class VendorController extends Controller
             ->latest()
             ->take(24)
             ->get();
-        $upcomingAppointments = Appointment::with('customer:id,name')
-            ->where('vendor_id', $vendor->id)
-            ->where('starts_at', '>=', now())
-            ->orderBy('starts_at', 'asc')
-            ->paginate(10);
+        $isVendorOwner = Auth::check() && (int) Auth::id() === (int) $vendor->user_id;
+        $upcomingAppointments = $isVendorOwner
+            ? Appointment::with('customer:id,name')
+                ->where('vendor_id', $vendor->id)
+                ->where('starts_at', '>=', now())
+                ->orderBy('starts_at', 'asc')
+                ->paginate(10)
+            : null;
 
         return view('vendors.show', compact('vendor', 'upcomingAppointments', 'firstProduct', 'products', 'partisipasi', 'expo'));
     }

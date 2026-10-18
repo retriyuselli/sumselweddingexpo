@@ -1,9 +1,10 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-receipt')
 
-@section('title', 'Bukti Pembayaran — WeddingExpo')
+@section('title', 'Bukti Pembayaran — Sumsel Wedding Expo')
 
 @section('content')
-    <main class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50">
         <section class="pt-24 md:pt-28 pb-8">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
@@ -90,7 +91,7 @@
                 </div>
             </div>
         </section>
-    </main>
+    </div>
     <style>
         @media print {
             html { font-size: 12px; }

@@ -43,6 +43,9 @@ Route::get('/form-tring-pegadaian.pdf', function () {
 })->name('form.tring-pegadaian.pdf');
 
 Route::get('/doorprizes/{doorprize}/form-tring-pegadaian.pdf', function (\App\Models\Doorprize $doorprize) {
+    $user = auth()->user();
+    abort_unless($user && $user->hasAnyRole(['super_admin', 'admin', 'swe']), 403);
+
     $penyelenggara = \App\Models\Penyelenggara::first();
 
     $pdf = Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.form-tring-pegadaian', [
@@ -74,17 +77,14 @@ Route::get('/partisipasis/{partisipasi}/invoice', [PartisipasiPdfController::cla
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman Lokasi Pameran
-Route::view('/lokasi', 'lokasi')->name('lokasi');
+Route::get('/lokasi', \App\Http\Controllers\LocationController::class)->name('lokasi');
 // Syarat & Ketentuan
 Route::view('/syarat-ketentuan', 'terms')->name('terms');
+Route::view('/kebijakan-privasi', 'privacy')->name('privacy');
 // Halaman Penyelenggara (via controller)
 Route::get('/penyelenggara', [PenyelenggaraController::class, 'index'])->name('penyelenggara');
 // Halaman Gallery (menampilkan image_path dari model Gallery)
-Route::get('/gallery', function () {
-    $galleries = Gallery::orderBy('created_at', 'desc')->paginate(24);
-
-    return view('gallery', compact('galleries'));
-})->name('gallery');
+Route::get('/gallery', \App\Http\Controllers\GalleryController::class)->name('gallery');
 // Halaman Peserta (Daftar Vendor Partisipan)
 Route::get('/peserta', [PesertaController::class, 'index'])->name('peserta.index');
 Route::get('/peserta/{vendor:slug}', [PesertaController::class, 'show'])->name('peserta.show');
@@ -110,7 +110,7 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Product Detail (public)
 Route::get('/products/{product:slug}', function (ProductVendor $product) {
-    $product->load('vendor:id,nama_vendor,slug,logo');
+    $product->load('vendor:id,nama_vendor,slug,logo,no_wa_pic');
 
     return view('products.show', compact('product'));
 })->name('products.show');
@@ -191,7 +191,6 @@ Route::get('/my-avatar', [AvatarController::class, 'showOwn'])->name('avatar.own
 
 // User Settings Routes
 Route::get('/settings', [AuthController::class, 'settings'])->name('settings')->middleware('auth');
-Route::put('/settings', [AuthController::class, 'updateSettings'])->name('settings.update')->middleware('auth');
 
 // Dashboard Route
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware(['auth','verified']);

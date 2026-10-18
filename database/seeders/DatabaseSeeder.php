@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             PengeluaranSeeder::class,
             PengeluaranLainSeeder::class,
             OrderSeeder::class,
+            WebhookEventSeeder::class,
             SponsorSeeder::class,
             HomeSeeder::class,
             RundownSeeder::class,

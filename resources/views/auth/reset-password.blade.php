@@ -1,11 +1,13 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-auth')
 
-@section('title', 'Atur Ulang Password — WeddingExpo')
+@section('title', 'Atur Ulang Password — Sumsel Wedding Expo')
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-10 bg-rose-50">
+    <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-rose-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold">Atur Ulang Password</h1>
+            <span class="swe-page-eyebrow">A FRESH START</span>
+<h1 class="text-3xl sm:text-4xl font-bold">Atur Ulang Password</h1>
             <p class="mt-3 text-neutral-600 max-w-2xl">Buat password baru untuk akun Anda.</p>
         </div>
     </section>
@@ -48,7 +50,7 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full px-4 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition text-sm">
+                        class="w-full px-4 py-3 text-white font-medium rounded-lg transition text-sm swe-action-primary">
                         Simpan Password
                     </button>
                 </form>

@@ -1,13 +1,15 @@
 @extends('layouts.app')
+@section('page-theme', 'swe-unified swe-page-appointments')
 
-@section('title', 'Janji Temu Saya — WeddingExpo')
+@section('title', 'Janji Temu Saya — Sumsel Wedding Expo')
 
 @section('content')
-    <section class="pt-24 md:pt-28 pb-16">
+@include('layouts/unified-hero', ['pageTitle' => 'Janji Temu Saya', 'pageEyebrow' => 'LET THE CONVERSATION BEGIN', 'pageDescription' => 'Atur percakapan dengan vendor dan rencanakan kunjungan Anda.'])
+    <section class="pt-10 pb-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Janji Temu Saya</h1>
-                <a href="{{ route('appointments.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-600 text-white hover:bg-rose-700">Buat Janji Temu</a>
+                <h2 class="text-2xl font-bold">Janji Temu Saya</h2>
+                <a href="{{ route('appointments.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white swe-action-primary">Buat Janji Temu</a>
             </div>
 
             @if (session('success'))
