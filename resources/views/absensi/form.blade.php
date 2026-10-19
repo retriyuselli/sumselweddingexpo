@@ -22,9 +22,6 @@
                 <span class="event-tag"><span aria-hidden="true"></span>ABSENSI PENGUNJUNG</span>
             </header>
             <section class="attendance-content" aria-labelledby="attendance-heading">
-                @if (session('status'))
-                    <div class="status" role="status">{{ session('status') }}</div>
-                @endif
                 <div class="section-kicker"><span class="line" aria-hidden="true"></span><span>SELAMAT DATANG</span></div>
                 <h2 id="attendance-heading">Terima kasih sudah mengunjungi Sumsel Wedding Expo.</h2>
                 <p class="intro visitor-welcome">Senang menjadi bagian dari perjalanan menuju hari bahagia Anda. Temukan inspirasi pernikahan, kenali vendor pilihan, dan jelajahi potongan harga serta promo menarik selama kegiatan berlangsung.</p>
@@ -71,6 +68,16 @@
         </div>
         <footer>Terima kasih telah menjadi bagian dari cerita kami.<a href="{{ route('privacy') }}">Kebijakan Privasi</a></footer>
     </main>
+    @if (session('status'))
+        <dialog class="success-modal" id="success-modal" aria-labelledby="success-title">
+            <div class="success-card">
+                <span class="eyebrow">KEHADIRAN</span>
+                <h2 id="success-title">Kehadiran tercatat.</h2>
+                <p>Terima kasih.</p>
+                <button type="button" id="success-close">Tutup</button>
+            </div>
+        </dialog>
+    @endif
     <script>
         const tujuan = document.getElementById('tujuan');
         const tujuanLainnyaField = document.getElementById('tujuan-lainnya-field');
@@ -86,6 +93,15 @@
 
         tujuan?.addEventListener('change', () => syncTujuan(true));
         syncTujuan(false);
+
+        const successModal = document.getElementById('success-modal');
+        if (successModal && typeof successModal.showModal === 'function') {
+            successModal.showModal();
+            successModal.addEventListener('click', (event) => {
+                if (event.target === successModal) successModal.close();
+            });
+            document.getElementById('success-close')?.addEventListener('click', () => successModal.close());
+        }
     </script>
 </body>
 </html>
