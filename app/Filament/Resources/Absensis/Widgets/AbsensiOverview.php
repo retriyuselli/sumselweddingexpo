@@ -58,9 +58,14 @@ class AbsensiOverview extends StatsOverviewWidget
         $topCount = 0;
         $topDescription = 'Belum ada tujuan yang tercatat';
 
-        if ($top?->tujuan) {
+        $tujuan = $top?->tujuan;
+
+        if ($tujuan instanceof TujuanKunjungan) {
             $topCount = (int) $top->total;
-            $topDescription = TujuanKunjungan::tryFrom((string) $top->tujuan)?->label() ?? (string) $top->tujuan;
+            $topDescription = $tujuan->label();
+        } elseif (is_string($tujuan) && $tujuan !== '') {
+            $topCount = (int) $top->total;
+            $topDescription = TujuanKunjungan::tryFrom($tujuan)?->label() ?? $tujuan;
         }
 
         return [
