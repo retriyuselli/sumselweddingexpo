@@ -13,7 +13,16 @@
 </head>
 <body>
     <main>
-        <a class="brand" href="{{ url('/') }}" aria-label="Beranda Sumsel Wedding Expo"><span>SUMSEL</span><small>WEDDING EXPO</small></a>
+        @php
+            $attendanceLogo = $penyelenggara?->logo ?? 'logo/logoswe.png';
+        @endphp
+        <a class="brand" href="{{ url('/') }}" aria-label="Beranda Sumsel Wedding Expo">
+            @if (\Illuminate\Support\Facades\Storage::disk('public')->exists($attendanceLogo))
+                <img src="{{ asset('storage/'.$attendanceLogo) }}" alt="{{ $penyelenggara?->name ?? 'Sumsel Wedding Expo' }}">
+            @else
+                <span>SUMSEL</span><small>WEDDING EXPO</small>
+            @endif
+        </a>
         <div class="attendance-shell">
             <header class="event-header">
                 <span class="eyebrow">YOUR EXPO EXPERIENCE</span>

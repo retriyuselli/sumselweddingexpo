@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasAnyRole(['super_admin', 'admin']);
         });
 
-        View::composer('layouts.navbar', function ($view) {
+        View::composer(['layouts.navbar', 'absensi.form'], function ($view) {
             $penyelenggara = Cache::remember('penyelenggara.navbar', 600, function () {
                 return Penyelenggara::query()
                     ->select('name', 'logo')
