@@ -4,7 +4,8 @@
     const designKey = 'swe.design-theme';
     // Design identity is separate from Light/Dark/Auto preferences.
     const designs = { burgundy: 'Burgundy', 'navy-gold': 'Navy Gold' };
-    let design = 'burgundy';
+    const defaultDesign = 'navy-gold';
+    let design = defaultDesign;
     try { const stored = localStorage.getItem(designKey); if (Object.hasOwn(designs, stored)) design = stored; } catch (_) {}
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const valid = value => ['light', 'dark', 'auto'].includes(value);
@@ -25,10 +26,10 @@
     window.__saveTheme = () => { try { localStorage.setItem(key, selected); localStorage.setItem(designKey, design); return true; } catch (_) { return false; } };
     media.addEventListener('change', () => { if (selected === 'auto') apply(); });
     window.addEventListener('storage', event => {
-        if (event.key === designKey) { design = Object.hasOwn(designs, event.newValue) ? event.newValue : 'burgundy'; apply(); return; }
+        if (event.key === designKey) { design = Object.hasOwn(designs, event.newValue) ? event.newValue : defaultDesign; apply(); return; }
         if (event.key !== key && event.key !== null) return;
         selected = valid(event.newValue) ? event.newValue : 'light';
-        if (event.key === null) design = 'burgundy';
+        if (event.key === null) design = defaultDesign;
         apply();
     });
     apply();

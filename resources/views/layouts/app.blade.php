@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html data-design-theme="navy-gold" lang="id" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
