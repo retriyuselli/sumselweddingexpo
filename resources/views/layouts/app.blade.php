@@ -30,6 +30,7 @@
     @include('layouts.motion-styles')
     @stack('head')
     @include('layouts.theme-styles')
+    @include('layouts.design-theme-palette')
 </head>
 
 <body class="text-neutral-800 bg-white" style="font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif">

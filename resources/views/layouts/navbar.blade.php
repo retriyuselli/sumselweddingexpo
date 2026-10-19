@@ -1,20 +1,20 @@
 @include('layouts.mini-cart-styles')
 <style>
-header .swe-header-avatar{background:#641b2a;color:#fff}
-header #mobile-profile-button.swe-header-profile-ring:hover{--tw-ring-color:#b78a54}
-header #mobile-profile-button.swe-header-profile-ring:active{--tw-ring-color:#641b2a}
+header .swe-header-avatar{background:var(--swe-palette-hex-641b2a,#641b2a);color:#fff}
+header #mobile-profile-button.swe-header-profile-ring:hover{--tw-ring-color:var(--swe-palette-hex-b78a54,#b78a54)}
+header #mobile-profile-button.swe-header-profile-ring:active{--tw-ring-color:var(--swe-palette-hex-641b2a,#641b2a)}
 
-header .swe-header-login{background:#641b2a;color:#fff;transition:background-color .2s ease}
-header .swe-header-login:hover{background:#4d1421}
-header .swe-header-login:active{background:#3c101a}
-header .swe-header-login-icon{color:#641b2a}
-header .swe-header-login-icon:hover{background:#f1e8de}
-header :is(.swe-header-login,.swe-header-login-icon):focus-visible{outline:2px solid #b78a54;outline-offset:3px}
+header .swe-header-login{background:var(--swe-palette-hex-641b2a,#641b2a);color:#fff;transition:background-color .2s ease}
+header .swe-header-login:hover{background:var(--swe-palette-hex-4d1421,#4d1421)}
+header .swe-header-login:active{background:var(--swe-palette-hex-3c101a,#3c101a)}
+header .swe-header-login-icon{color:var(--swe-palette-hex-641b2a,#641b2a)}
+header .swe-header-login-icon:hover{background:var(--swe-palette-hex-f1e8de,#f1e8de)}
+header :is(.swe-header-login,.swe-header-login-icon):focus-visible{outline:2px solid var(--swe-palette-hex-b78a54,#b78a54);outline-offset:3px}
 
 header nav>a,header nav>.dropdown-hover>button{position:relative;padding-block:10px}
-header :is(a[aria-current="page"],[data-nav-active="true"]){color:#641b2a;font-weight:600}
-header .dropdown-menu a[aria-current="page"],header #mobile-menu :is(a[aria-current="page"],[data-nav-active="true"]){color:#641b2a}
-header #mobile-menu a[aria-current="page"] svg{color:#641b2a}
+header :is(a[aria-current="page"],[data-nav-active="true"]){color:var(--swe-palette-hex-641b2a,#641b2a);font-weight:600}
+header .dropdown-menu a[aria-current="page"],header #mobile-menu :is(a[aria-current="page"],[data-nav-active="true"]){color:var(--swe-palette-hex-641b2a,#641b2a)}
+header #mobile-menu a[aria-current="page"] svg{color:var(--swe-palette-hex-641b2a,#641b2a)}
 </style>
 <!-- Navbar -->
 <header class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-neutral-200 shadow-sm">
@@ -35,7 +35,7 @@ header #mobile-menu a[aria-current="page"] svg{color:#641b2a}
                 <img src="{{ asset('storage/' . $navbarLogo) }}" alt="{{ $penyelenggara?->name ?? 'Sumsel Wedding Expo' }}"
                     class="h-8 md:h-10 w-auto">
             @else
-                <span style="display:block;color:#641b2a;text-align:center;line-height:1.15">
+                <span style="display:block;color:var(--swe-palette-hex-641b2a,#641b2a);text-align:center;line-height:1.15">
                     <span style="display:block;font-family:'Playfair Display',Georgia,serif;font-size:21px;letter-spacing:.17em">SUMSEL</span>
                     <span style="display:block;font-size:8px;letter-spacing:.2em;margin-top:3px">WEDDING EXPO</span>
                 </span>

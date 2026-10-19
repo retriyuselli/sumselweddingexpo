@@ -5,11 +5,11 @@
 
 @push('head')
 <style>
-.swe-unified .swe-participant-card:hover{border-color:#b78a54}
-.swe-unified .swe-participant-card:hover h3{color:#641b2a}
-.swe-unified .swe-participant-card .swe-booth-badge{background:#f1e8de;border-color:#ddcfc1;color:#641b2a}
-.swe-unified .swe-participant-card .swe-profile-link{color:#641b2a}
-.swe-unified .swe-participant-card .swe-profile-link:hover{color:#4d1421}
+.swe-unified .swe-participant-card:hover{border-color:var(--swe-palette-hex-b78a54,#b78a54)}
+.swe-unified .swe-participant-card:hover h3{color:var(--swe-palette-hex-641b2a,#641b2a)}
+.swe-unified .swe-participant-card .swe-booth-badge{background:var(--swe-palette-hex-f1e8de,#f1e8de);border-color:var(--swe-palette-hex-ddcfc1,#ddcfc1);color:var(--swe-palette-hex-641b2a,#641b2a)}
+.swe-unified .swe-participant-card .swe-profile-link{color:var(--swe-palette-hex-641b2a,#641b2a)}
+.swe-unified .swe-participant-card .swe-profile-link:hover{color:var(--swe-palette-hex-4d1421,#4d1421)}
 </style>
 @endpush
 
@@ -96,7 +96,7 @@
                                     @if (\Illuminate\Support\Facades\Storage::disk('public')->exists('logo/logoswe.png'))
                                         <img src="{{ asset('storage/logo/logoswe.png') }}" alt="SWE" class="h-9 w-auto">
                                     @else
-                                        <span class="text-sm font-bold" style="color:#641b2a;letter-spacing:.12em">SWE</span>
+                                        <span class="text-sm font-bold" style="color:var(--swe-palette-hex-641b2a,#641b2a);letter-spacing:.12em">SWE</span>
                                     @endif
                                 </div>
                                 <div>

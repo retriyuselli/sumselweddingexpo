@@ -10,7 +10,7 @@
         <section class="swe-page-hero pt-24 md:pt-28 pb-10 bg-gradient-to-r from-rose-50 to-pink-50">
             <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-lg" style="background:#641b2a;color:#f4d7ba">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-lg" style="background:var(--swe-palette-hex-641b2a,#641b2a);color:var(--swe-palette-hex-f4d7ba,#f4d7ba)">
                         <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -68,13 +68,20 @@
                         <div id="appearance" class="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
                             <div class="mb-6">
                                 <h2 class="text-base sm:text-lg font-bold mb-1">Tampilan</h2>
-                                <p class="text-xs text-neutral-600">Pilih tema tampilan untuk browser ini. Auto mengikuti pengaturan perangkat.</p>
+                                <p class="text-xs text-neutral-600">Pilih tema desain dan mode tampilan untuk browser ini.</p>
                             </div>
 
                             <div class="space-y-4">
-                                <!-- Theme Selection -->
+                                <fieldset class="swe-design-picker">
+                                    <legend class="block text-xs sm:text-sm font-medium mb-3">Tema desain</legend>
+                                    <div class="swe-design-options">
+                                        <div><input type="radio" id="design-burgundy" name="design_theme" value="burgundy" class="sr-only"><label for="design-burgundy" class="swe-design-theme"><div><h3>Burgundy</h3><p>Marun, krem, dan emas.</p></div><div class="swe-design-swatches" aria-hidden="true"><span style="background:#641b2a"></span><span style="background:#faf7f2"></span><span style="background:#b78a54"></span></div></label></div>
+                                        <div><input type="radio" id="design-navy-gold" name="design_theme" value="navy-gold" class="sr-only"><label for="design-navy-gold" class="swe-design-theme"><div><h3>Navy Gold</h3><p>Biru navy dan aksen emas.</p></div><div class="swe-design-swatches" aria-hidden="true"><span style="background:#003b70"></span><span style="background:#f5f8fb"></span><span style="background:#e3aa20"></span></div></label></div>
+                                    </div>
+                                </fieldset>
+                                <!-- Display mode is independent of the named design. -->
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-neutral-700 mb-3">Tema</label>
+                                    <label class="block text-xs sm:text-sm font-medium text-neutral-700 mb-3">Mode tampilan</label>
                                     <div class="grid grid-cols-3 gap-3">
                                         <div class="relative">
                                             <input type="radio" name="theme" value="light" id="light" class="sr-only peer">
@@ -111,6 +118,14 @@
                                                 var dark = document.getElementById('dark');
                                                 var auto = document.getElementById('auto');
 
+                                                var designInputs = document.querySelectorAll('input[name="design_theme"]');
+                                                function syncDesign() {
+                                                    var design = window.__getDesignTheme();
+                                                    designInputs.forEach(function(input) { input.checked = input.value === design; });
+                                                    document.getElementById('save-theme').textContent = 'Simpan Tema ' + window.__getDesignThemeName();
+                                                }
+                                                designInputs.forEach(function(input) { input.addEventListener('change', function() { window.__setDesignTheme(input.value); }); });
+                                                syncDesign();
                                                 function syncRadios(value) {
                                                     if (value === 'dark') dark.checked = true;
                                                     else if (value === 'auto') auto.checked = true;
@@ -125,10 +140,10 @@
                                                 light.addEventListener('change', function() { window.__setTheme && window.__setTheme('light'); });
                                                 dark.addEventListener('change', function() { window.__setTheme && window.__setTheme('dark'); });
                                                 auto.addEventListener('change', function() { window.__setTheme && window.__setTheme('auto'); });
-                                                window.addEventListener('swe:theme-change', function(event) { syncRadios(event.detail); });
+                                                window.addEventListener('swe:theme-change', function(event) { syncRadios(event.detail); syncDesign(); });
                                                 document.getElementById('save-theme').addEventListener('click', function() {
                                                     var saved = window.__saveTheme && window.__saveTheme();
-                                                    document.getElementById('theme-status').textContent = saved ? 'Tema disimpan pada browser ini.' : 'Tema diterapkan sementara. Penyimpanan browser tidak tersedia.';
+                                                    document.getElementById('theme-status').textContent = saved ? 'Tema ' + window.__getDesignThemeName() + ' dan mode tampilan disimpan pada browser ini.' : 'Tema diterapkan sementara. Penyimpanan browser tidak tersedia.';
                                                 });
                                             })();
                                         </script>
@@ -137,7 +152,7 @@
 
                                 <div class="mt-6">
                                     <button id="save-theme" type="button" class="w-full sm:w-auto px-6 py-2.5 text-white font-semibold rounded-lg transition text-xs sm:text-sm swe-action-primary">
-                                        Simpan Tema
+                                        Simpan Tema Burgundy
                                     </button>
                                     <p id="theme-status" role="status" aria-live="polite" class="mt-3 text-xs text-neutral-600"></p>
                                 </div>

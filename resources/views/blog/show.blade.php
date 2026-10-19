@@ -113,7 +113,7 @@
                             }
 
                             .blog-content a {
-                                color: #f43f5e;
+                                color: var(--swe-palette-hex-f43f5e,#f43f5e);
                                 text-decoration: none;
                             }
 
@@ -174,7 +174,7 @@
                             }
 
                             .blog-content blockquote {
-                                border-left: 4px solid #f43f5e;
+                                border-left: 4px solid var(--swe-palette-hex-f43f5e,#f43f5e);
                                 padding-left: 1rem;
                                 font-style: italic;
                                 color: #6b7280;
@@ -186,7 +186,7 @@
                                 padding: 0.125rem 0.375rem;
                                 border-radius: 0.25rem;
                                 font-size: 0.875rem;
-                                color: #f43f5e;
+                                color: var(--swe-palette-hex-f43f5e,#f43f5e);
                                 font-family: monospace;
                             }
 

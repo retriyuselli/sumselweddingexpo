@@ -3,8 +3,8 @@ main .swe-shape-host{position:relative;isolation:isolate;overflow:hidden}
 main .swe-shape-host>.swe-wrap,main .swe-shape-host>.max-w-7xl{position:relative;z-index:1}
 .swe-motion-shapes{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;user-select:none}
 .swe-motion-shapes::before,.swe-motion-shapes::after{content:'';position:absolute;box-sizing:border-box;will-change:transform;animation-play-state:paused!important}
-.swe-motion-shapes::before{width:260px;height:300px;border:1px solid #edcda92e;border-radius:48% 48% 42% 42%;right:-85px;top:-125px;rotate:-22deg}
-.swe-motion-shapes::after{width:135px;height:135px;border:1px solid #edcda924;border-radius:50%;left:-70px;bottom:-60px;background:#edcda904}
+.swe-motion-shapes::before{width:260px;height:300px;border:1px solid var(--swe-palette-hex-edcda92e,#edcda92e);border-radius:48% 48% 42% 42%;right:-85px;top:-125px;rotate:-22deg}
+.swe-motion-shapes::after{width:135px;height:135px;border:1px solid var(--swe-palette-hex-edcda924,#edcda924);border-radius:50%;left:-70px;bottom:-60px;background:var(--swe-palette-hex-edcda904,#edcda904)}
 .swe-shapes-active>.swe-motion-shapes::before,.swe-shapes-active>.swe-motion-shapes::after{animation-play-state:running!important}
 @keyframes swe-shape-drift{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-14px,15px) rotate(7deg)}}
 @keyframes swe-shape-float{0%,100%{transform:translate(0,0)}50%{transform:translate(12px,-12px)}}
