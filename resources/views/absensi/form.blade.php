@@ -74,7 +74,30 @@
                 <span class="eyebrow">KEHADIRAN</span>
                 <h2 id="success-title">Kehadiran tercatat.</h2>
                 <p>Terima kasih.</p>
-                <button type="button" id="success-close">Tutup</button>
+                @php
+                    $successPrizes = collect($expo->visitor_prizes ?? [])->filter(fn ($prize) => is_array($prize) && filled($prize['name'] ?? null));
+                @endphp
+                @if ($expo->visitor_prizes_enabled && $successPrizes->isNotEmpty())
+                    <div class="success-prizes">
+                        <p>Hadiah yang bisa Anda dapatkan:</p>
+                        <ul>
+                            @foreach ($successPrizes as $prize)
+                                <li>
+                                    <strong>{{ $prize['name'] }}</strong>
+                                    @if ((int) ($prize['quantity'] ?? 0) > 0)
+                                        <span>{{ (int) $prize['quantity'] }} hadiah</span>
+                                    @endif
+                                    @if (filled($prize['description'] ?? null))
+                                        <em>{{ $prize['description'] }}</em>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                        @if (filled($expo->visitor_prize_terms))
+                            <p class="success-prize-terms">{{ $expo->visitor_prize_terms }}</p>
+                        @endif
+                    </div>
+                @endif
             </div>
         </dialog>
     @endif
@@ -98,9 +121,9 @@
         if (successModal && typeof successModal.showModal === 'function') {
             successModal.showModal();
             successModal.addEventListener('click', (event) => {
-                if (event.target === successModal) successModal.close();
+                const card = successModal.querySelector('.success-card');
+                if (!card || !card.contains(event.target)) successModal.close();
             });
-            document.getElementById('success-close')?.addEventListener('click', () => successModal.close());
         }
     </script>
 </body>
