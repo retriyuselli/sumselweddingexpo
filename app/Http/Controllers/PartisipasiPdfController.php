@@ -121,6 +121,7 @@ class PartisipasiPdfController extends Controller
 
         $penyelenggara = Penyelenggara::first();
         $rekeningTujuans = RekeningTujuan::query()
+            ->active()
             ->orderBy('nama_bank')
             ->orderBy('nama_pemilik')
             ->get();

@@ -14,6 +14,11 @@ class RekeningTujuan extends Model
         'nama_bank',
         'nomor_rekening',
         'nama_pemilik',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function dataPembayarans()
@@ -29,5 +34,10 @@ class RekeningTujuan extends Model
     public function pengeluaranLains()
     {
         return $this->hasMany(PengeluaranLain::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

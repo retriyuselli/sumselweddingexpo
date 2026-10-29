@@ -14,16 +14,19 @@ class RekeningTujuanSeeder extends Seeder
                 'nama_bank' => 'Bank Mandiri',
                 'nomor_rekening' => '1370012345678',
                 'nama_pemilik' => 'PT. Makna Kreatif Indonesia',
+                'is_active' => true,
             ],
             [
                 'nama_bank' => 'Bank BCA',
                 'nomor_rekening' => '7650987654321',
                 'nama_pemilik' => 'PT. Makna Kreatif Indonesia',
+                'is_active' => true,
             ],
             [
                 'nama_bank' => 'Bank BRI',
                 'nomor_rekening' => '002401234567890',
                 'nama_pemilik' => 'PT. Makna Kreatif Indonesia',
+                'is_active' => true,
             ],
         ];
 

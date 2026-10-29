@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RekeningTujuans\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class RekeningTujuanForm
@@ -25,6 +26,12 @@ class RekeningTujuanForm
                     ->required()
                     ->maxLength(255)
                     ->label('Nama Pemilik'),
+
+                Toggle::make('is_active')
+                    ->label('Aktif')
+                    ->helperText('Hanya rekening aktif yang dicantumkan di invoice.')
+                    ->default(true)
+                    ->inline(false),
             ]);
     }
 }

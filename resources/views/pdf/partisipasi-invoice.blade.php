@@ -1,23 +1,21 @@
 @php
-    $accent = '#003D79'; // Bank Mandiri Blue (RGB 0, 61, 121)
     $hargaJual = (int) ($partisipasi->harga_jual ?? 0);
     $diskon = (int) ($partisipasi->diskon ?? 0);
     $barterNominal = $partisipasi->is_barter ? (int) ($partisipasi->barter_nominal ?? 0) : 0;
-    // Harga bersih sudah = harga jual - diskon - barter
     $hargaBersih = $partisipasi->hitungHargaBersih();
     $tagihanAkhir = $hargaBersih;
     $totalBayar = (int) ($partisipasi->total_pembayaran ?? $partisipasi->dataPembayarans->sum('nominal'));
     $sisaBayar = max(0, $tagihanAkhir - $totalBayar);
     $status = $partisipasi->statusPembayaranEfektif($totalBayar);
     $statusBg = match ($status) {
-        'Lunas' => '#dcfce7',
-        'DP', 'Cicilan' => '#fef9c3',
-        default => '#fee2e2',
+        'Lunas' => '#e7f6ec',
+        'DP', 'Cicilan' => '#f8efd8',
+        default => '#f8e8e6',
     };
     $statusColor = match ($status) {
-        'Lunas' => '#166534',
-        'DP', 'Cicilan' => '#854d0e',
-        default => '#991b1b',
+        'Lunas' => '#1f6b3a',
+        'DP', 'Cicilan' => '#8a5a12',
+        default => '#8d2d32',
     };
     $paket = $partisipasi->categoryTenant?->category?->label() ?? '-';
     $booth = $partisipasi->tenantSpot?->kode_booth
@@ -27,6 +25,10 @@
     if ($ukuran) {
         $itemLabel .= ' ('.$ukuran.')';
     }
+    $tanggalInvoice = ($partisipasi->tanggal_booking ?? $generatedAt)->format('d M Y');
+    $periodeExpo = $expo?->tanggal_mulai
+        ? $expo->tanggal_mulai->format('d M Y').($expo->tanggal_selesai ? ' – '.$expo->tanggal_selesai->format('d M Y') : '')
+        : null;
 
     $metodeLabels = [
         'transfer' => 'Transfer',
@@ -41,251 +43,142 @@
 <meta charset="UTF-8">
 <title>Invoice {{ $invoiceNumber }}</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DejaVu Sans', sans-serif; font-size:10px; color:#1a1a1a; background:#fff; }
-
-.row  { display:table; width:100%; }
-.col  { display:table-cell; vertical-align:top; }
-.col-r{ display:table-cell; vertical-align:top; text-align:right; }
-
-.deco-bar {
-    position:relative;
-    height: 68px;
-    background:#fff;
-    overflow:hidden;
-    margin-bottom: 4px;
-}
-.deco-pill {
-    position:absolute;
-    top:-20px; right:-30px;
-    width:320px; height:100px;
-    background: {{ $accent }};
-    border-radius:60px;
-}
-.deco-dot {
-    position:absolute;
-    top:-28px; left:-24px;
-    width:90px; height:90px;
-    background: {{ $accent }};
-    border-radius:50%;
-}
-
-.brand-wrap  { padding: 0 52px 16px; border-bottom: 1px solid #e5e7eb; }
-.brand-name  { font-size:13px; font-weight:bold; color:#1a1a1a; letter-spacing:0.5px; }
-.brand-tagline { font-size:8px; color:#6b7280; margin-top:2px; }
-
-.invoice-title {
-    font-size:44px;
-    font-weight:bold;
-    color:#1a1a1a;
-    letter-spacing:1px;
-    padding: 20px 52px 0;
-}
-
-.bill-section { padding: 18px 52px 0; }
-.label-sm  { font-size:9px; color:#9ca3af; margin-bottom:3px; }
-.name-lg   { font-size:13px; font-weight:bold; color:#1a1a1a; margin-bottom:3px; }
-.text-muted { font-size:9.5px; color:#6b7280; line-height:1.7; }
-
-.meta-table { border-collapse:collapse; width:100%; }
-.meta-table td { padding: 4px 0; font-size:10px; vertical-align:top; }
-.meta-table td.ml { color:#6b7280; white-space:nowrap; width:1px; }
-.meta-table td.mc { color:#6b7280; padding:4px 8px 0; width:1px; white-space:nowrap; }
-.meta-table td.mv { font-weight:bold; color:#1a1a1a; text-align:right; }
-
-.badge {
-    display:inline-block;
-    padding: 2px 9px;
-    border-radius:20px;
-    font-size:8px;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-}
-
-.items-wrap { padding: 22px 52px 0; }
-table.items { width:100%; border-collapse:collapse; }
-table.items thead tr { border-bottom: 1.5px solid #1a1a1a; }
-table.items thead th {
-    padding: 7px 0;
-    font-size:9px;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:0.6px;
-    color:#1a1a1a;
-    text-align:left;
-}
-table.items thead th.r { text-align:right; }
-table.items thead th.c { text-align:center; }
-table.items tbody tr { border-bottom:1px solid #e5e7eb; }
-table.items tbody td { padding:10px 0; font-size:10px; color:#374151; vertical-align:top; }
-table.items tbody td.r { text-align:right; }
-table.items tbody td.c { text-align:center; }
-table.items tbody td .sub { font-size:8.5px; color:#9ca3af; margin-top:2px; }
-
-.bottom-wrap { padding: 20px 52px 0; }
-.pay-method-title { font-size:9px; font-weight:bold; text-transform:uppercase; letter-spacing:0.8px; color:#1a1a1a; margin-bottom:6px; }
-.pay-method-val   { font-size:10px; color:#374151; line-height:1.8; }
-
-table.totals { border-collapse:collapse; width:280px; }
-table.totals td { padding:4px 0; font-size:10px; white-space:nowrap; }
-table.totals td:first-child { padding-right:16px; }
-table.totals td:last-child { text-align:right; }
-table.totals .sub-row td { color:#6b7280; }
-table.totals .total-row td { font-size:14px; font-weight:bold; color:#1a1a1a; white-space:nowrap; }
-table.totals .total-row td:last-child { color: {{ $accent }}; }
-
-.payments-wrap { padding: 18px 52px 0; }
-.payments-title { font-size:9px; font-weight:bold; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; }
-table.payments { width:100%; border-collapse:collapse; }
-table.payments th, table.payments td { padding:6px 0; font-size:9px; border-bottom:1px solid #e5e7eb; }
-table.payments th { text-align:left; color:#6b7280; text-transform:uppercase; letter-spacing:0.4px; }
-table.payments td.r { text-align:right; }
-
-.thankyou-wrap { padding: 24px 52px 60px; }
-.thankyou-text { font-size:14px; color:#1a1a1a; }
-.signed-block { width:160px; margin-left:auto; padding-top:60px; }
-.signed-line  { border-top:1.5px solid #1a1a1a; margin-bottom:5px; }
-.signed-label { font-size:9px; color:#6b7280; text-align:center; }
-
-.footer-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: {{ $accent }};
-    padding: 11px 52px;
-    color:#fff;
-}
-.footer-bar .row-inner { display:table; width:100%; }
-.footer-bar .fi {
-    display:table-cell;
-    vertical-align:top;
-    font-size:9px;
-    padding-right:28px;
-}
-.footer-bar .fi-label {
-    font-size:7.5px;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:0.6px;
-    opacity:0.65;
-    display:block;
-    margin-bottom:1px;
-}
-.footer-bar .fi-val { font-size:9px; }
+@page { margin: 0 0 58px 0; }
+* { margin: 0; padding: 0; }
+body { font-family: 'DejaVu Sans', sans-serif; font-size: 10px; color: #35252a; line-height: 1.5; }
+table { border-collapse: collapse; }
+.band { width: 100%; background: #641b2a; color: #fff8f3; }
+.band td { vertical-align: middle; padding: 22px 36px; }
+.kicker { font-size: 8px; letter-spacing: 1.6px; color: #e6c7a2; text-transform: uppercase; }
+.organizer { font-size: 13px; font-weight: bold; color: #fff8f3; margin-top: 4px; }
+.doc-kicker { font-size: 8px; letter-spacing: 2px; color: #e6c7a2; text-align: right; }
+.doc-title { font-size: 28px; font-weight: bold; letter-spacing: 3px; color: #fff8f3; text-align: right; line-height: 1.1; }
+.doc-no { font-size: 9px; color: #f3ddc4; text-align: right; margin-top: 6px; }
+.gold { height: 4px; background: #b78a54; }
+.pad { padding: 22px 36px 0; }
+.card { width: 100%; background: #faf7f2; border: 1px solid #e6d8c8; }
+.card td { vertical-align: top; padding: 16px 18px; }
+.label { font-size: 8px; letter-spacing: 1.1px; text-transform: uppercase; color: #8a7164; margin-bottom: 6px; }
+.name { font-size: 15px; font-weight: bold; color: #641b2a; margin-bottom: 6px; }
+.muted { font-size: 9px; color: #6d584f; line-height: 1.7; }
+.meta { width: 100%; }
+.meta td { padding: 3px 0; font-size: 9px; vertical-align: top; }
+.meta .k { color: #8a7164; width: 38%; }
+.meta .v { font-weight: bold; color: #35252a; text-align: right; }
+.badge { font-size: 8px; font-weight: bold; letter-spacing: .6px; padding: 3px 8px; }
+.items { width: 100%; }
+.items th { background: #641b2a; color: #fff8f3; font-size: 8px; letter-spacing: .7px; text-transform: uppercase; padding: 9px 8px; text-align: left; }
+.items td { padding: 12px 8px; font-size: 9px; border-bottom: 1px solid #eadfd3; vertical-align: top; }
+.items td.desc { font-weight: bold; color: #641b2a; }
+.sub { font-size: 8px; font-weight: normal; color: #8a7164; margin-top: 4px; line-height: 1.6; }
+.r { text-align: right; }
+.c { text-align: center; }
+.section-title { font-size: 8px; font-weight: bold; letter-spacing: 1.1px; text-transform: uppercase; color: #641b2a; margin-bottom: 8px; }
+.note { font-size: 9px; color: #5c463e; line-height: 1.7; }
+.totals { width: 100%; }
+.totals td { padding: 5px 8px; font-size: 9px; color: #5c463e; }
+.totals td.r { text-align: right; white-space: nowrap; }
+.totals .sum td { background: #f4ebe1; color: #641b2a; font-weight: bold; font-size: 11px; padding: 9px 8px; }
+.totals .due td { background: #641b2a; color: #fff8f3; font-weight: bold; font-size: 11px; padding: 11px 8px; }
+.payments { width: 100%; }
+.payments th { background: #f4ebe1; color: #641b2a; font-size: 7px; letter-spacing: .5px; text-transform: uppercase; text-align: left; padding: 7px 6px; }
+.payments td { font-size: 8px; padding: 8px 6px; border-bottom: 1px solid #eadfd3; vertical-align: top; }
+.thanks { font-size: 13px; font-weight: bold; color: #641b2a; }
+.sign { width: 170px; margin-left: auto; margin-top: 28px; border-top: 1px solid #b78a54; padding-top: 6px; text-align: center; font-size: 8px; color: #6d584f; }
+.footer { position: fixed; left: 36px; right: 36px; bottom: 16px; border-top: 2px solid #b78a54; padding-top: 7px; color: #6d584f; }
+.footer td { font-size: 7px; vertical-align: top; padding-right: 10px; }
+.footer .fk { display: block; font-size: 6px; letter-spacing: .7px; text-transform: uppercase; color: #a08878; margin-bottom: 2px; }
+tr { page-break-inside: avoid; }
+thead { display: table-header-group; }
 </style>
 </head>
 <body>
 
-<div class="deco-bar">
-    <div class="deco-dot"></div>
-    <div class="deco-pill"></div>
-</div>
-
-<div class="brand-wrap">
-    <div class="row">
-        <div class="col">
-            @if($logoBase64)
-                <img src="{{ $logoBase64 }}"
-                     alt="{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}"
-                     style="height:60px; width:auto; display:block;">
-            @else
-                <div class="brand-name">{{ strtoupper($penyelenggara->name ?? 'SUMSEL WEDDING EXPO') }}</div>
-                <div class="brand-tagline">Invoice Partisipasi Tenant</div>
+<div class="footer">
+    <table width="100%">
+        <tr>
+            @if($penyelenggara?->no_tlp)
+            <td><span class="fk">Telepon</span>{{ $penyelenggara->no_tlp }}</td>
             @endif
-        </div>
-    </div>
+            @if($penyelenggara?->email)
+            <td><span class="fk">Email</span>{{ $penyelenggara->email }}</td>
+            @endif
+            @if($penyelenggara?->instagram)
+            <td><span class="fk">Instagram</span>{{ $penyelenggara->instagram }}</td>
+            @endif
+            @if($penyelenggara?->alamat)
+            <td><span class="fk">Alamat</span>{{ $penyelenggara->alamat }}</td>
+            @endif
+        </tr>
+    </table>
 </div>
 
-<div class="invoice-title">INVOICE</div>
+<table class="band">
+    <tr>
+        <td style="width:58%;">
+            @if($logoBase64)
+                <img src="{{ $logoBase64 }}" alt="{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}" style="height:42px; width:auto;">
+            @else
+                <div class="kicker">Sumsel Wedding Expo</div>
+            @endif
+            <div class="organizer">{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</div>
+        </td>
+        <td style="width:42%;">
+            <div class="doc-kicker">Partisipasi pameran</div>
+            <div class="doc-title">INVOICE</div>
+            <div class="doc-no">{{ $invoiceNumber }}<br>{{ $tanggalInvoice }}</div>
+        </td>
+    </tr>
+</table>
+<div class="gold"></div>
 
-<div class="bill-section">
-    <div class="row">
-        <div class="col" style="width:50%">
-            <div class="label-sm">Invoice to:</div>
-            <div class="name-lg">{{ $vendor->nama_vendor ?? '-' }}</div>
-            <div class="text-muted">
-                @if($vendor?->nama_pic)
-                    PIC: {{ $vendor->nama_pic }}<br>
-                @endif
-                @if($vendor?->email)
-                    {{ $vendor->email }}<br>
-                @endif
-                @if($vendor?->no_telepon || $vendor?->no_wa_pic)
-                    {{ $vendor->no_telepon ?: $vendor->no_wa_pic }}<br>
-                @endif
-                @if($vendor?->alamat || $vendor?->kota)
-                    {{ collect([$vendor->alamat, $vendor->kota])->filter()->implode(', ') }}
-                @endif
-            </div>
-        </div>
-        <div class="col-r" style="width:50%">
-            <table class="meta-table">
-                <tr>
-                    <td class="ml">Invoice#</td>
-                    <td class="mc">:</td>
-                    <td class="mv">{{ $invoiceNumber }}</td>
-                </tr>
-                <tr>
-                    <td class="ml">Tanggal</td>
-                    <td class="mc">:</td>
-                    <td class="mv">{{ ($partisipasi->tanggal_booking ?? $generatedAt)->format('d / m / Y') }}</td>
-                </tr>
-                <tr>
-                    <td class="ml">Expo</td>
-                    <td class="mc">:</td>
-                    <td class="mv">{{ $expo->nama_expo ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="ml">Periode</td>
-                    <td class="mc">:</td>
-                    <td class="mv">{{ $expo->periode ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="ml">Booth</td>
-                    <td class="mc">:</td>
-                    <td class="mv">{{ $booth }}</td>
-                </tr>
-                <tr>
-                    <td class="ml">Status</td>
-                    <td class="mc">:</td>
-                    <td class="mv">
-                        <span class="badge" style="background:{{ $statusBg }}; color:{{ $statusColor }}">
-                            {{ strtoupper($status) }}
-                        </span>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
+<div class="pad">
+    <table class="card">
+        <tr>
+            <td style="width:52%;">
+                <div class="label">Ditagihkan kepada</div>
+                <div class="name">{{ $vendor->nama_vendor ?? '-' }}</div>
+                <div class="muted">
+                    @if($vendor?->nama_pic)PIC: {{ $vendor->nama_pic }}<br>@endif
+                    @if($vendor?->email){{ $vendor->email }}<br>@endif
+                    @if($vendor?->no_telepon || $vendor?->no_wa_pic){{ $vendor->no_telepon ?: $vendor->no_wa_pic }}<br>@endif
+                    @if($vendor?->alamat || $vendor?->kota){{ collect([$vendor->alamat, $vendor->kota])->filter()->implode(', ') }}@endif
+                </div>
+            </td>
+            <td style="width:48%; background:#fffdf9;">
+                <table class="meta">
+                    <tr><td class="k">Expo</td><td class="v">{{ $expo->nama_expo ?? '-' }}</td></tr>
+                    <tr><td class="k">Periode</td><td class="v">{{ $expo->periode ?? '-' }}</td></tr>
+                    <tr><td class="k">Booth</td><td class="v">{{ $booth }}</td></tr>
+                    <tr><td class="k">Paket</td><td class="v">{{ $paket }}</td></tr>
+                    <tr>
+                        <td class="k">Status</td>
+                        <td class="v"><span class="badge" style="background:{{ $statusBg }}; color:{{ $statusColor }};">{{ strtoupper($status) }}</span></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </div>
 
-<div class="items-wrap">
+<div class="pad">
     <table class="items">
         <thead>
             <tr>
-                <th style="width:48%">Item</th>
-                <th style="width:12%" class="c">Qty</th>
-                <th style="width:20%" class="r">Harga</th>
-                <th style="width:20%" class="r">Total</th>
+                <th style="width:46%;">Deskripsi</th>
+                <th style="width:12%;" class="c">Jml</th>
+                <th style="width:21%;" class="r">Harga</th>
+                <th style="width:21%;" class="r">Total</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>
+                <td class="desc">
                     {{ $itemLabel }}
                     <div class="sub">
                         {{ $expo->nama_expo ?? '' }}
-                        @if($expo?->tanggal_mulai)
-                            · {{ $expo->tanggal_mulai->format('d M Y') }}
-                            @if($expo->tanggal_selesai)
-                                – {{ $expo->tanggal_selesai->format('d M Y') }}
-                            @endif
-                        @endif
-                        @if($expo?->lokasi)
-                            · {{ $expo->lokasi }}
-                        @endif
+                        @if($periodeExpo) · {{ $periodeExpo }} @endif
+                        @if($expo?->lokasi) · {{ $expo->lokasi }} @endif
                     </div>
                 </td>
                 <td class="c">1</td>
@@ -296,83 +189,79 @@ table.payments td.r { text-align:right; }
     </table>
 </div>
 
-<div class="bottom-wrap">
-    <div class="row">
-        <div class="col" style="width:50%; padding-top:6px;">
-            <div class="pay-method-title">Pembayaran dapat dilakukan melalui</div>
-            <div class="pay-method-val">
-                @forelse($rekeningTujuans as $i => $rekening)
-                    {{ $i + 1 }}. {{ $rekening->nama_bank }} — {{ $rekening->nomor_rekening }}
-                    <br>&nbsp;&nbsp;&nbsp;&nbsp;a.n. {{ $rekening->nama_pemilik }}
-                    @if(! $loop->last)<br>@endif
-                @empty
-                    —
-                @endforelse
-            </div>
-
-            @if($partisipasi->keterangan || $barterNominal > 0)
-                <div class="pay-method-title" style="margin-top:12px;">Keterangan</div>
-                <div class="pay-method-val">
-                    @if($partisipasi->keterangan)
-                        {{ $partisipasi->keterangan }}
+<div class="pad">
+    <table width="100%">
+        <tr>
+            <td style="width:52%; vertical-align:top; padding-right:18px;">
+                <div class="section-title">Pembayaran dapat dilakukan melalui</div>
+                <div class="note">
+                    @forelse($rekeningTujuans as $i => $rekening)
+                        {{ $i + 1 }}. {{ $rekening->nama_bank }} — {{ $rekening->nomor_rekening }}<br>
+                        &nbsp;&nbsp;&nbsp;a.n. {{ $rekening->nama_pemilik }}
+                        @if(! $loop->last)<br>@endif
+                    @empty
+                        —
+                    @endforelse
+                </div>
+                @if($partisipasi->keterangan || $barterNominal > 0)
+                    <div class="section-title" style="margin-top:14px;">Keterangan</div>
+                    <div class="note">
+                        @if($partisipasi->keterangan){{ $partisipasi->keterangan }}@endif
+                        @if($barterNominal > 0)
+                            @if($partisipasi->keterangan)<br>@endif
+                            <strong>Barter:</strong> Rp {{ number_format($barterNominal, 0, ',', '.') }}
+                            @if($partisipasi->barter_description)<br>{{ $partisipasi->barter_description }}@endif
+                            <br><span style="color:#a08878;">Nilai barter tidak termasuk pembayaran tunai ke perusahaan.</span>
+                        @endif
+                    </div>
+                @endif
+            </td>
+            <td style="width:48%; vertical-align:top;">
+                <table class="totals">
+                    <tr>
+                        <td>Harga jual</td>
+                        <td class="r">Rp {{ number_format($hargaJual, 0, ',', '.') }}</td>
+                    </tr>
+                    @if($diskon > 0)
+                    <tr>
+                        <td>Diskon</td>
+                        <td class="r">- Rp {{ number_format($diskon, 0, ',', '.') }}</td>
+                    </tr>
                     @endif
                     @if($barterNominal > 0)
-                        @if($partisipasi->keterangan)<br>@endif
-                        <strong>Barter:</strong> Rp {{ number_format($barterNominal, 0, ',', '.') }}
-                        @if($partisipasi->barter_description)
-                            <br>{{ $partisipasi->barter_description }}
-                        @endif
-                        <br><span style="color:#9ca3af; font-size:8.5px;">Nilai barter tidak termasuk pembayaran tunai ke perusahaan.</span>
+                    <tr>
+                        <td>Barter</td>
+                        <td class="r">- Rp {{ number_format($barterNominal, 0, ',', '.') }}</td>
+                    </tr>
                     @endif
-                </div>
-            @endif
-        </div>
-        <div class="col-r" style="width:50%">
-            <table class="totals" style="margin-left:auto;">
-                <tr class="sub-row">
-                    <td>Harga Jual</td>
-                    <td>Rp {{ number_format($hargaJual, 0, ',', '.') }}</td>
-                </tr>
-                @if($diskon > 0)
-                <tr class="sub-row">
-                    <td>Diskon</td>
-                    <td>- Rp {{ number_format($diskon, 0, ',', '.') }}</td>
-                </tr>
-                @endif
-                @if($barterNominal > 0)
-                <tr class="sub-row">
-                    <td>Barter</td>
-                    <td>- Rp {{ number_format($barterNominal, 0, ',', '.') }}</td>
-                </tr>
-                @endif
-                <tr class="sub-row">
-                    <td>Sudah Dibayar</td>
-                    <td>Rp {{ number_format($totalBayar, 0, ',', '.') }}</td>
-                </tr>
-                <tr class="sub-row">
-                    <td>Sisa</td>
-                    <td>Rp {{ number_format($sisaBayar, 0, ',', '.') }}</td>
-                </tr>
-                <tr class="line-row"><td colspan="2" style="padding:0; border-top:1.5px solid #e5e7eb;"></td></tr>
-                <tr class="total-row">
-                    <td>Total Tagihan</td>
-                    <td>Rp {{ number_format($tagihanAkhir, 0, ',', '.') }}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+                    <tr class="sum">
+                        <td>Total tagihan</td>
+                        <td class="r">Rp {{ number_format($tagihanAkhir, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Sudah dibayar</td>
+                        <td class="r">Rp {{ number_format($totalBayar, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr class="due">
+                        <td>Sisa tagihan</td>
+                        <td class="r">Rp {{ number_format($sisaBayar, 0, ',', '.') }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </div>
 
 @if($partisipasi->dataPembayarans->isNotEmpty())
-<div class="payments-wrap">
-    <div class="payments-title">Riwayat Pembayaran</div>
+<div class="pad">
+    <div class="section-title">Riwayat pembayaran</div>
     <table class="payments">
         <thead>
             <tr>
                 <th>Tanggal</th>
                 <th>Pembayar</th>
                 <th>Metode</th>
-                <th>Rekening Tujuan</th>
+                <th>Rekening tujuan</th>
                 <th class="r">Nominal</th>
             </tr>
         </thead>
@@ -381,9 +270,7 @@ table.payments td.r { text-align:right; }
             @php
                 $metode = $metodeLabels[$bayar->metode_pembayaran] ?? ($bayar->metode_pembayaran ? strtoupper($bayar->metode_pembayaran) : '-');
                 $rek = $bayar->rekeningTujuan;
-                $rekLabel = $rek
-                    ? $rek->nama_bank.' · '.$rek->nomor_rekening
-                    : '-';
+                $rekLabel = $rek ? $rek->nama_bank.' · '.$rek->nomor_rekening : '-';
             @endphp
             <tr>
                 <td>{{ $bayar->tanggal_bayar?->format('d M Y') ?? '-' }}</td>
@@ -398,50 +285,18 @@ table.payments td.r { text-align:right; }
 </div>
 @endif
 
-<div class="thankyou-wrap">
-    <div class="row">
-        <div class="col" style="width:55%; padding-top:8px;">
-            <div class="thankyou-text">Terima kasih atas partisipasi Anda!</div>
-            <div class="text-muted" style="margin-top:6px;">
-                Dokumen digenerate: {{ $generatedAt->format('d M Y H:i') }} WIB
-            </div>
-        </div>
-        <div class="col-r" style="width:45%">
-            <div class="signed-block">
-                <div class="signed-line"></div>
-                <div class="signed-label">{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="footer-bar">
-    <div class="row-inner">
-        @if($penyelenggara?->no_tlp)
-        <div class="fi">
-            <span class="fi-label">Telepon</span>
-            <span class="fi-val">{{ $penyelenggara->no_tlp }}</span>
-        </div>
-        @endif
-        @if($penyelenggara?->email)
-        <div class="fi">
-            <span class="fi-label">Email</span>
-            <span class="fi-val">{{ $penyelenggara->email }}</span>
-        </div>
-        @endif
-        @if($penyelenggara?->instagram)
-        <div class="fi">
-            <span class="fi-label">Instagram</span>
-            <span class="fi-val">{{ $penyelenggara->instagram }}</span>
-        </div>
-        @endif
-        @if($penyelenggara?->alamat)
-        <div class="fi">
-            <span class="fi-label">Alamat</span>
-            <span class="fi-val">{{ $penyelenggara->alamat }}</span>
-        </div>
-        @endif
-    </div>
+<div class="pad" style="padding-bottom:18px;">
+    <table width="100%">
+        <tr>
+            <td style="width:58%; vertical-align:top; padding-top:10px;">
+                <div class="thanks">Terima kasih atas partisipasi Anda.</div>
+                <div class="muted" style="margin-top:5px;">Diterbitkan {{ $generatedAt->format('d M Y H:i') }} WIB</div>
+            </td>
+            <td style="width:42%; vertical-align:top;">
+                <div class="sign">{{ $penyelenggara->name ?? 'Sumsel Wedding Expo' }}</div>
+            </td>
+        </tr>
+    </table>
 </div>
 
 </body>
