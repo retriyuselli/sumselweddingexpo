@@ -72,6 +72,7 @@
 
                     // Display label: 'A-01' → 'A1', 'B-11' → 'B11'
                     $label = fn($id) => preg_replace('/^([A-Z])-0?(\d+)$/', '$1$2', $id);
+                    $showBoothVendor = auth()->user()?->hasRole('super_admin') ?? false;
 
                     // Theme classes preserve the booth category and availability.
                     $boothColor = function($ps) {
@@ -134,11 +135,11 @@
                                                 @php $ps = $boothMap[$boothId] ?? null; @endphp
                                                 <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                    class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                                   title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                   title="{{ $ps ? ($showBoothVendor ? ($ps->vendor->nama_vendor ?? 'Terisi') : 'Terisi') : 'Tersedia' }}">
                                                     <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
                                                     @if($ps)
                                                         <div class="text-center">
-                                                            <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                            @if ($showBoothVendor)<span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>@endif
                                                             <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                         </div>
                                                     @else
@@ -181,11 +182,11 @@
                                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
                                                             <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                                class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                               title="{{ $ps ? ($showBoothVendor ? ($ps->vendor->nama_vendor ?? 'Terisi') : 'Terisi') : 'Tersedia' }}">
                                                                 <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
                                                                 @if($ps)
                                                                     <div class="text-center">
-                                                                        <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                                        @if ($showBoothVendor)<span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>@endif
                                                                         <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                                     </div>
                                                                 @else
@@ -206,11 +207,11 @@
                                                         @php $ps = $boothMap[$boothId] ?? null; @endphp
                                                         <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                            class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                                           title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                                           title="{{ $ps ? ($showBoothVendor ? ($ps->vendor->nama_vendor ?? 'Terisi') : 'Terisi') : 'Tersedia' }}">
                                                             <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
                                                             @if($ps)
                                                                 <div class="text-center">
-                                                                    <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                                    @if ($showBoothVendor)<span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>@endif
                                                                     <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                                 </div>
                                                             @else
@@ -233,11 +234,11 @@
                                             @php $ps = $boothMap[$boothId] ?? null; @endphp
                                             <a href="{{ $ps ? '#vendor-' . ($ps->vendor_id ?? $ps->vendor?->id) : 'javascript:void(0)' }}"
                                                class="w-20 h-24 rounded border-2 flex flex-col justify-between p-2 transition-all {{ $boothColor($ps) }} {{ $ps ? 'hover:scale-105 hover:shadow-md' : '' }}"
-                                               title="{{ $ps ? ($ps->vendor->nama_vendor ?? '') : 'Tersedia' }}">
+                                               title="{{ $ps ? ($showBoothVendor ? ($ps->vendor->nama_vendor ?? 'Terisi') : 'Terisi') : 'Tersedia' }}">
                                                 <span class="text-lg font-black leading-none">{{ $label($boothId) }}</span>
                                                 @if($ps)
                                                     <div class="text-center">
-                                                        <span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>
+                                                        @if ($showBoothVendor)<span class="text-[9px] font-bold block truncate leading-tight">{{ Str::limit($ps->vendor->nama_vendor ?? '', 10) }}</span>@endif
                                                         <span class="text-[8px] font-black tracking-widest block mt-0.5">TERISI</span>
                                                     </div>
                                                 @else
